@@ -1,0 +1,15 @@
+{
+  "name": "agentpay-cli",
+  "version": "0.1.0",
+  "description": "CLI for AgentPay - agent-to-agent payment protocol on Solana",
+  "type": "module",
+  "bin": {
+    "agentpay": "./index.mjs"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.98.0",
+    "commander": "^12.0.0",
+    "bs58": "^6.0.0"
+  }
+}
