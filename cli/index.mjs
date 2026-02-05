@@ -58,6 +58,45 @@ function solToLamports(sol) {
 }
 
 // ============================================================================
+// ZK proof helpers
+// ============================================================================
+
+function bigIntToBytes32BE(n) {
+  const hex = n.toString(16).padStart(64, "0");
+  return Buffer.from(hex, "hex");
+}
+
+function unstringifyProof(proof) {
+  // Convert snarkjs proof format to groth16-solana byte format
+  // proof_a: negate and convert to big-endian bytes
+  // proof_b: convert to big-endian bytes
+  // proof_c: convert to big-endian bytes
+
+  const a = Buffer.alloc(64);
+  const pi_a_x = BigInt(proof.pi_a[0]);
+  const pi_a_y = BigInt(proof.pi_a[1]);
+  // Negate proof_a (negate y coordinate on BN254)
+  const P = BigInt("21888242871839275222246405745257275088696311157297823662689037894645226208583");
+  const neg_y = (P - pi_a_y) % P;
+  bigIntToBytes32BE(pi_a_x).copy(a, 0);
+  bigIntToBytes32BE(neg_y).copy(a, 32);
+
+  const b = Buffer.alloc(128);
+  // G2 point: proof_b[0] = [x_c1, x_c0], proof_b[1] = [y_c1, y_c0]
+  // groth16-solana expects: [x_c0, x_c1, y_c0, y_c1] in big-endian
+  bigIntToBytes32BE(BigInt(proof.pi_b[0][1])).copy(b, 0);
+  bigIntToBytes32BE(BigInt(proof.pi_b[0][0])).copy(b, 32);
+  bigIntToBytes32BE(BigInt(proof.pi_b[1][1])).copy(b, 64);
+  bigIntToBytes32BE(BigInt(proof.pi_b[1][0])).copy(b, 96);
+
+  const c = Buffer.alloc(64);
+  bigIntToBytes32BE(BigInt(proof.pi_c[0])).copy(c, 0);
+  bigIntToBytes32BE(BigInt(proof.pi_c[1])).copy(c, 32);
+
+  return { a, b, c };
+}
+
+// ============================================================================
 // PDA derivation
 // ============================================================================
 
@@ -87,7 +126,7 @@ cli
   .option(
     "-k, --keypair <path>",
     "Path to Solana keypair",
-    "~/.config/solana/id.json"
+    process.env.AGENTPAY_KEYPAIR || "~/.config/solana/id.json"
   )
   .option("-u, --url <rpc>", "Solana RPC URL", DEFAULT_RPC);
 
@@ -98,6 +137,7 @@ cli
   .description("Register a service on-chain with a description and price")
   .requiredOption("-d, --description <text>", "Service description (max 128 chars)")
   .requiredOption("-p, --price <sol>", "Price per task in SOL")
+  .option("--min-reputation <n>", "Minimum reputation score required (0 = no minimum)", "0")
   .action(async (opts) => {
     const { program, keypair } = getProgram(
       cli.opts().url,
@@ -110,7 +150,8 @@ cli
       .registerService(
         Array.from(serviceId),
         padBytes(opts.description, 128),
-        new BN(solToLamports(opts.price))
+        new BN(solToLamports(opts.price)),
+        new BN(parseInt(opts.minReputation))
       )
       .accounts({
         provider: keypair.publicKey,
@@ -287,6 +328,75 @@ cli
         status: "ok",
         taskPda: opts.taskPda,
         resultHash: resultHash.toString("hex"),
+        tx,
+      })
+    );
+  });
+
+// ── submit-result-zk ────────────────────────────────────────────────────────
+
+cli
+  .command("submit-result-zk")
+  .description("Submit a ZK-verified result for a task (Groth16 proof verified on-chain)")
+  .requiredOption("--task-pda <pda>", "Task request PDA address")
+  .requiredOption("-r, --result <text>", "Result text (will be Poseidon hashed & ZK proved)")
+  .option("--circuits-dir <path>", "Path to compiled circuits directory", new URL("../circuits", import.meta.url).pathname)
+  .action(async (opts) => {
+    const { program, keypair } = getProgram(
+      cli.opts().url,
+      cli.opts().keypair
+    );
+
+    // Dynamically import snarkjs and circomlibjs
+    const snarkjs = await import("snarkjs");
+    const { buildPoseidon } = await import("circomlibjs");
+
+    // Compute Poseidon hash of the result (as field element)
+    const poseidon = await buildPoseidon();
+    // Convert result text to a field element (use first 31 bytes of SHA256 to stay in field)
+    const resultSha = createHash("sha256").update(opts.result).digest();
+    const resultField = BigInt("0x" + resultSha.subarray(0, 31).toString("hex"));
+    const poseidonHash = poseidon.F.toString(poseidon([resultField]));
+
+    console.error("Generating ZK proof...");
+
+    // Generate Groth16 proof
+    const circuitsDir = opts.circuitsDir;
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+      { result: resultField.toString(), expectedHash: poseidonHash },
+      `${circuitsDir}/task_verify_js/task_verify.wasm`,
+      `${circuitsDir}/task_verify.zkey`
+    );
+
+    console.error("ZK proof generated. Submitting to Solana...");
+
+    // Convert proof to byte arrays for the on-chain verifier
+    // groth16-solana expects: proof_a negated big-endian, proof_b big-endian, proof_c big-endian
+    const proofParsed = unstringifyProof(proof);
+
+    // Convert public signal (Poseidon hash) to 32-byte big-endian
+    const hashBigInt = BigInt(publicSignals[0]);
+    const resultHashBytes = bigIntToBytes32BE(hashBigInt);
+
+    const tx = await program.methods
+      .submitResultZk(
+        Array.from(proofParsed.a),
+        Array.from(proofParsed.b),
+        Array.from(proofParsed.c),
+        Array.from(resultHashBytes)
+      )
+      .accounts({
+        provider: keypair.publicKey,
+        taskRequest: new PublicKey(opts.taskPda),
+      })
+      .rpc();
+
+    console.log(
+      JSON.stringify({
+        status: "ok",
+        taskPda: opts.taskPda,
+        resultHash: Buffer.from(resultHashBytes).toString("hex"),
+        zkVerified: true,
         tx,
       })
     );

@@ -16,6 +16,8 @@ pub struct ServiceListing {
     pub tasks_completed: u64,
     /// Timestamp of creation
     pub created_at: i64,
+    /// Minimum reputation score required (0 = no minimum)
+    pub min_reputation: u64,
     /// PDA bump seed
     pub bump: u8,
 }
@@ -29,6 +31,7 @@ impl ServiceListing {
         + 1    // is_active
         + 8    // tasks_completed
         + 8    // created_at
+        + 8    // min_reputation
         + 1;   // bump
 }
 
@@ -69,6 +72,8 @@ pub struct TaskRequest {
     pub deadline: i64,
     /// Timestamp of creation
     pub created_at: i64,
+    /// Whether the result was ZK-verified (Groth16 proof verified on-chain)
+    pub zk_verified: bool,
     /// PDA bump seed
     pub bump: u8,
 }
@@ -85,5 +90,6 @@ impl TaskRequest {
         + 32   // result_hash
         + 8    // deadline
         + 8    // created_at
+        + 1    // zk_verified
         + 1;   // bump
 }

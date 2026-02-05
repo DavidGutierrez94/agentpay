@@ -22,4 +22,8 @@ pub enum AgentPayError {
     DescriptionTooLong,
     #[msg("Deadline must be in the future")]
     DeadlineInPast,
+    #[msg("ZK proof verification failed")]
+    ZkProofVerificationFailed,
+    #[msg("Provider reputation is too low for this service")]
+    ReputationTooLow,
 }

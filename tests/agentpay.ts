@@ -76,7 +76,8 @@ describe("agentpay", () => {
       .registerService(
         Array.from(serviceId),
         description,
-        new anchor.BN(PRICE_LAMPORTS)
+        new anchor.BN(PRICE_LAMPORTS),
+        new anchor.BN(0)
       )
       .accounts({
         provider: providerAgent.publicKey,
@@ -275,7 +276,8 @@ describe("agentpay", () => {
         .registerService(
           Array.from(disputeServiceId),
           padBytes("Code review service", 128),
-          new anchor.BN(PRICE_LAMPORTS)
+          new anchor.BN(PRICE_LAMPORTS),
+          new anchor.BN(0)
         )
         .accounts({
           provider: providerAgent.publicKey,
@@ -362,7 +364,8 @@ describe("agentpay", () => {
         .registerService(
           Array.from(expireServiceId),
           padBytes("Quick task service", 128),
-          new anchor.BN(PRICE_LAMPORTS)
+          new anchor.BN(PRICE_LAMPORTS),
+          new anchor.BN(0)
         )
         .accounts({
           provider: providerAgent.publicKey,

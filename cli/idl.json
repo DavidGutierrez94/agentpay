@@ -437,6 +437,10 @@
         {
           "name": "price_lamports",
           "type": "u64"
+        },
+        {
+          "name": "min_reputation",
+          "type": "u64"
         }
       ]
     },
@@ -495,6 +499,201 @@
       "args": [
         {
           "name": "result_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "submit_result_zk",
+      "docs": [
+        "Submit a result with ZK proof verification.",
+        "The provider proves knowledge of the result pre-image via a Groth16 proof.",
+        "proof_a: 64 bytes (G1, negated, big-endian)",
+        "proof_b: 128 bytes (G2, big-endian)",
+        "proof_c: 64 bytes (G1, big-endian)",
+        "result_hash: 32 bytes (the Poseidon hash, used as public input)"
+      ],
+      "discriminator": [
+        98,
+        173,
+        167,
+        164,
+        217,
+        231,
+        142,
+        199
+      ],
+      "accounts": [
+        {
+          "name": "provider",
+          "signer": true,
+          "relations": [
+            "task_request"
+          ]
+        },
+        {
+          "name": "task_request",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  97,
+                  115,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "task_request.requester",
+                "account": "TaskRequest"
+              },
+              {
+                "kind": "account",
+                "path": "task_request.task_id",
+                "account": "TaskRequest"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "proof_a",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        },
+        {
+          "name": "proof_b",
+          "type": {
+            "array": [
+              "u8",
+              128
+            ]
+          }
+        },
+        {
+          "name": "proof_c",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        },
+        {
+          "name": "result_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "verify_reputation",
+      "docs": [
+        "Verify a provider's reputation meets the service minimum requirement.",
+        "Uses a ZK proof to prove reputation >= threshold without revealing exact score.",
+        "This is called by the requester before creating a task, to verify the provider qualifies."
+      ],
+      "discriminator": [
+        182,
+        23,
+        57,
+        13,
+        214,
+        61,
+        83,
+        208
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "signer": true
+        },
+        {
+          "name": "service_listing",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  101,
+                  114,
+                  118,
+                  105,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "service_listing.provider",
+                "account": "ServiceListing"
+              },
+              {
+                "kind": "account",
+                "path": "service_listing.service_id",
+                "account": "ServiceListing"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "proof_a",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        },
+        {
+          "name": "proof_b",
+          "type": {
+            "array": [
+              "u8",
+              128
+            ]
+          }
+        },
+        {
+          "name": "proof_c",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        },
+        {
+          "name": "threshold",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "provider_commitment",
           "type": {
             "array": [
               "u8",
@@ -583,6 +782,16 @@
       "code": 6009,
       "name": "DeadlineInPast",
       "msg": "Deadline must be in the future"
+    },
+    {
+      "code": 6010,
+      "name": "ZkProofVerificationFailed",
+      "msg": "ZK proof verification failed"
+    },
+    {
+      "code": 6011,
+      "name": "ReputationTooLow",
+      "msg": "Provider reputation is too low for this service"
     }
   ],
   "types": [
@@ -649,6 +858,13 @@
               "Timestamp of creation"
             ],
             "type": "i64"
+          },
+          {
+            "name": "min_reputation",
+            "docs": [
+              "Minimum reputation score required (0 = no minimum)"
+            ],
+            "type": "u64"
           },
           {
             "name": "bump",
@@ -753,6 +969,13 @@
               "Timestamp of creation"
             ],
             "type": "i64"
+          },
+          {
+            "name": "zk_verified",
+            "docs": [
+              "Whether the result was ZK-verified (Groth16 proof verified on-chain)"
+            ],
+            "type": "bool"
           },
           {
             "name": "bump",

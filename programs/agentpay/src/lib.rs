@@ -3,6 +3,7 @@ use anchor_lang::system_program;
 
 pub mod errors;
 pub mod state;
+pub mod zk;
 
 use errors::AgentPayError;
 use state::*;
@@ -20,6 +21,7 @@ pub mod agentpay {
         service_id: [u8; 16],
         description: [u8; 128],
         price_lamports: u64,
+        min_reputation: u64,
     ) -> Result<()> {
         let listing = &mut ctx.accounts.service_listing;
         listing.provider = ctx.accounts.provider.key();
@@ -29,6 +31,7 @@ pub mod agentpay {
         listing.is_active = true;
         listing.tasks_completed = 0;
         listing.created_at = Clock::get()?.unix_timestamp;
+        listing.min_reputation = min_reputation;
         listing.bump = ctx.bumps.service_listing;
         Ok(())
     }
@@ -83,6 +86,7 @@ pub mod agentpay {
         task.result_hash = [0u8; 32];
         task.deadline = deadline;
         task.created_at = now;
+        task.zk_verified = false;
         task.bump = ctx.bumps.task_request;
 
         msg!(
@@ -222,6 +226,75 @@ pub mod agentpay {
 
         Ok(())
     }
+
+    /// Submit a result with ZK proof verification.
+    /// The provider proves knowledge of the result pre-image via a Groth16 proof.
+    /// proof_a: 64 bytes (G1, negated, big-endian)
+    /// proof_b: 128 bytes (G2, big-endian)
+    /// proof_c: 64 bytes (G1, big-endian)
+    /// result_hash: 32 bytes (the Poseidon hash, used as public input)
+    pub fn submit_result_zk(
+        ctx: Context<SubmitResult>,
+        proof_a: [u8; 64],
+        proof_b: [u8; 128],
+        proof_c: [u8; 64],
+        result_hash: [u8; 32],
+    ) -> Result<()> {
+        let task = &mut ctx.accounts.task_request;
+        let now = Clock::get()?.unix_timestamp;
+
+        require!(
+            task.provider == ctx.accounts.provider.key(),
+            AgentPayError::UnauthorizedProvider
+        );
+        require!(
+            task.status == TaskStatus::Open,
+            AgentPayError::InvalidTaskStatus
+        );
+        require!(now <= task.deadline, AgentPayError::DeadlinePassed);
+
+        // Verify the Groth16 proof on-chain
+        // Public input: the Poseidon hash of the result
+        zk::verify_task_proof(&proof_a, &proof_b, &proof_c, &[result_hash])?;
+
+        task.result_hash = result_hash;
+        task.status = TaskStatus::Submitted;
+        task.zk_verified = true;
+
+        msg!(
+            "ZK-verified result submitted for task by provider {}",
+            task.provider
+        );
+
+        Ok(())
+    }
+
+    /// Verify a provider's reputation meets the service minimum requirement.
+    /// Uses a ZK proof to prove reputation >= threshold without revealing exact score.
+    /// This is called by the requester before creating a task, to verify the provider qualifies.
+    pub fn verify_reputation(
+        ctx: Context<VerifyReputation>,
+        proof_a: [u8; 64],
+        proof_b: [u8; 128],
+        proof_c: [u8; 64],
+        threshold: [u8; 32],
+        provider_commitment: [u8; 32],
+    ) -> Result<()> {
+        let listing = &ctx.accounts.service_listing;
+
+        require!(listing.is_active, AgentPayError::ServiceNotActive);
+
+        // Verify the Groth16 reputation proof
+        // Public inputs: [threshold, providerCommitment]
+        zk::verify_reputation_proof(&proof_a, &proof_b, &proof_c, &[threshold, provider_commitment])?;
+
+        msg!(
+            "Reputation verified for service {} (threshold met)",
+            ctx.accounts.service_listing.key()
+        );
+
+        Ok(())
+    }
 }
 
 // ============================================================================
@@ -352,4 +425,15 @@ pub struct ExpireTask<'info> {
         bump = task_request.bump,
     )]
     pub task_request: Account<'info, TaskRequest>,
+}
+
+#[derive(Accounts)]
+pub struct VerifyReputation<'info> {
+    pub signer: Signer<'info>,
+
+    #[account(
+        seeds = [b"service", service_listing.provider.as_ref(), service_listing.service_id.as_ref()],
+        bump = service_listing.bump,
+    )]
+    pub service_listing: Account<'info, ServiceListing>,
 }

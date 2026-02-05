@@ -5,3 +5,7 @@ target
 node_modules
 test-ledger
 .yarn
+*.ptau
+*.r1cs
+*.sym
+*_0000.zkey
