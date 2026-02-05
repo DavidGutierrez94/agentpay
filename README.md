@@ -39,6 +39,44 @@ AgentPay uses **Groth16 zero-knowledge proofs** to cryptographically verify task
 
 Proofs are generated client-side with [snarkjs](https://github.com/iden3/snarkjs) and verified on-chain using Solana's `alt_bn128` syscall via [groth16-solana](https://crates.io/crates/groth16-solana) (<200K compute units).
 
+## x402 HTTP Payments
+
+AgentPay supports the **x402 protocol** for instant, stateless HTTP-based payments — no escrow needed:
+
+```
+Client                          AgentPay API
+  │                                  │
+  ├─── POST /api/x402/{service} ────►│
+  │                                  │
+  │◄─── 402 Payment Required ────────┤
+  │     X-Payment-Required: {        │
+  │       asset: "USDC",             │
+  │       amount: "100000",          │
+  │       recipient: "provider"      │
+  │     }                            │
+  │                                  │
+  ├─── POST /api/x402/{service} ────►│
+  │     X-Payment: {signed tx}       │
+  │                                  │
+  │◄─── 200 OK + result ─────────────┤
+```
+
+**x402 Terminal Commands:**
+```bash
+# List x402-enabled services
+x402-services
+
+# Enable x402 on your service
+x402-register --service-pda <pda> --price 0.001 -d "My API service"
+
+# Get x402 service info
+x402-info --service-id <id>
+```
+
+**Dual Payment Model:**
+- **Escrow-based**: Lock SOL for guaranteed delivery with dispute resolution
+- **x402 HTTP**: Instant USDC micropayments for lightweight API calls
+
 ## Web Interface
 
 A full-featured web UI built with **Next.js 16** and **React 19.2**:

@@ -45,7 +45,12 @@ const commands: Record<string, CommandHandler> = {
   submit-result           Submit result (--task-pda <pda> -r <result>)
   accept-result           Accept result (--task-pda <pda> --provider <pk> --service-pda <pda>)
   dispute-task            Dispute task (--task-pda <pda>)
-  clear                   Clear terminal`,
+  clear                   Clear terminal
+
+x402 Payment Commands:
+  x402-services           List all x402-enabled services
+  x402-register           Register for x402 (--service-pda <pda> --price <usdc> -d <desc>)
+  x402-info               Get x402 service info (--service-id <id>)`,
   }),
 
   balance: async (_args, _wallet, publicKey) => {
@@ -179,6 +184,50 @@ const commands: Record<string, CommandHandler> = {
       .accounts({ requester: publicKey, taskRequest: new PublicKey(opts["task-pda"]) })
       .rpc();
     const data = { status: "ok", taskPda: opts["task-pda"], action: "disputed", tx };
+    return { output: JSON.stringify(data, null, 2), data };
+  },
+
+  // x402 Payment Commands
+  "x402-services": async () => {
+    const response = await fetch("/api/x402/services");
+    const data = await response.json();
+    return { output: JSON.stringify(data, null, 2), data };
+  },
+
+  "x402-register": async (args, _wallet, publicKey) => {
+    if (!publicKey) return { output: "Error: Connect wallet first", error: true };
+    const opts = parseArgs(args);
+    if (!opts["service-pda"]) return { output: "Error: --service-pda required", error: true };
+    if (!opts.price) return { output: "Error: --price <usdc> required", error: true };
+    if (!opts.d) return { output: "Error: -d <description> required", error: true };
+
+    const response = await fetch("/api/x402/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        servicePda: opts["service-pda"],
+        priceUsdc: parseFloat(opts.price),
+        recipientWallet: publicKey.toBase58(),
+        description: opts.d,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      return { output: `Error: ${data.error}`, error: true };
+    }
+    return { output: JSON.stringify(data, null, 2), data };
+  },
+
+  "x402-info": async (args) => {
+    const opts = parseArgs(args);
+    if (!opts["service-id"]) return { output: "Error: --service-id required", error: true };
+
+    const response = await fetch(`/api/x402/${opts["service-id"]}`);
+    const data = await response.json();
+    if (!response.ok) {
+      return { output: `Error: ${data.error}`, error: true };
+    }
     return { output: JSON.stringify(data, null, 2), data };
   },
 };

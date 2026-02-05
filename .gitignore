@@ -9,3 +9,4 @@ test-ledger
 *.r1cs
 *.sym
 *_0000.zkey
+.vercel

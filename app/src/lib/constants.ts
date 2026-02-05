@@ -15,3 +15,8 @@ export const TASK_STATUSES = [
 ] as const;
 
 export type TaskStatus = (typeof TASK_STATUSES)[number];
+
+// x402 Payment Constants
+export const USDC_MINT_DEVNET = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
+export const SOLANA_NETWORK_X402 = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"; // Devnet
+export const X402_VERSION = 1;
