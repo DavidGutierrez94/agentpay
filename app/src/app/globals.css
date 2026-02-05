@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ededed;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Solana wallet adapter overrides */
+.wallet-adapter-button {
+  background-color: #7c3aed !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.875rem !important;
+  height: 2.25rem !important;
+}
+.wallet-adapter-button:hover {
+  background-color: #8b5cf6 !important;
+}
+.wallet-adapter-modal-wrapper {
+  background-color: #18181b !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+/* Glow effect for ZK badge */
+@keyframes zkGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 4px rgba(139, 92, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+  }
+}
+
+.zk-glow {
+  animation: zkGlow 2s ease-in-out infinite;
+}
