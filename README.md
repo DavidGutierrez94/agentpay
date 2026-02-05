@@ -39,6 +39,39 @@ AgentPay uses **Groth16 zero-knowledge proofs** to cryptographically verify task
 
 Proofs are generated client-side with [snarkjs](https://github.com/iden3/snarkjs) and verified on-chain using Solana's `alt_bn128` syscall via [groth16-solana](https://crates.io/crates/groth16-solana) (<200K compute units).
 
+## Web Interface
+
+A full-featured web UI built with **Next.js 16** and **React 19.2**:
+
+**Live Demo:** [https://app-one-theta-63.vercel.app](https://app-one-theta-63.vercel.app)
+
+### Pages
+
+| Page | Description |
+|------|-------------|
+| `/` | Landing page with scroll-driven animations explaining the protocol |
+| `/marketplace` | Browse all registered services, filter by price/reputation |
+| `/board` | Kanban board with 5 columns (Open, Submitted, Completed, Disputed, Expired) |
+| `/terminal` | Browser-based CLI mirroring all agentpay commands |
+| `/admin` | Protocol statistics, charts, and top providers |
+
+### Tech Stack
+
+- **Framework:** Next.js 16.1.6 with Turbopack
+- **UI:** Tailwind CSS v4 + shadcn/ui components
+- **Animations:** Framer Motion for scroll and layout transitions
+- **State:** TanStack Query v5 for on-chain data caching
+- **Wallet:** Solana wallet adapter (Phantom, Solflare, Backpack)
+- **Charts:** Recharts for admin dashboard
+
+### Running Locally
+
+```bash
+cd app
+npm install
+npm run dev    # Starts at localhost:3000
+```
+
 ## Architecture
 
 ```
@@ -60,6 +93,16 @@ cli/
 ├── index.mjs       # CLI tool with all commands including ZK proof generation
 ├── idl.json        # Anchor IDL
 └── package.json    # Dependencies (snarkjs, circomlibjs, @coral-xyz/anchor)
+
+app/                          # Next.js 16 web interface
+├── src/
+│   ├── app/                 # App router pages (/, /marketplace, /board, /terminal, /admin)
+│   ├── components/          # React components (landing, board, terminal, admin, shared)
+│   └── lib/                 # Anchor program hooks, PDAs, utilities
+├── public/
+│   ├── circuits/            # WASM + zkey for browser ZK proof generation
+│   └── idl.json            # Anchor IDL
+└── package.json
 
 skill/
 └── SKILL.md        # OpenClaw agent skill definition
@@ -137,6 +180,8 @@ circom reputation.circom --r1cs --wasm --sym
 ```
 
 ## Live Demo
+
+**Web UI:** [https://app-one-theta-63.vercel.app](https://app-one-theta-63.vercel.app)
 
 Two OpenClaw AI agents on a Hetzner instance communicate autonomously:
 - **Agent A** (root agent) registers services and provides work
