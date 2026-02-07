@@ -205,6 +205,24 @@ cli
     console.log(JSON.stringify({ status: "ok", count: services.length, services }));
   });
 
+// ── REKT Shield integration ─────────────────────────────────────────────────
+
+const REKT_SHIELD_API = "https://web-production-c5ac4.up.railway.app/api/scan";
+
+async function scanProviderRisk(providerPubkey) {
+  try {
+    const response = await fetch(`${REKT_SHIELD_API}/${providerPubkey}`);
+    if (!response.ok) {
+      console.error(`⚠️  REKT Shield API returned ${response.status}`);
+      return null;
+    }
+    return await response.json();
+  } catch (e) {
+    console.error(`⚠️  Could not reach REKT Shield: ${e.message}`);
+    return null;
+  }
+}
+
 // ── create-task ─────────────────────────────────────────────────────────────
 
 cli
@@ -213,15 +231,44 @@ cli
   .requiredOption("--service-pda <pda>", "Service listing PDA address")
   .requiredOption("-d, --description <text>", "Task description (max 256 chars)")
   .option("--deadline-minutes <min>", "Deadline in minutes from now", "60")
+  .option("--scan-provider", "Scan provider wallet for risk using REKT Shield before creating task")
+  .option("--risk-threshold <score>", "Max acceptable risk score (0-100, default 70)", "70")
   .action(async (opts) => {
     const { program, keypair } = getProgram(
       cli.opts().url,
       cli.opts().keypair
     );
 
+    const serviceListingPda = new PublicKey(opts.servicePda);
+
+    // Fetch service to get provider address
+    const serviceAccount = await program.account.serviceListing.fetch(serviceListingPda);
+    const providerPubkey = serviceAccount.provider.toBase58();
+
+    // REKT Shield integration: scan provider before locking escrow
+    if (opts.scanProvider) {
+      console.error(`🔍 Scanning provider ${providerPubkey} with REKT Shield...`);
+      const riskData = await scanProviderRisk(providerPubkey);
+
+      if (riskData) {
+        const riskScore = riskData.score || riskData.riskScore || 0;
+        const threshold = parseInt(opts.riskThreshold);
+
+        if (riskScore > threshold) {
+          console.error(`🚨 Provider risk score: ${riskScore}/100 — exceeds threshold of ${threshold}`);
+          console.error(`   Reason: ${riskData.reason || riskData.summary || 'High risk detected'}`);
+          console.error(`   Aborting task creation to protect your funds.`);
+          process.exit(1);
+        }
+
+        console.error(`✅ Provider risk score: ${riskScore}/100 — safe to proceed`);
+      } else {
+        console.error(`⚠️  Could not verify provider risk. Proceeding with caution.`);
+      }
+    }
+
     const taskId = randomBytes(16);
     const [taskRequestPda] = findTaskPda(keypair.publicKey, taskId);
-    const serviceListingPda = new PublicKey(opts.servicePda);
     const deadlineMinutes = parseInt(opts.deadlineMinutes);
     const deadline = Math.floor(Date.now() / 1000) + deadlineMinutes * 60;
 
@@ -245,6 +292,7 @@ cli
         taskId: Buffer.from(taskId).toString("hex"),
         taskPda: taskRequestPda.toBase58(),
         servicePda: opts.servicePda,
+        provider: providerPubkey,
         deadlineMinutes,
         tx,
       })
@@ -522,6 +570,37 @@ cli
         tx,
       })
     );
+  });
+
+// ── scan-wallet ─────────────────────────────────────────────────────────────
+
+cli
+  .command("scan-wallet")
+  .description("Scan a wallet for risk using REKT Shield (by @Youth)")
+  .requiredOption("-w, --wallet <pubkey>", "Wallet address to scan")
+  .action(async (opts) => {
+    console.error(`🔍 Scanning wallet ${opts.wallet} with REKT Shield...`);
+    const riskData = await scanProviderRisk(opts.wallet);
+
+    if (!riskData) {
+      console.log(JSON.stringify({
+        status: "error",
+        message: "Could not reach REKT Shield API",
+      }));
+      return;
+    }
+
+    const riskScore = riskData.score || riskData.riskScore || 0;
+    const emoji = riskScore <= 30 ? "✅" : riskScore <= 70 ? "⚠️" : "🚨";
+
+    console.log(JSON.stringify({
+      status: "ok",
+      wallet: opts.wallet,
+      riskScore,
+      riskLevel: riskScore <= 30 ? "LOW" : riskScore <= 70 ? "MEDIUM" : "HIGH",
+      details: riskData,
+      poweredBy: "REKT Shield (@Youth)",
+    }));
   });
 
 // ── balance ─────────────────────────────────────────────────────────────────

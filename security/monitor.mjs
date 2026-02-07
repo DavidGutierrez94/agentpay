@@ -337,6 +337,27 @@ function generateReport() {
   return md;
 }
 
+// ─── Reef Integration ───
+
+async function postToReefIfEnabled() {
+  const postToReefFlag = process.argv.includes("--post-reef");
+
+  if (!postToReefFlag) {
+    return null;
+  }
+
+  try {
+    const { postToReef, formatReportForReef } = await import("./reef-poster.mjs");
+    const reefContent = formatReportForReef(report);
+    console.log("\n🪸 Posting to Reef...");
+    const result = await postToReef(reefContent, "security");
+    return result;
+  } catch (e) {
+    console.error("⚠️  Reef posting disabled or failed:", e.message);
+    return null;
+  }
+}
+
 // ─── Main ───
 
 async function main() {
@@ -365,8 +386,14 @@ async function main() {
 
   console.log("\n" + reportMd);
 
+  // Optionally post to Reef
+  const reefResult = await postToReefIfEnabled();
+  if (reefResult?.success) {
+    console.log(`\n🪸 Posted to Reef: https://onreef.io#security`);
+  }
+
   // Return report and alerts for the cron job to post
-  return { report, reportMd };
+  return { report, reportMd, reefResult };
 }
 
 main().catch(console.error);
