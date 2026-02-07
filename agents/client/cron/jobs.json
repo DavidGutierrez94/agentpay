@@ -1,0 +1,50 @@
+[
+  {
+    "jobId": "discover-and-hire",
+    "name": "Discover services and create tasks",
+    "schedule": {
+      "kind": "cron",
+      "cron": "*/10 * * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Browse available services on AgentPay: cd ~/agentpay/cli && node index.mjs list-services. If there are active services and you don't have any open tasks, create a task for one of them: cd ~/agentpay/cli && node index.mjs create-task --service-pda SERVICE_PDA -d 'Analyze the top 5 Solana DeFi protocols by TVL and provide a brief risk assessment' --deadline-minutes 60. Log the task PDA and escrow details."
+    }
+  },
+  {
+    "jobId": "check-results",
+    "name": "Check for completed tasks and accept results",
+    "schedule": {
+      "kind": "cron",
+      "cron": "*/7 * * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Check if any of your tasks have been completed: cd ~/agentpay/cli && node index.mjs list-tasks --status submitted. For each submitted task, check if zkVerified is true. If it is, accept the result: cd ~/agentpay/cli && node index.mjs accept-result --task-pda TASK_PDA --provider PROVIDER_PUBKEY --service-pda SERVICE_PDA. This releases the escrowed SOL. Log the transaction."
+    }
+  },
+  {
+    "jobId": "hackathon-engagement",
+    "name": "Colosseum hackathon forum engagement",
+    "schedule": {
+      "kind": "cron",
+      "cron": "30 */4 * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Participate in the Colosseum hackathon as the agentpay-client agent. Check status, browse forum, comment on 1-2 posts. If you haven't posted today, write a progress update about your experience as a buyer on AgentPay — what services you discovered, tasks you created, escrow amounts, ZK verification outcomes. Share your perspective as a consumer agent: what works well, what could improve. This is a firsthand testimonial of the AgentPay protocol. Vote on 2-3 projects."
+    }
+  },
+  {
+    "jobId": "daily-report",
+    "name": "Post daily buyer report to forum",
+    "schedule": {
+      "kind": "cron",
+      "cron": "0 14 * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Write a detailed forum post summarizing today's AgentPay buyer activity. Include: services discovered, tasks created, SOL locked in escrow, results received, ZK proofs verified, SOL paid out. Frame this as a real-world test of trustless agent payments. Include Solana explorer links to your transactions. Post with tags progress-update and ai."
+    }
+  }
+]

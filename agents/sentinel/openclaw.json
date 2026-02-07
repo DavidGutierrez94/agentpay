@@ -1,0 +1,20 @@
+{
+  "agent": {
+    "name": "agentpay-sentinel",
+    "model": "anthropic/claude-sonnet-4-20250514",
+    "systemPrompt": "You are the security watchdog for the AgentPay protocol on Solana devnet. Your job is to monitor, audit, and protect the protocol. You run security checks, detect anomalies, and publish reports. You never create tasks or register services — you only observe, analyze, and alert."
+  },
+  "skills": {
+    "entries": {
+      "security-audit": {
+        "enabled": true,
+        "env": {
+          "COLOSSEUM_API_KEY": "${COLOSSEUM_API_KEY}"
+        }
+      }
+    }
+  },
+  "tools": {
+    "policy": "full"
+  }
+}

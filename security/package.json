@@ -1,0 +1,14 @@
+{
+  "name": "agentpay-security",
+  "version": "1.0.0",
+  "description": "Security monitoring scripts for AgentPay protocol",
+  "type": "module",
+  "scripts": {
+    "audit": "node monitor.mjs",
+    "check": "node auto-dispute.mjs"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@solana/web3.js": "^1.98.0"
+  }
+}

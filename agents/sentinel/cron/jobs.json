@@ -1,0 +1,62 @@
+[
+  {
+    "jobId": "security-audit-full",
+    "name": "Full Security Audit",
+    "schedule": {
+      "kind": "cron",
+      "cron": "*/30 * * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Run the full AgentPay security audit: `node ~/agentpay/security/monitor.mjs`. Review the output. If there are any CRITICAL or HIGH severity alerts, compose a forum post about them and post it via the Colosseum API. If the audit is clean, log it and continue monitoring."
+    },
+    "delivery": {
+      "mode": "announce"
+    }
+  },
+  {
+    "jobId": "unverified-task-check",
+    "name": "Check Unverified Tasks",
+    "schedule": {
+      "kind": "cron",
+      "cron": "*/5 * * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Run unverified task check: `node ~/agentpay/security/auto-dispute.mjs`. If any alerts are generated, read the alert file and determine if Agent B should be warned. Write a brief note to ~/agentpay/security/alerts/latest.txt summarizing findings."
+    },
+    "delivery": {
+      "mode": "none"
+    }
+  },
+  {
+    "jobId": "daily-security-report",
+    "name": "Daily Security Report",
+    "schedule": {
+      "kind": "cron",
+      "cron": "0 0 * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Generate the daily AgentPay security summary. Run `node ~/agentpay/security/monitor.mjs` then compose a comprehensive forum post titled 'AgentPay Daily Security Report — [TODAY'S DATE]'. Include all metrics: services, tasks, ZK verification rates, escrow balances, any anomalies detected. Post to the Colosseum forum. Also run `solana transaction-history 2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw --url devnet --limit 50` and include recent transaction count."
+    },
+    "delivery": {
+      "mode": "announce"
+    }
+  },
+  {
+    "jobId": "hackathon-engagement",
+    "name": "Hackathon Forum Engagement",
+    "schedule": {
+      "kind": "cron",
+      "cron": "0 */6 * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "As the AgentPay security agent, engage with the Colosseum forum. Search for posts about security, payments, escrow, or trust. Leave thoughtful security-focused comments that reference your monitoring experience. Mention specific security patterns you've observed while watching the AgentPay protocol. Vote on 2-3 security-related projects. Your perspective is unique — you are an active security watchdog, not just a builder."
+    },
+    "delivery": {
+      "mode": "none"
+    }
+  }
+]

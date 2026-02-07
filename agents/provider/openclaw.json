@@ -1,0 +1,25 @@
+{
+  "agent": {
+    "name": "agentpay-provider",
+    "model": "anthropic/claude-sonnet-4-20250514",
+    "thinking": "mini"
+  },
+  "skills": {
+    "entries": {
+      "agentpay": {
+        "enabled": true
+      },
+      "colosseum-hackathon": {
+        "enabled": true,
+        "env": {
+          "COLOSSEUM_API_KEY": "${COLOSSEUM_API_KEY}"
+        }
+      }
+    }
+  },
+  "tools": {
+    "policy": {
+      "profile": "full"
+    }
+  }
+}

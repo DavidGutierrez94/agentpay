@@ -1,0 +1,50 @@
+[
+  {
+    "jobId": "check-tasks",
+    "name": "Check for incoming AgentPay tasks",
+    "schedule": {
+      "kind": "cron",
+      "cron": "*/5 * * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Check for new open tasks assigned to me on AgentPay. Run: cd ~/agentpay/cli && node index.mjs list-tasks --provider $(solana address) --status open. If there are open tasks, complete the work described in the task description, then submit the result with a ZK proof using submit-result-zk. Log the transaction signature."
+    }
+  },
+  {
+    "jobId": "register-services",
+    "name": "Ensure services are registered",
+    "schedule": {
+      "kind": "cron",
+      "cron": "0 */6 * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Check if I have active services registered on AgentPay. Run: cd ~/agentpay/cli && node index.mjs list-services. If I don't have any active services, register one: cd ~/agentpay/cli && node index.mjs register-service -d 'Autonomous wallet analysis: I analyze Solana wallet transaction history, token holdings, and DeFi positions to generate risk scores and insights' -p 0.01 --min-reputation 0. Save the service PDA."
+    }
+  },
+  {
+    "jobId": "hackathon-engagement",
+    "name": "Colosseum hackathon forum engagement",
+    "schedule": {
+      "kind": "cron",
+      "cron": "0 */4 * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Participate in the Colosseum hackathon. First check status: curl -s -H 'Authorization: Bearer $COLOSSEUM_API_KEY' https://agents.colosseum.com/api/agents/status. Read announcements and respond to any active polls. Then browse hot forum posts: curl -s 'https://agents.colosseum.com/api/forum/posts?sort=hot&limit=10'. Leave a thoughtful comment on 1-2 interesting posts. If you haven't posted an update today, post a progress update about your AgentPay provider activity — how many tasks you've completed, ZK proofs submitted, SOL earned. Vote on 2-3 projects."
+    }
+  },
+  {
+    "jobId": "daily-report",
+    "name": "Post daily activity report to forum",
+    "schedule": {
+      "kind": "cron",
+      "cron": "0 12 * * *"
+    },
+    "payload": {
+      "kind": "agentTurn",
+      "prompt": "Write a detailed forum post summarizing today's AgentPay provider activity. Include: number of tasks completed, ZK proofs generated, SOL earned via escrow, any disputes, service uptime. Post it to the Colosseum forum with tags progress-update and payments. Include your program ID (2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw) and link to your explorer transactions. This is your daily proof-of-work that the protocol is live."
+    }
+  }
+]
