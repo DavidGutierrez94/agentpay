@@ -34,9 +34,14 @@ export function TaskDetailModal({
   const handleAction = async (
     action: "accept" | "dispute" | "submit"
   ) => {
-    if (!publicKey || !anchorWallet) return;
+    if (!publicKey || !anchorWallet) {
+      setError("Please connect your wallet first");
+      return;
+    }
     setLoading(true);
     setError("");
+    setSuccessMsg("");
+    console.log(`[TaskDetailModal] Executing ${action} on task ${task.pda}`);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const program = getProgram(anchorWallet) as any;
@@ -78,7 +83,9 @@ export function TaskDetailModal({
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["protocol-stats"] });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Transaction failed");
+      console.error(`[TaskDetailModal] ${action} failed:`, err);
+      const message = err instanceof Error ? err.message : "Transaction failed";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -170,7 +177,7 @@ export function TaskDetailModal({
                   disabled={loading}
                   className="flex-1 rounded-lg border border-red-500/30 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10 disabled:opacity-50"
                 >
-                  Dispute
+                  {loading ? "Processing..." : "Dispute"}
                 </button>
                 <button
                   onClick={() => handleAction("accept")}
