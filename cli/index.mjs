@@ -174,14 +174,19 @@ cli
 
 // ── list-services ───────────────────────────────────────────────────────────
 
+// Account sizes for filtering (to skip incompatible legacy accounts)
+const SERVICE_LISTING_SIZE = 218;
+const TASK_REQUEST_SIZE = 435;
+
 cli
   .command("list-services")
   .description("List all registered services (optionally filter by provider)")
   .option("--provider <pubkey>", "Filter by provider wallet")
   .action(async (opts) => {
-    const { program } = getProgram(cli.opts().url, cli.opts().keypair);
+    const { program, connection } = getProgram(cli.opts().url, cli.opts().keypair);
 
-    const filters = [];
+    // Use dataSize filter to skip incompatible legacy accounts
+    const filters = [{ dataSize: SERVICE_LISTING_SIZE }];
     if (opts.provider) {
       filters.push({
         memcmp: {
@@ -191,16 +196,25 @@ cli
       });
     }
 
-    const accounts = await program.account.serviceListing.all(filters);
-    const services = accounts.map((a) => ({
-      pda: a.publicKey.toBase58(),
-      provider: a.account.provider.toBase58(),
-      serviceId: Buffer.from(a.account.serviceId).toString("hex"),
-      description: trimBytes(a.account.description),
-      priceSol: lamportsToSol(a.account.priceLamports),
-      isActive: a.account.isActive,
-      tasksCompleted: a.account.tasksCompleted.toNumber(),
-    }));
+    const rawAccounts = await connection.getProgramAccounts(PROGRAM_ID, { filters });
+    const services = [];
+
+    for (const { pubkey, account } of rawAccounts) {
+      try {
+        const decoded = program.coder.accounts.decode("serviceListing", account.data);
+        services.push({
+          pda: pubkey.toBase58(),
+          provider: decoded.provider.toBase58(),
+          serviceId: Buffer.from(decoded.serviceId).toString("hex"),
+          description: trimBytes(decoded.description),
+          priceSol: lamportsToSol(decoded.priceLamports),
+          isActive: decoded.isActive,
+          tasksCompleted: decoded.tasksCompleted.toNumber(),
+        });
+      } catch {
+        // Skip incompatible accounts
+      }
+    }
 
     console.log(JSON.stringify({ status: "ok", count: services.length, services }));
   });
@@ -308,9 +322,10 @@ cli
   .option("--provider <pubkey>", "Filter by provider wallet")
   .option("--status <status>", "Filter by status: open, submitted, completed, disputed, expired")
   .action(async (opts) => {
-    const { program } = getProgram(cli.opts().url, cli.opts().keypair);
+    const { program, connection } = getProgram(cli.opts().url, cli.opts().keypair);
 
-    const filters = [];
+    // Use dataSize filter to skip incompatible legacy accounts
+    const filters = [{ dataSize: TASK_REQUEST_SIZE }];
     if (opts.requester) {
       filters.push({
         memcmp: { offset: 8, bytes: new PublicKey(opts.requester).toBase58() },
@@ -322,24 +337,32 @@ cli
       });
     }
 
-    const accounts = await program.account.taskRequest.all(filters);
-    let tasks = accounts.map((a) => {
-      const statusKey = Object.keys(a.account.status)[0];
-      return {
-        pda: a.publicKey.toBase58(),
-        taskId: Buffer.from(a.account.taskId).toString("hex"),
-        requester: a.account.requester.toBase58(),
-        provider: a.account.provider.toBase58(),
-        description: trimBytes(a.account.description),
-        amountSol: lamportsToSol(a.account.amountLamports),
-        status: statusKey,
-        resultHash:
-          statusKey === "submitted" || statusKey === "completed"
-            ? Buffer.from(a.account.resultHash).toString("hex")
-            : null,
-        deadline: new Date(a.account.deadline.toNumber() * 1000).toISOString(),
-      };
-    });
+    const rawAccounts = await connection.getProgramAccounts(PROGRAM_ID, { filters });
+    let tasks = [];
+
+    for (const { pubkey, account } of rawAccounts) {
+      try {
+        const decoded = program.coder.accounts.decode("taskRequest", account.data);
+        const statusKey = Object.keys(decoded.status)[0];
+        tasks.push({
+          pda: pubkey.toBase58(),
+          taskId: Buffer.from(decoded.taskId).toString("hex"),
+          requester: decoded.requester.toBase58(),
+          provider: decoded.provider.toBase58(),
+          description: trimBytes(decoded.description),
+          amountSol: lamportsToSol(decoded.amountLamports),
+          status: statusKey,
+          resultHash:
+            statusKey === "submitted" || statusKey === "completed"
+              ? Buffer.from(decoded.resultHash).toString("hex")
+              : null,
+          deadline: new Date(decoded.deadline.toNumber() * 1000).toISOString(),
+          zkVerified: decoded.zkVerified ?? false,
+        });
+      } catch {
+        // Skip incompatible accounts
+      }
+    }
 
     if (opts.status) {
       tasks = tasks.filter((t) => t.status === opts.status);
