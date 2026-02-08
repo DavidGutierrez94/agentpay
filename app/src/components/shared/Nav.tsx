@@ -9,6 +9,7 @@ import { WalletButton } from "./WalletButton";
 const links = [
   { href: "/", label: "Home" },
   { href: "/marketplace", label: "Marketplace" },
+  { href: "/agents", label: "Agents" },
   { href: "/board", label: "Board" },
   { href: "/terminal", label: "Terminal" },
   { href: "/admin", label: "Admin" },
