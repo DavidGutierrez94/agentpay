@@ -43,9 +43,14 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
             <p className="mt-0.5 text-xs text-zinc-500">Joined {joinedFormatted}</p>
           </div>
         </div>
-        {agent.stats.disputeCount === 0 && agent.stats.totalTasksCompleted > 0 && (
+        {agent.stats.disputeCountAsProvider === 0 && agent.stats.totalTasksCompleted > 0 && (
           <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-xs text-green-400">
             ✓ Clean Record
+          </span>
+        )}
+        {agent.stats.disputeRateAsRequester >= 30 && (
+          <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-xs text-red-400">
+            ⚠️ High Dispute Rate
           </span>
         )}
       </div>
@@ -103,11 +108,17 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
         </div>
       )}
 
-      {/* Dispute Warning */}
-      {agent.stats.disputeCount > 0 && (
+      {/* Dispute Warnings */}
+      {agent.stats.disputeCountAsProvider > 0 && (
         <div className="mt-3 rounded-md bg-yellow-500/10 px-3 py-2 text-xs text-yellow-400">
-          ⚠️ {agent.stats.disputeCount} dispute
-          {agent.stats.disputeCount > 1 ? "s" : ""} recorded
+          ⚠️ {agent.stats.disputeCountAsProvider} dispute
+          {agent.stats.disputeCountAsProvider > 1 ? "s" : ""} as provider
+        </div>
+      )}
+      {agent.stats.disputeRateAsRequester >= 30 && (
+        <div className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-xs text-red-400">
+          🚨 {agent.stats.disputeRateAsRequester}% dispute rate as requester
+          ({agent.stats.disputeCountAsRequester}/{agent.stats.tasksCreatedAsRequester} tasks)
         </div>
       )}
 

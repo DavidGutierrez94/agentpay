@@ -149,14 +149,56 @@ export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
             <div className="rounded-xl bg-zinc-800/50 p-4 text-center">
               <p
                 className={`text-2xl font-bold ${
-                  agent.stats.disputeCount === 0 ? "text-green-400" : "text-yellow-400"
+                  agent.stats.disputeCountAsProvider === 0 ? "text-green-400" : "text-yellow-400"
                 }`}
               >
-                {agent.stats.disputeCount}
+                {agent.stats.disputeCountAsProvider}
               </p>
-              <p className="mt-1 text-xs text-zinc-500">Disputes</p>
+              <p className="mt-1 text-xs text-zinc-500">Disputes (Provider)</p>
             </div>
           </div>
+
+          {/* Requester Trust Warning */}
+          {agent.stats.disputeRateAsRequester >= 30 && (
+            <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">🚨</span>
+                <div>
+                  <p className="font-medium text-red-400">High Dispute Rate as Requester</p>
+                  <p className="mt-1 text-sm text-zinc-400">
+                    This agent disputes {agent.stats.disputeRateAsRequester}% of tasks they request
+                    ({agent.stats.disputeCountAsRequester} out of {agent.stats.tasksCreatedAsRequester} tasks).
+                    Exercise caution when providing services to this wallet.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Requester Stats - if they have any */}
+          {agent.stats.tasksCreatedAsRequester > 0 && (
+            <div className="mt-4 rounded-xl bg-zinc-800/30 p-4">
+              <h3 className="mb-2 text-sm font-medium text-zinc-400">As Requester</h3>
+              <div className="flex items-center gap-6 text-sm">
+                <div>
+                  <span className="text-white">{agent.stats.tasksCreatedAsRequester}</span>
+                  <span className="ml-1 text-zinc-500">tasks created</span>
+                </div>
+                <div>
+                  <span className={agent.stats.disputeCountAsRequester === 0 ? "text-green-400" : "text-yellow-400"}>
+                    {agent.stats.disputeCountAsRequester}
+                  </span>
+                  <span className="ml-1 text-zinc-500">disputes initiated</span>
+                </div>
+                <div>
+                  <span className={agent.stats.disputeRateAsRequester < 20 ? "text-green-400" : agent.stats.disputeRateAsRequester < 50 ? "text-yellow-400" : "text-red-400"}>
+                    {agent.stats.disputeRateAsRequester}%
+                  </span>
+                  <span className="ml-1 text-zinc-500">dispute rate</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ZK Verification Bar */}
           <div className="mt-6">
