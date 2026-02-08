@@ -47,9 +47,30 @@ export function useServices(providerFilter?: string) {
             },
           ]
         : [];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const accounts = await (program.account as any).serviceListing.all(filters);
-      return accounts.map(decodeService).filter((s: ServiceListing) => s.isActive);
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const accounts = await (program.account as any).serviceListing.all(filters);
+
+        // Filter out accounts that fail to decode (old schema)
+        const validServices: ServiceListing[] = [];
+        for (const account of accounts) {
+          try {
+            const service = decodeService(account);
+            if (service.isActive) {
+              validServices.push(service);
+            }
+          } catch {
+            // Skip accounts with incompatible schema
+            console.warn(`Skipping incompatible service account: ${account.publicKey.toBase58()}`);
+          }
+        }
+        return validServices;
+      } catch (e) {
+        console.error("Error fetching services:", e);
+        // Return empty array instead of throwing to show "no services" message
+        return [];
+      }
     },
     refetchInterval: 15000,
   });

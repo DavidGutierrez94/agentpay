@@ -20,10 +20,30 @@ export function useProtocolStats() {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const acct = program.account as any;
-      const [services, tasks] = await Promise.all([
-        acct.serviceListing.all(),
-        acct.taskRequest.all(),
-      ]);
+
+      let services: { account: { provider: { toBase58: () => string }; tasksCompleted: { toNumber: () => number }; isActive: boolean } }[] = [];
+      let tasks: { account: { status: object; amountLamports: { toNumber: () => number } } }[] = [];
+
+      try {
+        const [rawServices, rawTasks] = await Promise.all([
+          acct.serviceListing.all(),
+          acct.taskRequest.all(),
+        ]);
+        services = rawServices;
+        tasks = rawTasks;
+      } catch (e) {
+        console.error("Error fetching protocol stats:", e);
+        // Return default stats on error
+        return {
+          totalServices: 0,
+          activeServices: 0,
+          totalTasks: 0,
+          tasksByStatus: { open: 0, submitted: 0, completed: 0, disputed: 0, expired: 0 },
+          escrowLockedSol: "0",
+          escrowLockedLamports: 0,
+          topProviders: [],
+        };
+      }
 
       const tasksByStatus: Record<string, number> = {
         open: 0,
