@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { PublicKey } from "@solana/web3.js";
-import { getReadonlyProgram } from "../program";
+import { PublicKey, GetProgramAccountsFilter } from "@solana/web3.js";
+import { getReadonlyProgram, getConnection } from "../program";
 import { trimBytes, lamportsToSol } from "../utils";
+import { PROGRAM_ID } from "../constants";
 import type { TaskStatus } from "../constants";
+
+// TaskRequest account size: 435 bytes
+const TASK_REQUEST_SIZE = 435;
 
 export interface TaskRequest {
   pda: string;
@@ -20,31 +24,6 @@ export interface TaskRequest {
   zkVerified: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function decodeTask(account: { publicKey: PublicKey; account: any }): TaskRequest {
-  const a = account.account;
-  const statusKey = Object.keys(a.status)[0] as TaskStatus;
-  const deadlineTs = a.deadline.toNumber();
-  return {
-    pda: account.publicKey.toBase58(),
-    taskId: Buffer.from(a.taskId).toString("hex"),
-    requester: a.requester.toBase58(),
-    provider: a.provider.toBase58(),
-    serviceListing: a.serviceListing.toBase58(),
-    description: trimBytes(a.description),
-    amountSol: lamportsToSol(a.amountLamports),
-    amountLamports: a.amountLamports.toNumber(),
-    status: statusKey,
-    resultHash:
-      statusKey === "submitted" || statusKey === "completed"
-        ? Buffer.from(a.resultHash).toString("hex")
-        : null,
-    deadline: new Date(deadlineTs * 1000).toISOString(),
-    deadlineTs,
-    zkVerified: a.zkVerified ?? false,
-  };
-}
-
 export function useTasks(opts?: {
   requester?: string;
   provider?: string;
@@ -54,31 +33,81 @@ export function useTasks(opts?: {
     queryKey: ["tasks", opts?.requester, opts?.provider, opts?.status],
     queryFn: async () => {
       const program = getReadonlyProgram();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const filters: any[] = [];
-      if (opts?.requester) {
-        filters.push({
-          memcmp: {
-            offset: 8,
-            bytes: new PublicKey(opts.requester).toBase58(),
-          },
+      const connection = getConnection();
+
+      try {
+        // Filter by dataSize to only get compatible TaskRequest accounts
+        const filters: GetProgramAccountsFilter[] = [
+          { dataSize: TASK_REQUEST_SIZE },
+        ];
+
+        if (opts?.requester) {
+          filters.push({
+            memcmp: {
+              offset: 8,
+              bytes: new PublicKey(opts.requester).toBase58(),
+            },
+          });
+        }
+        if (opts?.provider) {
+          filters.push({
+            memcmp: {
+              offset: 40,
+              bytes: new PublicKey(opts.provider).toBase58(),
+            },
+          });
+        }
+
+        const rawAccounts = await connection.getProgramAccounts(PROGRAM_ID, {
+          filters,
         });
+
+        const tasks: TaskRequest[] = [];
+
+        for (const { pubkey, account } of rawAccounts) {
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const decoded = (program.coder.accounts as any).decode(
+              "taskRequest",
+              account.data
+            );
+
+            const statusKey = Object.keys(decoded.status)[0] as TaskStatus;
+            const deadlineTs = decoded.deadline.toNumber();
+
+            const task: TaskRequest = {
+              pda: pubkey.toBase58(),
+              taskId: Buffer.from(decoded.taskId).toString("hex"),
+              requester: decoded.requester.toBase58(),
+              provider: decoded.provider.toBase58(),
+              serviceListing: decoded.serviceListing.toBase58(),
+              description: trimBytes(decoded.description),
+              amountSol: lamportsToSol(decoded.amountLamports),
+              amountLamports: decoded.amountLamports.toNumber(),
+              status: statusKey,
+              resultHash:
+                statusKey === "submitted" || statusKey === "completed"
+                  ? Buffer.from(decoded.resultHash).toString("hex")
+                  : null,
+              deadline: new Date(deadlineTs * 1000).toISOString(),
+              deadlineTs,
+              zkVerified: decoded.zkVerified ?? false,
+            };
+
+            // Apply status filter if specified
+            if (!opts?.status || task.status === opts.status) {
+              tasks.push(task);
+            }
+          } catch {
+            console.warn(`Skipping incompatible task account: ${pubkey.toBase58()}`);
+          }
+        }
+
+        return tasks;
+      } catch (e) {
+        console.error("Error fetching tasks:", e);
+        return [];
       }
-      if (opts?.provider) {
-        filters.push({
-          memcmp: {
-            offset: 40,
-            bytes: new PublicKey(opts.provider).toBase58(),
-          },
-        });
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const accounts = await (program.account as any).taskRequest.all(filters);
-      let tasks = accounts.map(decodeTask);
-      if (opts?.status) {
-        tasks = tasks.filter((t: TaskRequest) => t.status === opts.status);
-      }
-      return tasks;
     },
     refetchInterval: 10000,
   });
@@ -89,9 +118,55 @@ export function useAllTasks() {
     queryKey: ["tasks", "all"],
     queryFn: async () => {
       const program = getReadonlyProgram();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const accounts = await (program.account as any).taskRequest.all();
-      return accounts.map(decodeTask);
+      const connection = getConnection();
+
+      try {
+        // Filter by dataSize to only get compatible TaskRequest accounts
+        const rawAccounts = await connection.getProgramAccounts(PROGRAM_ID, {
+          filters: [{ dataSize: TASK_REQUEST_SIZE }],
+        });
+
+        const tasks: TaskRequest[] = [];
+
+        for (const { pubkey, account } of rawAccounts) {
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const decoded = (program.coder.accounts as any).decode(
+              "taskRequest",
+              account.data
+            );
+
+            const statusKey = Object.keys(decoded.status)[0] as TaskStatus;
+            const deadlineTs = decoded.deadline.toNumber();
+
+            tasks.push({
+              pda: pubkey.toBase58(),
+              taskId: Buffer.from(decoded.taskId).toString("hex"),
+              requester: decoded.requester.toBase58(),
+              provider: decoded.provider.toBase58(),
+              serviceListing: decoded.serviceListing.toBase58(),
+              description: trimBytes(decoded.description),
+              amountSol: lamportsToSol(decoded.amountLamports),
+              amountLamports: decoded.amountLamports.toNumber(),
+              status: statusKey,
+              resultHash:
+                statusKey === "submitted" || statusKey === "completed"
+                  ? Buffer.from(decoded.resultHash).toString("hex")
+                  : null,
+              deadline: new Date(deadlineTs * 1000).toISOString(),
+              deadlineTs,
+              zkVerified: decoded.zkVerified ?? false,
+            });
+          } catch {
+            console.warn(`Skipping incompatible task account: ${pubkey.toBase58()}`);
+          }
+        }
+
+        return tasks;
+      } catch (e) {
+        console.error("Error fetching all tasks:", e);
+        return [];
+      }
     },
     refetchInterval: 10000,
   });
