@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { PublicKey } from "@solana/web3.js";
-import { getReadonlyProgram } from "../program";
+import { PublicKey, GetProgramAccountsFilter } from "@solana/web3.js";
+import { getReadonlyProgram, getConnection } from "../program";
 import { trimBytes, lamportsToSol } from "../utils";
+import { PROGRAM_ID } from "../constants";
 
 export interface ServiceListing {
   pda: string;
@@ -14,61 +15,65 @@ export interface ServiceListing {
   minReputation: number;
 }
 
-function decodeService(account: {
-  publicKey: PublicKey;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  account: any;
-}): ServiceListing {
-  const a = account.account;
-  return {
-    pda: account.publicKey.toBase58(),
-    provider: a.provider.toBase58(),
-    serviceId: Buffer.from(a.serviceId).toString("hex"),
-    description: trimBytes(a.description),
-    priceSol: lamportsToSol(a.priceLamports),
-    isActive: a.isActive,
-    tasksCompleted: a.tasksCompleted.toNumber(),
-    minReputation: a.minReputation.toNumber(),
-  };
-}
-
 export function useServices(providerFilter?: string) {
   return useQuery<ServiceListing[]>({
     queryKey: ["services", providerFilter ?? "all"],
     queryFn: async () => {
       const program = getReadonlyProgram();
-      const filters = providerFilter
-        ? [
-            {
-              memcmp: {
-                offset: 8,
-                bytes: new PublicKey(providerFilter).toBase58(),
-              },
-            },
-          ]
-        : [];
+      const connection = getConnection();
 
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const accounts = await (program.account as any).serviceListing.all(filters);
+        // Use raw getProgramAccounts to fetch all accounts, then decode individually
+        // This allows us to skip accounts that don't match the current schema
+        // Filter by dataSize=218 to only get accounts with current ServiceListing schema
+        const filters: GetProgramAccountsFilter[] = [
+          { dataSize: 218 },
+        ];
 
-        // Filter out accounts that fail to decode (old schema)
+        if (providerFilter) {
+          filters.push({
+            memcmp: {
+              offset: 8,
+              bytes: new PublicKey(providerFilter).toBase58(),
+            },
+          });
+        }
+
+        const rawAccounts = await connection.getProgramAccounts(PROGRAM_ID, {
+          filters,
+        });
+
         const validServices: ServiceListing[] = [];
-        for (const account of accounts) {
+
+        for (const { pubkey, account } of rawAccounts) {
           try {
-            const service = decodeService(account);
-            if (service.isActive) {
-              validServices.push(service);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const decoded = (program.coder.accounts as any).decode(
+              "serviceListing",
+              account.data
+            );
+
+            if (decoded.isActive) {
+              validServices.push({
+                pda: pubkey.toBase58(),
+                provider: decoded.provider.toBase58(),
+                serviceId: Buffer.from(decoded.serviceId).toString("hex"),
+                description: trimBytes(decoded.description),
+                priceSol: lamportsToSol(decoded.priceLamports),
+                isActive: decoded.isActive,
+                tasksCompleted: decoded.tasksCompleted.toNumber(),
+                minReputation: decoded.minReputation.toNumber(),
+              });
             }
           } catch {
             // Skip accounts with incompatible schema
-            console.warn(`Skipping incompatible service account: ${account.publicKey.toBase58()}`);
+            console.warn(`Skipping incompatible service account: ${pubkey.toBase58()}`);
           }
         }
+
         return validServices;
       } catch (e) {
         console.error("Error fetching services:", e);
-        // Return empty array instead of throwing to show "no services" message
         return [];
       }
     },
