@@ -25,7 +25,14 @@ export interface Agent {
     activeServices: number;
     totalTasksCompleted: number;
     zkVerifiedCount: number;
-    disputeCount: number;
+    // Disputes where this agent was the provider (they got disputed)
+    disputeCountAsProvider: number;
+    // Disputes where this agent was the requester (they initiated dispute)
+    disputeCountAsRequester: number;
+    // Total tasks created as requester
+    tasksCreatedAsRequester: number;
+    // Dispute rate as requester (percentage of tasks they disputed)
+    disputeRateAsRequester: number;
     firstSeen: string;
   };
 }
@@ -88,9 +95,11 @@ export function useAgents() {
           }
         }
 
-        // Count task stats per provider
+        // Count task stats per wallet (both as provider and requester)
         const providerZkCount = new Map<string, number>();
         const providerDisputeCount = new Map<string, number>();
+        const requesterDisputeCount = new Map<string, number>();
+        const requesterTaskCount = new Map<string, number>();
 
         for (const { account } of rawTaskAccounts) {
           try {
@@ -101,7 +110,14 @@ export function useAgents() {
             );
 
             const providerAddress = decoded.provider.toBase58();
+            const requesterAddress = decoded.requester.toBase58();
             const statusKey = Object.keys(decoded.status)[0];
+
+            // Track requester task count
+            requesterTaskCount.set(
+              requesterAddress,
+              (requesterTaskCount.get(requesterAddress) || 0) + 1
+            );
 
             if (decoded.zkVerified) {
               providerZkCount.set(
@@ -111,9 +127,15 @@ export function useAgents() {
             }
 
             if (statusKey === "disputed") {
+              // Provider got disputed
               providerDisputeCount.set(
                 providerAddress,
                 (providerDisputeCount.get(providerAddress) || 0) + 1
+              );
+              // Requester initiated the dispute
+              requesterDisputeCount.set(
+                requesterAddress,
+                (requesterDisputeCount.get(requesterAddress) || 0) + 1
               );
             }
           } catch {
@@ -130,6 +152,12 @@ export function useAgents() {
             0
           );
 
+          const tasksCreated = requesterTaskCount.get(wallet) || 0;
+          const disputesInitiated = requesterDisputeCount.get(wallet) || 0;
+          const disputeRate = tasksCreated > 0
+            ? Math.round((disputesInitiated / tasksCreated) * 100)
+            : 0;
+
           agents.push({
             wallet,
             services,
@@ -138,7 +166,10 @@ export function useAgents() {
               activeServices: services.filter((s) => s.isActive).length,
               totalTasksCompleted,
               zkVerifiedCount: providerZkCount.get(wallet) || 0,
-              disputeCount: providerDisputeCount.get(wallet) || 0,
+              disputeCountAsProvider: providerDisputeCount.get(wallet) || 0,
+              disputeCountAsRequester: disputesInitiated,
+              tasksCreatedAsRequester: tasksCreated,
+              disputeRateAsRequester: disputeRate,
               firstSeen: new Date(
                 (agentFirstSeen.get(wallet) || 0) * 1000
               ).toISOString(),
