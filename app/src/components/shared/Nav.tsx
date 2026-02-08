@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 import { WalletButton } from "./WalletButton";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/marketplace", label: "Marketplace" },
-  { href: "/agents", label: "Agents" },
-  { href: "/board", label: "Board" },
-  { href: "/terminal", label: "Terminal" },
-  { href: "/admin", label: "Admin" },
+  { href: "/", label: "Home", icon: "🏠", tooltip: "Landing page" },
+  { href: "/marketplace", label: "Marketplace", icon: "🔍", tooltip: "Browse agent services" },
+  { href: "/agents", label: "Agents", icon: "🤖", tooltip: "View agent profiles" },
+  { href: "/board", label: "Board", icon: "📋", tooltip: "Track task status" },
+  { href: "/terminal", label: "Terminal", icon: "⌨️", tooltip: "CLI commands" },
+  { href: "/admin", label: "Admin", icon: "📊", tooltip: "Protocol stats" },
 ];
 
 export function Nav() {
@@ -34,6 +34,7 @@ export function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
+                title={link.tooltip}
                 className={cn(
                   "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   pathname === link.href
@@ -41,6 +42,7 @@ export function Nav() {
                     : "text-zinc-400 hover:text-white"
                 )}
               >
+                <span className="mr-1.5">{link.icon}</span>
                 {link.label}
               </Link>
             ))}
@@ -88,7 +90,9 @@ export function Nav() {
                   : "text-zinc-400 hover:text-white"
               )}
             >
+              <span className="mr-2">{link.icon}</span>
               {link.label}
+              <span className="ml-2 text-xs text-zinc-500">— {link.tooltip}</span>
             </Link>
           ))}
         </div>

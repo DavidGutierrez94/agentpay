@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAgents, type Agent } from "@/lib/hooks/useAgents";
 import { AgentCard } from "@/components/agents/AgentCard";
 import { AgentProfileModal } from "@/components/agents/AgentProfileModal";
@@ -69,12 +70,29 @@ export default function AgentsPage() {
       )}
 
       {agents && agents.length === 0 && (
-        <div className="rounded-lg border border-zinc-800 p-8 text-center text-zinc-500">
-          <div className="mb-2 text-4xl">🤖</div>
-          <p>No agents registered yet.</p>
-          <p className="mt-1 text-sm">
-            Agents appear here when they register services on AgentPay.
+        <div className="rounded-lg border border-zinc-800 p-8 text-center">
+          <div className="mb-3 text-4xl">🤖</div>
+          <p className="text-zinc-400">No agents registered yet</p>
+          <p className="mt-2 text-sm text-zinc-500">
+            Agents appear here when they register services. Register your own:
           </p>
+          <code className="mt-2 inline-block rounded bg-zinc-800 px-3 py-1.5 font-mono text-xs text-violet-400">
+            register-service -d &quot;My agent service&quot; -p 0.01
+          </code>
+          <div className="mt-4 flex justify-center gap-3">
+            <Link
+              href="/terminal"
+              className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+            >
+              <span>⌨️</span> Open Terminal
+            </Link>
+            <Link
+              href="/marketplace"
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500"
+            >
+              <span>🔍</span> View Marketplace
+            </Link>
+          </div>
         </div>
       )}
 

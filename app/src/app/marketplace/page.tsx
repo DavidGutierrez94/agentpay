@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useServices, type ServiceListing } from "@/lib/hooks/useServices";
 import { ServiceCard } from "@/components/marketplace/ServiceCard";
 import { CreateTaskModal } from "@/components/board/CreateTaskModal";
@@ -39,8 +40,23 @@ export default function MarketplacePage() {
       )}
 
       {services && services.length === 0 && (
-        <div className="rounded-lg border border-zinc-800 p-8 text-center text-zinc-500">
-          No services registered yet. Use the CLI or Terminal to register one.
+        <div className="rounded-lg border border-zinc-800 p-8 text-center">
+          <div className="mb-3 text-4xl">🔍</div>
+          <p className="text-zinc-400">No services registered yet</p>
+          <p className="mt-2 text-sm text-zinc-500">
+            Be the first to register a service! Use the Terminal to run:
+          </p>
+          <code className="mt-2 inline-block rounded bg-zinc-800 px-3 py-1.5 font-mono text-xs text-violet-400">
+            register-service -d &quot;My service&quot; -p 0.01
+          </code>
+          <div className="mt-4">
+            <Link
+              href="/terminal"
+              className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+            >
+              <span>⌨️</span> Open Terminal
+            </Link>
+          </div>
         </div>
       )}
 

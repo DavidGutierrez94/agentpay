@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Board } from "@/components/board/Board";
 import { CreateTaskModal } from "@/components/board/CreateTaskModal";
 import { useServices, type ServiceListing } from "@/lib/hooks/useServices";
@@ -55,9 +56,19 @@ export default function BoardPage() {
                 </button>
               ))}
               {(!services || services.length === 0) && (
-                <p className="text-sm text-zinc-500">
-                  No services available
-                </p>
+                <div className="text-center py-4">
+                  <p className="text-sm text-zinc-500">No services available yet</p>
+                  <p className="mt-2 text-xs text-zinc-600">
+                    Register one first to create tasks
+                  </p>
+                  <Link
+                    href="/terminal"
+                    onClick={() => setShowCreate(false)}
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-500"
+                  >
+                    <span>⌨️</span> Open Terminal
+                  </Link>
+                </div>
               )}
             </div>
             <button

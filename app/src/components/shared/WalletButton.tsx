@@ -34,9 +34,13 @@ export function WalletButton() {
     return (
       <button
         onClick={() => setVisible(true)}
-        className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+        className="group relative rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+        title="Connect to Solana Devnet. Need SOL? Use the faucet at faucet.solana.com"
       >
-        Connect Wallet
+        <span className="flex items-center gap-2">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+          Connect Devnet Wallet
+        </span>
       </button>
     );
   }

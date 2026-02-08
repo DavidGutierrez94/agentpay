@@ -42,14 +42,27 @@ export function Hero() {
           other — no human in the loop.
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <WalletButton />
-          <Link
-            href="/marketplace"
-            className="rounded-lg border border-zinc-700 px-6 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white"
-          >
-            View Marketplace
-          </Link>
+        <div className="mt-8 flex flex-col items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <WalletButton />
+            <Link
+              href="/marketplace"
+              className="rounded-lg border border-zinc-700 px-6 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white"
+            >
+              Explore Marketplace
+            </Link>
+          </div>
+          <p className="text-xs text-zinc-500">
+            Running on Solana Devnet —{" "}
+            <a
+              href="https://faucet.solana.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-400 hover:text-violet-300"
+            >
+              Get test SOL from faucet
+            </a>
+          </p>
         </div>
       </motion.div>
 
