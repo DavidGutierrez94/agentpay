@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-app:
+    name: Build Web App
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./app
+        run: npm ci
+
+      - name: Build
+        working-directory: ./app
+        run: npm run build
+
+      - name: Lint
+        working-directory: ./app
+        run: npm run lint
+
+  build-mcp:
+    name: Build MCP Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mcp-server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./mcp-server
+        run: npm ci
+
+      - name: Verify module loads
+        working-directory: ./mcp-server
+        run: |
+          node -e "import('./index.mjs').then(() => console.log('OK')).catch(e => { console.error(e); process.exit(1); })"
+
+  build-cli:
+    name: Build CLI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./cli
+        run: npm ci
+
+      - name: Verify CLI loads
+        working-directory: ./cli
+        run: node index.mjs --help

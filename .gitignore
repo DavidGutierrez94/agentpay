@@ -10,3 +10,4 @@ test-ledger
 *.sym
 *_0000.zkey
 .vercel
+.env
