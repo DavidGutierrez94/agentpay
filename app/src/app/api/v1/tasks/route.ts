@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const connection = new Connection(RPC_URL, "confirmed");
 
     // Build filters
-    const filters: Array<{ dataSize?: number; memcmp?: { offset: number; bytes: string } }> = [
+    const filters: Array<{ dataSize: number } | { memcmp: { offset: number; bytes: string } }> = [
       { dataSize: TASK_REQUEST_SIZE },
     ];
 

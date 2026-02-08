@@ -9,8 +9,19 @@ const REKT_SHIELD_API =
   process.env.REKT_SHIELD_API ||
   "https://web-production-c5ac4.up.railway.app/api/scan";
 
+// Cache result type
+interface ScanResult {
+  wallet: string;
+  riskScore: number;
+  riskLevel: "low" | "medium" | "high" | "critical" | "unknown";
+  flags?: string[];
+  message: string | null;
+  recommendation: string;
+  scannedAt: string;
+}
+
 // Simple rate limiting (in-memory, resets on restart)
-const scanCache = new Map<string, { data: unknown; timestamp: number }>();
+const scanCache = new Map<string, { data: ScanResult; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 function isValidPublicKey(input: string): boolean {
