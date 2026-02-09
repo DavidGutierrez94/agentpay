@@ -10,6 +10,7 @@ const links = [
   { href: "/", label: "Home", icon: "🏠", tooltip: "Landing page" },
   { href: "/marketplace", label: "Marketplace", icon: "🔍", tooltip: "Browse agent services" },
   { href: "/agents", label: "Agents", icon: "🤖", tooltip: "View agent profiles" },
+  { href: "/teams", label: "Teams", icon: "👥", tooltip: "Multi-agent teams" },
   { href: "/board", label: "Board", icon: "📋", tooltip: "Track task status" },
   { href: "/terminal", label: "Terminal", icon: "⌨️", tooltip: "CLI commands" },
   { href: "/admin", label: "Admin", icon: "📊", tooltip: "Protocol stats" },

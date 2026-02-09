@@ -27,6 +27,7 @@ import { createTask, getTask, listMyTasks, taskTools } from "./tools/tasks.mjs";
 import { submitResult, submitResultZk, providerTools } from "./tools/provider.mjs";
 import { acceptResult, disputeTask, requesterTools } from "./tools/requester.mjs";
 import { getBalance, scanWallet, walletTools } from "./tools/wallet.mjs";
+import { teamTools, teamHandlers } from "./tools/teams.mjs";
 
 // Security
 import { validateToolParams, SecurityError } from "./security/input-validator.mjs";
@@ -47,6 +48,7 @@ const ALL_TOOLS = [
   ...providerTools,
   ...requesterTools,
   ...walletTools,
+  ...teamTools,
 ];
 
 // Map tool names to handler functions
@@ -71,6 +73,9 @@ const TOOL_HANDLERS = {
   // Wallet tools
   get_balance: getBalance,
   scan_wallet: scanWallet,
+
+  // Team tools
+  ...teamHandlers,
 };
 
 // ============================================================================

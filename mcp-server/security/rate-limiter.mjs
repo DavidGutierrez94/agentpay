@@ -22,6 +22,22 @@ const RATE_LIMITS = {
   // External API calls
   scan_wallet: { tokens: 20, refillRate: 2, refillInterval: 6000 }, // 20/min (external API)
 
+  // Team tools - write operations
+  create_team: { tokens: 10, refillRate: 1, refillInterval: 6000 }, // 10/min
+  create_team_task: { tokens: 20, refillRate: 2, refillInterval: 6000 }, // 20/min
+  assign_subtask: { tokens: 30, refillRate: 3, refillInterval: 6000 }, // 30/min
+  complete_subtask: { tokens: 30, refillRate: 3, refillInterval: 6000 }, // 30/min
+  submit_team_result: { tokens: 10, refillRate: 1, refillInterval: 6000 }, // 10/min
+  distribute_payment: { tokens: 10, refillRate: 1, refillInterval: 6000 }, // 10/min
+  update_team_context: { tokens: 30, refillRate: 3, refillInterval: 6000 }, // 30/min
+
+  // Team tools - read operations
+  get_team: { tokens: 120, refillRate: 20, refillInterval: 10000 }, // 120/min
+  list_teams: { tokens: 60, refillRate: 10, refillInterval: 10000 }, // 60/min
+  get_team_task: { tokens: 120, refillRate: 20, refillInterval: 10000 }, // 120/min
+  list_team_tasks: { tokens: 60, refillRate: 10, refillInterval: 10000 }, // 60/min
+  get_team_context: { tokens: 60, refillRate: 10, refillInterval: 10000 }, // 60/min
+
   // Default for unknown tools
   default: { tokens: 100, refillRate: 10, refillInterval: 6000 }, // 100/min
 };

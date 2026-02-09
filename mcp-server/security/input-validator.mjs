@@ -45,6 +45,10 @@ const MAX_LENGTHS = {
   pda: 44,
   taskId: 32,
   serviceId: 32,
+  teamName: 64,
+  teamId: 36, // UUID
+  contextContent: 2048,
+  aggregatedResult: 4096,
   default: 256,
 };
 
@@ -259,6 +263,74 @@ export function validateToolParams(toolName, params) {
 
     case "scan_wallet":
       validated.walletAddress = validateWalletAddress(params.walletAddress);
+      break;
+
+    // Team tools
+    case "create_team":
+      validated.name = sanitizeInput(params.name, "teamName");
+      validated.leadWallet = validateWalletAddress(params.leadWallet);
+      if (params.description) validated.description = sanitizeInput(params.description, "description");
+      if (params.members && Array.isArray(params.members)) {
+        validated.members = params.members.map(m => ({
+          wallet: validateWalletAddress(m.wallet),
+          role: sanitizeInput(m.role || "worker"),
+          level: validateNumber(m.level || 2, { min: 1, max: 4, name: "level" }),
+          skills: Array.isArray(m.skills) ? m.skills.map(s => sanitizeInput(s)) : [],
+          sharePercentage: validateNumber(m.sharePercentage || 0, { min: 0, max: 100, name: "sharePercentage" }),
+        }));
+      }
+      break;
+
+    case "get_team":
+    case "get_team_context":
+      validated.teamId = sanitizeInput(params.teamId, "teamId");
+      break;
+
+    case "list_teams":
+      if (params.memberWallet) validated.memberWallet = validateWalletAddress(params.memberWallet);
+      if (params.includeInactive !== undefined) validated.includeInactive = Boolean(params.includeInactive);
+      break;
+
+    case "create_team_task":
+      validated.teamId = sanitizeInput(params.teamId, "teamId");
+      validated.onChainTaskPda = validatePda(params.onChainTaskPda);
+      validated.description = sanitizeInput(params.description, "description");
+      break;
+
+    case "get_team_task":
+      validated.teamTaskId = sanitizeInput(params.teamTaskId, "teamId");
+      break;
+
+    case "list_team_tasks":
+      if (params.teamId) validated.teamId = sanitizeInput(params.teamId, "teamId");
+      if (params.status) validated.status = sanitizeInput(params.status);
+      break;
+
+    case "assign_subtask":
+      validated.teamTaskId = sanitizeInput(params.teamTaskId, "teamId");
+      validated.assignedTo = validateWalletAddress(params.assignedTo);
+      validated.description = sanitizeInput(params.description, "description");
+      break;
+
+    case "complete_subtask":
+      validated.teamTaskId = sanitizeInput(params.teamTaskId, "teamId");
+      validated.subtaskId = sanitizeInput(params.subtaskId, "teamId");
+      validated.result = sanitizeInput(params.result, "result");
+      break;
+
+    case "submit_team_result":
+      validated.teamTaskId = sanitizeInput(params.teamTaskId, "teamId");
+      validated.aggregatedResult = sanitizeInput(params.aggregatedResult, "aggregatedResult");
+      break;
+
+    case "distribute_payment":
+      validated.teamTaskId = sanitizeInput(params.teamTaskId, "teamId");
+      break;
+
+    case "update_team_context":
+      validated.teamId = sanitizeInput(params.teamId, "teamId");
+      validated.type = sanitizeInput(params.type);
+      validated.content = sanitizeInput(params.content, "contextContent");
       break;
 
     default:
