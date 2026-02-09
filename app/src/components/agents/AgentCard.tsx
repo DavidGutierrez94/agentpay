@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { AddressDisplay } from "../shared/AddressDisplay";
-import { ZKBadge } from "../shared/ZKBadge";
 import type { Agent } from "@/lib/hooks/useAgents";
 
 interface AgentCardProps {
@@ -30,106 +29,123 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="group flex flex-col rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 transition-colors hover:border-violet-500/50"
+      className="group flex flex-col border border-[#00ff41]/25 bg-[#111111] transition-all hover:border-[#00ff41] hover:shadow-[0_0_20px_rgba(0,255,65,0.1)]"
     >
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-lg">
-            🤖
+      {/* Card Header */}
+      <div className="border-b border-[#00ff41]/25 bg-[#1a1a1a] px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1">
+            <div className="h-1.5 w-1.5 bg-[#00ff41]" />
+            <div className="h-1.5 w-1.5 bg-[#00ff41]/50" />
+            <div className="h-1.5 w-1.5 bg-[#00ff41]/25" />
+          </div>
+          <span className="text-[#00ff41] text-[10px] uppercase tracking-wider">
+            AGENT
+          </span>
+        </div>
+        {agent.stats.disputeCountAsProvider === 0 && agent.stats.totalTasksCompleted > 0 && (
+          <span className="text-[#00ff41] text-[10px]">[CLEAN_RECORD]</span>
+        )}
+        {agent.stats.disputeRateAsRequester >= 30 && (
+          <span className="text-[#ff3333] text-[10px]">[HIGH_DISPUTE]</span>
+        )}
+      </div>
+
+      {/* Card Body */}
+      <div className="p-4 flex-1 flex flex-col">
+        {/* Agent Info */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center border border-[#00ff41]/50 bg-[#00ff41]/10 text-lg">
+            <span className="text-[#00ff41] text-sm font-mono">&gt;_</span>
           </div>
           <div>
             <AddressDisplay address={agent.wallet} chars={4} />
-            <p className="mt-0.5 text-xs text-zinc-500">Joined {joinedFormatted}</p>
+            <p className="text-[10px] text-[#666666] uppercase mt-0.5">
+              Joined {joinedFormatted}
+            </p>
           </div>
         </div>
-        {agent.stats.disputeCountAsProvider === 0 && agent.stats.totalTasksCompleted > 0 && (
-          <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-xs text-green-400">
-            ✓ Clean Record
-          </span>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="border border-[#00ff41]/25 bg-[#0a0a0a] px-3 py-2">
+            <p className="text-[10px] text-[#666666] uppercase">TASKS</p>
+            <p className="text-lg font-mono text-[#00ff41]">
+              {agent.stats.totalTasksCompleted}
+            </p>
+          </div>
+          <div className="border border-[#00d4ff]/25 bg-[#0a0a0a] px-3 py-2">
+            <p className="text-[10px] text-[#666666] uppercase">SERVICES</p>
+            <p className="text-lg font-mono text-[#00d4ff]">
+              {agent.stats.activeServices}
+              <span className="text-sm text-[#666666]">
+                /{agent.stats.totalServices}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* ZK Verification */}
+        {agent.stats.zkVerifiedCount > 0 && (
+          <div className="mt-3 flex items-center gap-2">
+            <span className="border border-[#ff0080]/50 bg-[#ff0080]/10 px-2 py-0.5 text-[10px] text-[#ff0080] uppercase font-mono zk-glow">
+              ZK
+            </span>
+            <span className="text-xs text-[#666666]">
+              {zkPercentage}% verified ({agent.stats.zkVerifiedCount})
+            </span>
+          </div>
+        )}
+
+        {/* Services Preview */}
+        {agent.services.length > 0 && (
+          <div className="mt-4 border-t border-[#00ff41]/25 pt-3">
+            <p className="mb-2 text-[10px] text-[#666666] uppercase">
+              services_offered:
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {agent.services.slice(0, 3).map((service) => (
+                <span
+                  key={service.pda}
+                  className="border border-[#666666]/50 bg-[#0a0a0a] px-2 py-1 text-[10px] text-[#c0c0c0] font-mono"
+                >
+                  {service.description.length > 20
+                    ? service.description.slice(0, 20) + "..."
+                    : service.description}
+                </span>
+              ))}
+              {agent.services.length > 3 && (
+                <span className="border border-[#666666]/50 bg-[#0a0a0a] px-2 py-1 text-[10px] text-[#666666] font-mono">
+                  +{agent.services.length - 3}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Dispute Warnings */}
+        {agent.stats.disputeCountAsProvider > 0 && (
+          <div className="mt-3 border border-[#ffcc00]/50 bg-[#ffcc00]/10 px-3 py-2 text-[10px] text-[#ffcc00] font-mono">
+            [WARN] {agent.stats.disputeCountAsProvider} dispute
+            {agent.stats.disputeCountAsProvider > 1 ? "s" : ""} as provider
+          </div>
         )}
         {agent.stats.disputeRateAsRequester >= 30 && (
-          <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-xs text-red-400">
-            ⚠️ High Dispute Rate
-          </span>
-        )}
-      </div>
-
-      {/* Stats Grid */}
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <div className="rounded-lg bg-zinc-800/50 px-3 py-2">
-          <p className="text-xs text-zinc-500">Tasks</p>
-          <p className="text-lg font-semibold text-white">
-            {agent.stats.totalTasksCompleted}
-          </p>
-        </div>
-        <div className="rounded-lg bg-zinc-800/50 px-3 py-2">
-          <p className="text-xs text-zinc-500">Services</p>
-          <p className="text-lg font-semibold text-white">
-            {agent.stats.activeServices}{" "}
-            <span className="text-sm text-zinc-500">
-              / {agent.stats.totalServices}
-            </span>
-          </p>
-        </div>
-      </div>
-
-      {/* ZK Verification */}
-      {agent.stats.zkVerifiedCount > 0 && (
-        <div className="mt-3 flex items-center gap-2">
-          <ZKBadge />
-          <span className="text-xs text-zinc-400">
-            {zkPercentage}% ZK verified ({agent.stats.zkVerifiedCount})
-          </span>
-        </div>
-      )}
-
-      {/* Services Preview */}
-      {agent.services.length > 0 && (
-        <div className="mt-4 border-t border-zinc-800 pt-3">
-          <p className="mb-2 text-xs text-zinc-500">Services offered:</p>
-          <div className="flex flex-wrap gap-1">
-            {agent.services.slice(0, 3).map((service) => (
-              <span
-                key={service.pda}
-                className="rounded-md bg-zinc-800 px-2 py-1 text-xs text-zinc-300"
-              >
-                {service.description.length > 20
-                  ? service.description.slice(0, 20) + "..."
-                  : service.description}
-              </span>
-            ))}
-            {agent.services.length > 3 && (
-              <span className="rounded-md bg-zinc-800 px-2 py-1 text-xs text-zinc-500">
-                +{agent.services.length - 3} more
-              </span>
-            )}
+          <div className="mt-3 border border-[#ff3333]/50 bg-[#ff3333]/10 px-3 py-2 text-[10px] text-[#ff3333] font-mono">
+            [ALERT] {agent.stats.disputeRateAsRequester}% dispute rate
+            ({agent.stats.disputeCountAsRequester}/{agent.stats.tasksCreatedAsRequester})
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Dispute Warnings */}
-      {agent.stats.disputeCountAsProvider > 0 && (
-        <div className="mt-3 rounded-md bg-yellow-500/10 px-3 py-2 text-xs text-yellow-400">
-          ⚠️ {agent.stats.disputeCountAsProvider} dispute
-          {agent.stats.disputeCountAsProvider > 1 ? "s" : ""} as provider
+        {/* Actions */}
+        <div className="mt-4">
+          <button
+            onClick={onView}
+            className="w-full border border-[#00ff41] py-2 text-xs text-[#00ff41] uppercase tracking-wider transition-all hover:bg-[#00ff41] hover:text-[#0a0a0a] hover:shadow-[0_0_15px_rgba(0,255,65,0.3)]"
+          >
+            &gt; VIEW_PROFILE
+          </button>
         </div>
-      )}
-      {agent.stats.disputeRateAsRequester >= 30 && (
-        <div className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-xs text-red-400">
-          🚨 {agent.stats.disputeRateAsRequester}% dispute rate as requester
-          ({agent.stats.disputeCountAsRequester}/{agent.stats.tasksCreatedAsRequester} tasks)
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="mt-4 flex gap-2">
-        <button
-          onClick={onView}
-          className="flex-1 rounded-lg border border-zinc-700 py-2 text-sm font-medium text-white transition-colors hover:border-violet-500 hover:text-violet-400"
-        >
-          View Profile
-        </button>
       </div>
     </motion.div>
   );

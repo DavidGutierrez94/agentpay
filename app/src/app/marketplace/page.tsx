@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useServices, type ServiceListing } from "@/lib/hooks/useServices";
 import { ServiceCard } from "@/components/marketplace/ServiceCard";
 import { CreateTaskModal } from "@/components/board/CreateTaskModal";
+import { TerminalInput } from "@/components/ui/TerminalCard";
 
 export default function MarketplacePage() {
   const { data: services, isLoading, error } = useServices();
@@ -26,34 +27,53 @@ export default function MarketplacePage() {
         case "tasks":
           return b.tasksCompleted - a.tasksCompleted;
         default:
-          return 0; // newest - default order from fetch
+          return 0;
       }
     });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Marketplace</h1>
-        <p className="mt-1 text-zinc-400">
-          Browse and hire AI agent services on Solana devnet
-        </p>
+    <div className="mx-auto max-w-6xl px-4 py-8 font-mono">
+      {/* Terminal Header */}
+      <div className="mb-8 border border-[#00ff41]/25 bg-[#111111]">
+        <div className="border-b border-[#00ff41]/25 bg-[#1a1a1a] px-4 py-2 flex items-center gap-2">
+          <div className="flex gap-1.5">
+            <div className="h-2 w-2 bg-[#ff3333]" />
+            <div className="h-2 w-2 bg-[#ffcc00]" />
+            <div className="h-2 w-2 bg-[#00ff41]" />
+          </div>
+          <span className="text-[#00ff41] text-xs uppercase tracking-wider">
+            SERVICE_MARKETPLACE
+          </span>
+        </div>
+        <div className="p-4">
+          <div className="text-xs text-[#666666] mb-2">
+            <span className="text-[#00ff41]">$</span> ls ~/services --available
+          </div>
+          <p className="text-sm text-[#c0c0c0]">
+            Browse and hire AI agent services on <span className="text-[#ffcc00]">Solana devnet</span>
+          </p>
+        </div>
       </div>
 
+      {/* Loading State */}
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-48 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/50"
+              className="h-48 border border-[#00ff41]/25 bg-[#111111] animate-pulse"
             />
           ))}
         </div>
       )}
 
+      {/* Error State */}
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-400">
-          Failed to load services. Make sure you have a Solana devnet
-          connection.
+        <div className="border border-[#ff3333]/50 bg-[#ff3333]/10 p-4 font-mono">
+          <span className="text-[#ff3333] text-xs">[ERROR]</span>
+          <span className="text-[#c0c0c0] text-sm ml-2">
+            Failed to load services. Check Solana devnet connection.
+          </span>
         </div>
       )}
 
@@ -61,29 +81,27 @@ export default function MarketplacePage() {
       {services && services.length > 0 && (
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {/* Search Input */}
-          <div className="relative flex-1 max-w-md">
-            <input
-              type="text"
-              placeholder="Search services..."
+          <div className="flex-1 max-w-md">
+            <TerminalInput
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 pl-10 text-sm text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-none"
+              onChange={setSearch}
+              placeholder="grep -i 'service'"
+              prefix="$"
             />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">🔍</span>
           </div>
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-zinc-500">Sort by:</span>
+            <span className="text-xs text-[#666666] uppercase">sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
+              className="bg-[#0a0a0a] border border-[#00ff41]/25 px-3 py-1.5 text-xs text-[#00ff41] uppercase focus:border-[#00ff41] focus:outline-none cursor-pointer"
             >
-              <option value="newest">Newest</option>
-              <option value="price-asc">Price: Low → High</option>
-              <option value="price-desc">Price: High → Low</option>
-              <option value="tasks">Most Tasks</option>
+              <option value="newest">NEWEST</option>
+              <option value="price-asc">PRICE_ASC</option>
+              <option value="price-desc">PRICE_DESC</option>
+              <option value="tasks">MOST_TASKS</option>
             </select>
           </div>
         </div>
@@ -91,43 +109,54 @@ export default function MarketplacePage() {
 
       {/* Result Count */}
       {filteredServices && filteredServices.length > 0 && (
-        <div className="mb-4 text-sm text-zinc-500">
-          {filteredServices.length} service{filteredServices.length !== 1 ? "s" : ""} found
-          {search && ` for "${search}"`}
+        <div className="mb-4 text-xs text-[#666666]">
+          <span className="text-[#00ff41]">{filteredServices.length}</span>
+          {" "}service{filteredServices.length !== 1 ? "s" : ""} found
+          {search && (
+            <span>
+              {" "}matching <span className="text-[#00d4ff]">&quot;{search}&quot;</span>
+            </span>
+          )}
         </div>
       )}
 
       {/* No Search Results */}
       {filteredServices && filteredServices.length === 0 && search && (
-        <div className="rounded-lg border border-zinc-800 p-8 text-center">
-          <div className="mb-3 text-4xl">🔍</div>
-          <p className="text-zinc-400">No services match &quot;{search}&quot;</p>
+        <div className="border border-[#ffcc00]/25 bg-[#111111] p-8 text-center">
+          <div className="text-[#ffcc00] text-xs mb-3">[NO_MATCH]</div>
+          <p className="text-[#c0c0c0] text-sm">
+            No services match <span className="text-[#00d4ff]">&quot;{search}&quot;</span>
+          </p>
           <button
             onClick={() => setSearch("")}
-            className="mt-3 text-sm text-violet-400 hover:text-violet-300"
+            className="mt-4 border border-[#00ff41] px-4 py-1.5 text-xs text-[#00ff41] uppercase hover:bg-[#00ff41] hover:text-[#0a0a0a] transition-colors"
           >
-            Clear search
+            CLEAR_FILTER
           </button>
         </div>
       )}
 
-      {/* Empty State (no services at all) */}
+      {/* Empty State */}
       {services && services.length === 0 && (
-        <div className="rounded-lg border border-zinc-800 p-8 text-center">
-          <div className="mb-3 text-4xl">🔍</div>
-          <p className="text-zinc-400">No services registered yet</p>
-          <p className="mt-2 text-sm text-zinc-500">
-            Be the first to register a service! Use the Terminal to run:
+        <div className="border border-[#00ff41]/25 bg-[#111111] p-8 text-center">
+          <div className="text-[#ffcc00] text-xs mb-3">[EMPTY_REGISTRY]</div>
+          <p className="text-[#c0c0c0] text-sm mb-4">
+            No services registered yet
           </p>
-          <code className="mt-2 inline-block rounded bg-zinc-800 px-3 py-1.5 font-mono text-xs text-violet-400">
-            register-service -d &quot;My service&quot; -p 0.01
-          </code>
-          <div className="mt-4">
+          <div className="bg-[#0a0a0a] border border-[#00ff41]/25 p-4 text-left inline-block">
+            <div className="text-xs text-[#666666] mb-1">
+              <span className="text-[#00ff41]">$</span> register-service
+            </div>
+            <code className="text-xs text-[#00d4ff]">
+              register-service -d &quot;My service&quot; -p 0.01
+            </code>
+          </div>
+          <div className="mt-6">
             <Link
               href="/terminal"
-              className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+              className="inline-flex items-center gap-2 border border-[#00ff41] px-6 py-2 text-xs text-[#00ff41] uppercase tracking-wider hover:bg-[#00ff41] hover:text-[#0a0a0a] transition-all"
             >
-              <span>⌨️</span> Open Terminal
+              <span>&gt;</span> OPEN_TERMINAL
             </Link>
           </div>
         </div>

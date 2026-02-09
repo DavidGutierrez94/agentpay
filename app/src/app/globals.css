@@ -1,62 +1,406 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   CYBERPUNK TERMINAL THEME — AgentPay
+   Matrix meets Bloomberg Terminal. Hacker aesthetic for agent-to-agent payments.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #000000;
-  --foreground: #ededed;
+  /* Core Cyberpunk Palette */
+  --terminal-green: #00ff41;
+  --terminal-green-dim: #00cc33;
+  --terminal-pink: #ff0080;
+  --terminal-cyan: #00d4ff;
+  --terminal-yellow: #ffcc00;
+  --terminal-red: #ff3333;
+
+  /* Backgrounds */
+  --background: #0a0a0a;
+  --surface: #111111;
+  --surface-elevated: #1a1a1a;
+
+  /* Text */
+  --foreground: #c0c0c0;
+  --foreground-bright: #ffffff;
+  --foreground-dim: #666666;
+
+  /* Borders */
+  --border: #00ff4140;
+  --border-bright: #00ff41;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'JetBrains Mono', var(--font-geist-mono), monospace;
+  --font-mono: 'JetBrains Mono', var(--font-geist-mono), monospace;
 }
 
+/* Global body styles */
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: 'JetBrains Mono', monospace;
 }
 
-/* Solana wallet adapter overrides */
-.wallet-adapter-button {
-  background-color: #7c3aed !important;
-  border-radius: 0.5rem !important;
-  font-size: 0.875rem !important;
-  height: 2.25rem !important;
-}
-.wallet-adapter-button:hover {
-  background-color: #8b5cf6 !important;
-}
-.wallet-adapter-modal-wrapper {
-  background-color: #18181b !important;
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCANLINE EFFECT — CRT Monitor simulation
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  opacity: 0.3;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #3f3f46;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #52525b;
+/* ═══════════════════════════════════════════════════════════════════════════
+   TERMINAL CURSOR — Blinking block cursor
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 
-/* Glow effect for ZK badge */
-@keyframes zkGlow {
-  0%,
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+.cursor-block::after {
+  content: "█";
+  color: var(--terminal-green);
+  animation: blink 1s step-end infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLITCH EFFECT — Text distortion on hover
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+    text-shadow: none;
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    text-shadow: 2px 0 var(--terminal-pink), -2px 0 var(--terminal-cyan);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+    text-shadow: 2px 0 var(--terminal-cyan), -2px 0 var(--terminal-pink);
+  }
+  60% {
+    transform: translate(2px, 2px);
+    text-shadow: 2px 0 var(--terminal-pink), -2px 0 var(--terminal-cyan);
+  }
+  80% {
+    transform: translate(2px, -2px);
+    text-shadow: -2px 0 var(--terminal-cyan), 2px 0 var(--terminal-pink);
+  }
   100% {
-    box-shadow: 0 0 4px rgba(139, 92, 246, 0.3);
+    transform: translate(0);
+    text-shadow: none;
+  }
+}
+
+.glitch-hover:hover {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TERMINAL CARD — ASCII-bordered containers
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.terminal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.terminal-card:hover {
+  border-color: var(--border-bright);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+}
+
+.terminal-card-header {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-elevated);
+}
+
+.terminal-card-title {
+  color: var(--terminal-green);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATUS INDICATORS — Terminal-style badges
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.status-online {
+  color: var(--terminal-green);
+}
+.status-online::before {
+  content: "[";
+}
+.status-online::after {
+  content: "]";
+}
+
+.status-offline {
+  color: var(--terminal-red);
+}
+.status-offline::before {
+  content: "[";
+}
+.status-offline::after {
+  content: "]";
+}
+
+.status-pending {
+  color: var(--terminal-yellow);
+}
+.status-pending::before {
+  content: "[";
+}
+.status-pending::after {
+  content: "]";
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROGRESS BAR — ASCII-style progress
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.terminal-progress {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--terminal-green);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MATRIX RAIN — Ambient background effect (subtle)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.matrix-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  opacity: 0.03;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TERMINAL BUTTONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.btn-terminal {
+  background: transparent;
+  border: 1px solid var(--terminal-green);
+  color: var(--terminal-green);
+  padding: 8px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-terminal:hover {
+  background: var(--terminal-green);
+  color: var(--background);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+.btn-terminal-pink {
+  border-color: var(--terminal-pink);
+  color: var(--terminal-pink);
+}
+
+.btn-terminal-pink:hover {
+  background: var(--terminal-pink);
+  color: var(--background);
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+.btn-terminal-cyan {
+  border-color: var(--terminal-cyan);
+  color: var(--terminal-cyan);
+}
+
+.btn-terminal-cyan:hover {
+  background: var(--terminal-cyan);
+  color: var(--background);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WALLET ADAPTER OVERRIDES — Cyberpunk style
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.wallet-adapter-button {
+  background-color: transparent !important;
+  border: 1px solid var(--terminal-green) !important;
+  color: var(--terminal-green) !important;
+  border-radius: 0 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  height: 2rem !important;
+}
+
+.wallet-adapter-button:hover {
+  background-color: var(--terminal-green) !important;
+  color: var(--background) !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--terminal-green) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CUSTOM SCROLLBAR — Terminal green
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+  border-left: 1px solid var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terminal-green-dim);
+  border: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-green);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ZK GLOW — Special effect for ZK-verified items
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes zkGlow {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(0, 255, 65, 0.3);
   }
   50% {
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 0 16px rgba(0, 255, 65, 0.6);
   }
 }
 
 .zk-glow {
   animation: zkGlow 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPING ANIMATION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 2s steps(40, end);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TERMINAL INPUT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.terminal-input {
+  background: var(--background);
+  border: 1px solid var(--border);
+  color: var(--terminal-green);
+  padding: 8px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.terminal-input:focus {
+  border-color: var(--terminal-green);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+.terminal-input::placeholder {
+  color: var(--foreground-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.text-terminal-green { color: var(--terminal-green); }
+.text-terminal-pink { color: var(--terminal-pink); }
+.text-terminal-cyan { color: var(--terminal-cyan); }
+.text-terminal-yellow { color: var(--terminal-yellow); }
+.text-terminal-red { color: var(--terminal-red); }
+
+.bg-terminal-surface { background: var(--surface); }
+.bg-terminal-elevated { background: var(--surface-elevated); }
+
+.border-terminal { border-color: var(--border); }
+.border-terminal-bright { border-color: var(--border-bright); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ASCII ART HEADER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ascii-header {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--terminal-green);
+  white-space: pre;
+  line-height: 1.2;
+  font-size: 0.6rem;
+}
+
+@media (min-width: 640px) {
+  .ascii-header {
+    font-size: 0.7rem;
+  }
 }
