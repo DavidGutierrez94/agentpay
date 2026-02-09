@@ -4,11 +4,11 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import type { ProtocolStats } from "@/lib/hooks/useProtocolStats";
 
 const STATUS_COLORS: Record<string, string> = {
-  open: "#60a5fa",
-  submitted: "#fb923c",
-  completed: "#34d399",
-  disputed: "#f87171",
-  expired: "#71717a",
+  open: "#00d4ff",
+  submitted: "#ffcc00",
+  completed: "#00ff41",
+  disputed: "#ff3333",
+  expired: "#666666",
 };
 
 export function TaskStatusChart({
@@ -21,15 +21,15 @@ export function TaskStatusChart({
   const data = Object.entries(stats.tasksByStatus)
     .filter(([, count]) => count > 0)
     .map(([status, count]) => ({
-      name: status.charAt(0).toUpperCase() + status.slice(1),
+      name: status.toUpperCase(),
       value: count,
-      fill: STATUS_COLORS[status] ?? "#71717a",
+      fill: STATUS_COLORS[status] ?? "#666666",
     }));
 
   if (data.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-zinc-500">
-        No tasks yet
+      <div className="flex h-full items-center justify-center text-sm text-[var(--color-muted)]">
+        [NO_TASKS]
       </div>
     );
   }
@@ -53,10 +53,11 @@ export function TaskStatusChart({
           </Pie>
           <Tooltip
             contentStyle={{
-              backgroundColor: "#18181b",
-              borderColor: "#3f3f46",
-              borderRadius: "0.5rem",
+              backgroundColor: "var(--color-surface)",
+              borderColor: "var(--color-border)",
+              borderRadius: "var(--border-radius-sm)",
               fontSize: "0.75rem",
+              fontFamily: "var(--font-family)",
             }}
           />
         </PieChart>
@@ -65,10 +66,10 @@ export function TaskStatusChart({
         {data.map((d) => (
           <div key={d.name} className="flex items-center gap-1.5">
             <div
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: d.fill }}
+              className="h-2.5 w-2.5"
+              style={{ backgroundColor: d.fill, borderRadius: "var(--border-radius-sm)" }}
             />
-            <span className="text-xs text-zinc-400">
+            <span className="text-xs text-[var(--color-muted)] font-mono">
               {d.name} ({d.value})
             </span>
           </div>

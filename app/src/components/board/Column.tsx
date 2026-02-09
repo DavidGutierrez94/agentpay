@@ -2,16 +2,23 @@
 
 import { AnimatePresence } from "framer-motion";
 import { TaskCard } from "./TaskCard";
-import { cn, getColumnColor } from "@/lib/utils";
 import type { TaskRequest } from "@/lib/hooks/useTasks";
 import type { TaskStatus } from "@/lib/constants";
 
 const statusLabels: Record<TaskStatus, string> = {
-  open: "Open",
-  submitted: "Submitted",
-  completed: "Completed",
-  disputed: "Disputed",
-  expired: "Expired",
+  open: "OPEN",
+  submitted: "SUBMITTED",
+  completed: "COMPLETED",
+  disputed: "DISPUTED",
+  expired: "EXPIRED",
+};
+
+const statusColors: Record<TaskStatus, string> = {
+  open: "#00d4ff",
+  submitted: "#ffcc00",
+  completed: "#00ff41",
+  disputed: "#ff3333",
+  expired: "#666666",
 };
 
 export function Column({
@@ -23,18 +30,28 @@ export function Column({
   tasks: TaskRequest[];
   onTaskClick: (task: TaskRequest) => void;
 }) {
+  const color = statusColors[status];
+
   return (
     <div
-      className={cn(
-        "flex min-w-[240px] flex-1 flex-col rounded-xl border-t-2 bg-zinc-950/50 p-3",
-        getColumnColor(status)
-      )}
+      className="flex min-w-[240px] flex-1 flex-col bg-[var(--color-surface)] p-3"
+      style={{
+        borderTop: `2px solid ${color}`,
+        borderRadius: "var(--border-radius)",
+      }}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-zinc-300">
+        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color }}>
           {statusLabels[status]}
         </h3>
-        <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs tabular-nums text-zinc-400">
+        <span
+          className="border px-2 py-0.5 text-xs tabular-nums font-mono"
+          style={{
+            borderColor: color,
+            color,
+            borderRadius: "var(--border-radius-sm)",
+          }}
+        >
           {tasks.length}
         </span>
       </div>
@@ -47,8 +64,11 @@ export function Column({
         </AnimatePresence>
 
         {tasks.length === 0 && (
-          <div className="rounded-lg border border-dashed border-zinc-800 p-4 text-center text-xs text-zinc-600">
-            No tasks
+          <div
+            className="border border-dashed border-[var(--color-border)] p-4 text-center text-xs text-[var(--color-muted)]"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            [EMPTY]
           </div>
         )}
       </div>

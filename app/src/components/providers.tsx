@@ -9,6 +9,7 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DEVNET_RPC } from "@/lib/constants";
+import { ThemeProvider } from "@/lib/theme-context";
 
 import "@solana/wallet-adapter-react-ui/styles.css";
 
@@ -28,7 +29,9 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ConnectionProvider endpoint={DEVNET_RPC}>
         <WalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider>{children}</WalletModalProvider>
+          <WalletModalProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>
     </QueryClientProvider>

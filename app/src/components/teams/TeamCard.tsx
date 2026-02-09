@@ -4,20 +4,20 @@ import { motion } from "framer-motion";
 import { AddressDisplay } from "../shared/AddressDisplay";
 import type { Team, ROLE_ICONS, AGENT_LEVEL_NAMES } from "@/lib/hooks/useTeams";
 
-const roleIcons: Record<string, string> = {
-  lead: "👑",
-  backend: "⚙️",
-  frontend: "🎨",
-  researcher: "🔍",
-  reviewer: "📋",
-  worker: "🔧",
+const roleLabels: Record<string, string> = {
+  lead: "LEAD",
+  backend: "BACKEND",
+  frontend: "FRONTEND",
+  researcher: "RESEARCH",
+  reviewer: "REVIEW",
+  worker: "WORKER",
 };
 
 const levelBadges: Record<number, { label: string; color: string }> = {
-  1: { label: "L1", color: "bg-zinc-600" },
-  2: { label: "L2", color: "bg-blue-600" },
-  3: { label: "L3", color: "bg-violet-600" },
-  4: { label: "L4", color: "bg-amber-600" },
+  1: { label: "L1", color: "#666666" },
+  2: { label: "L2", color: "#00d4ff" },
+  3: { label: "L3", color: "#ff0080" },
+  4: { label: "L4", color: "#ffcc00" },
 };
 
 interface TeamCardProps {
@@ -34,39 +34,49 @@ export function TeamCard({ team, onView }: TeamCardProps) {
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="group flex flex-col rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 transition-colors hover:border-zinc-700"
+      className="group flex flex-col border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-colors hover:border-[var(--color-primary)]"
+      style={{ borderRadius: "var(--border-radius)" }}
     >
       {/* Header */}
-      <div className="mb-4 flex items-start justify-between">
-        <div className="flex-1">
+      <div className="border-b border-[var(--color-border)] pb-3 mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">👥</span>
-            <h3 className="font-semibold text-white">{team.name}</h3>
+            <span className="text-[var(--color-primary)] font-mono">&gt;_</span>
+            <h3 className="font-semibold text-[var(--color-text)] font-mono">{team.name}</h3>
           </div>
-          {team.description && (
-            <p className="mt-1 text-sm text-zinc-400 line-clamp-2">
-              {team.description}
-            </p>
-          )}
+          <span
+            className={`text-[10px] uppercase tracking-wider ${
+              team.isActive
+                ? "text-[var(--color-primary)]"
+                : "text-[var(--color-muted)]"
+            }`}
+          >
+            [{team.isActive ? "ACTIVE" : "INACTIVE"}]
+          </span>
         </div>
-        <span
-          className={`rounded-full px-2 py-0.5 text-xs ${
-            team.isActive
-              ? "bg-green-500/10 text-green-400"
-              : "bg-zinc-500/10 text-zinc-400"
-          }`}
-        >
-          {team.isActive ? "Active" : "Inactive"}
-        </span>
+        {team.description && (
+          <p className="mt-2 text-sm text-[var(--color-muted)] line-clamp-2">
+            {team.description}
+          </p>
+        )}
       </div>
 
       {/* Lead */}
       {lead && (
-        <div className="mb-3 flex items-center gap-2 rounded-lg bg-amber-500/5 p-2">
-          <span>{roleIcons.lead}</span>
-          <span className="text-xs text-amber-400">Lead</span>
+        <div
+          className="mb-3 flex items-center gap-2 border border-[#ffcc00]/50 bg-[#ffcc00]/10 p-2"
+          style={{ borderRadius: "var(--border-radius-sm)" }}
+        >
+          <span className="text-[10px] text-[#ffcc00] uppercase">[LEAD]</span>
           <AddressDisplay address={lead.wallet} chars={4} />
-          <span className={`ml-auto rounded px-1.5 py-0.5 text-xs text-white ${levelBadges[lead.level]?.color || "bg-zinc-600"}`}>
+          <span
+            className="ml-auto px-1.5 py-0.5 text-xs font-mono"
+            style={{
+              backgroundColor: `${levelBadges[lead.level]?.color}20`,
+              color: levelBadges[lead.level]?.color,
+              borderRadius: "var(--border-radius-sm)",
+            }}
+          >
             {levelBadges[lead.level]?.label || "L?"}
           </span>
         </div>
@@ -74,32 +84,39 @@ export function TeamCard({ team, onView }: TeamCardProps) {
 
       {/* Team Members */}
       <div className="mb-4">
-        <div className="mb-2 text-xs font-medium text-zinc-500">
-          Team Members ({team.memberCount})
+        <div className="mb-2 text-[10px] font-medium text-[var(--color-muted)] uppercase tracking-wider">
+          team_members: {team.memberCount}
         </div>
         <div className="flex flex-wrap gap-1.5">
           {otherMembers.slice(0, 4).map((member) => (
             <div
               key={member.wallet}
-              className="flex items-center gap-1 rounded-md bg-zinc-800/50 px-2 py-1"
+              className="flex items-center gap-1 border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
               title={`${member.role} (Level ${member.level})`}
             >
-              <span className="text-xs">{roleIcons[member.role] || "🔧"}</span>
-              <span className="text-xs text-zinc-400">
+              <span className="text-[10px] text-[var(--color-muted)] uppercase">
+                {roleLabels[member.role] || "WORKER"}
+              </span>
+              <span className="text-xs text-[var(--color-text)] font-mono">
                 {member.wallet.slice(0, 4)}...
               </span>
               <span
-                className={`rounded px-1 text-xs text-white ${
-                  levelBadges[member.level]?.color || "bg-zinc-600"
-                }`}
+                className="px-1 text-xs font-mono"
+                style={{
+                  color: levelBadges[member.level]?.color || "#666666",
+                }}
               >
                 {levelBadges[member.level]?.label || "L?"}
               </span>
             </div>
           ))}
           {otherMembers.length > 4 && (
-            <div className="flex items-center rounded-md bg-zinc-800/50 px-2 py-1 text-xs text-zinc-500">
-              +{otherMembers.length - 4} more
+            <div
+              className="flex items-center border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-muted)]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
+            >
+              +{otherMembers.length - 4}
             </div>
           )}
         </div>
@@ -115,23 +132,25 @@ export function TeamCard({ team, onView }: TeamCardProps) {
         ).map(([role, count]) => (
           <span
             key={role}
-            className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400"
+            className="border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-0.5 text-[10px] text-[var(--color-muted)] uppercase font-mono"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            {roleIcons[role] || "🔧"} {count} {role}
+            {roleLabels[role] || "WORKER"}: {count}
           </span>
         ))}
       </div>
 
       {/* Footer */}
-      <div className="mt-auto flex items-center justify-between border-t border-zinc-800 pt-3">
-        <span className="text-xs text-zinc-500">
-          Created {new Date(team.createdAt).toLocaleDateString()}
+      <div className="mt-auto flex items-center justify-between border-t border-[var(--color-border)] pt-3">
+        <span className="text-xs text-[var(--color-muted)]">
+          {new Date(team.createdAt).toLocaleDateString()}
         </span>
         <button
           onClick={onView}
-          className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+          className="border border-[var(--color-primary)] px-3 py-1.5 text-xs text-[var(--color-primary)] uppercase tracking-wider transition-all hover:bg-[var(--color-primary)] hover:text-[var(--color-bg)]"
+          style={{ borderRadius: "var(--border-radius-sm)" }}
         >
-          View Team
+          &gt; VIEW_TEAM
         </button>
       </div>
     </motion.div>

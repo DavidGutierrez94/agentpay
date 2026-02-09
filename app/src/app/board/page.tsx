@@ -14,29 +14,55 @@ export default function BoardPage() {
   const { data: services } = useServices();
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Task Board</h1>
-          <p className="mt-1 text-sm text-zinc-400">
+    <div className="mx-auto max-w-[1400px] px-4 py-8 font-mono">
+      {/* Terminal Header */}
+      <div className="mb-6 border border-[var(--color-border)] bg-[var(--color-surface)]">
+        <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <div className="h-2 w-2 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+              <div className="h-2 w-2 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+              <div className="h-2 w-2 bg-[var(--color-primary)]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+            </div>
+            <span className="text-[var(--color-primary)] text-xs uppercase tracking-wider">
+              TASK_BOARD
+            </span>
+          </div>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="border border-[var(--color-primary)] px-4 py-1.5 text-xs text-[var(--color-primary)] uppercase tracking-wider transition-all hover:bg-[var(--color-primary)] hover:text-[var(--color-bg)]"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            + CREATE_TASK
+          </button>
+        </div>
+        <div className="p-4">
+          <div className="text-xs text-[var(--color-muted)] mb-2">
+            <span className="text-[var(--color-primary)]">$</span> cat ~/tasks --board
+          </div>
+          <p className="text-sm text-[var(--color-text)]">
             Real-time view of all on-chain tasks
           </p>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
-        >
-          + Create Task
-        </button>
       </div>
 
       <Board />
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-            <h2 className="text-lg font-bold text-white">Select a Service</h2>
-            <p className="mt-1 text-sm text-zinc-400">
+          <div className="mx-4 w-full max-w-md border border-[var(--color-border)] bg-[var(--color-surface)] p-6" style={{ borderRadius: "var(--border-radius)" }}>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex gap-1">
+                <div className="h-1.5 w-1.5 bg-[var(--color-primary)]" />
+                <div className="h-1.5 w-1.5 bg-[var(--color-primary)]" style={{ opacity: 0.5 }} />
+                <div className="h-1.5 w-1.5 bg-[var(--color-primary)]" style={{ opacity: 0.25 }} />
+              </div>
+              <span className="text-[var(--color-primary)] text-[10px] uppercase tracking-wider">
+                SELECT_SERVICE
+              </span>
+            </div>
+            <h2 className="text-lg font-bold text-[var(--color-text)]">Select a Service</h2>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
               Choose which service to hire
             </p>
             <div className="mt-4 max-h-64 space-y-2 overflow-y-auto">
@@ -47,35 +73,38 @@ export default function BoardPage() {
                     setSelectedService(s);
                     setShowCreate(false);
                   }}
-                  className="w-full rounded-lg border border-zinc-800 p-3 text-left transition-colors hover:border-zinc-600"
+                  className="w-full border border-[var(--color-border)] bg-[var(--color-bg)] p-3 text-left transition-colors hover:border-[var(--color-primary)]"
+                  style={{ borderRadius: "var(--border-radius-sm)" }}
                 >
-                  <p className="text-sm text-white">{s.description}</p>
-                  <p className="mt-1 text-xs text-emerald-400">
+                  <p className="text-sm text-[var(--color-text)]">{s.description}</p>
+                  <p className="mt-1 text-xs text-[var(--color-accent)]">
                     {s.priceSol} SOL
                   </p>
                 </button>
               ))}
               {(!services || services.length === 0) && (
                 <div className="text-center py-4">
-                  <p className="text-sm text-zinc-500">No services available yet</p>
-                  <p className="mt-2 text-xs text-zinc-600">
+                  <p className="text-sm text-[var(--color-muted)]">[NO_SERVICES]</p>
+                  <p className="mt-2 text-xs text-[var(--color-muted)]">
                     Register one first to create tasks
                   </p>
                   <Link
                     href="/terminal"
                     onClick={() => setShowCreate(false)}
-                    className="mt-3 inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-500"
+                    className="mt-3 inline-flex items-center gap-2 border border-[var(--color-primary)] px-3 py-1.5 text-xs font-medium text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)] hover:text-[var(--color-bg)]"
+                    style={{ borderRadius: "var(--border-radius-sm)" }}
                   >
-                    <span>⌨️</span> Open Terminal
+                    &gt; OPEN_TERMINAL
                   </Link>
                 </div>
               )}
             </div>
             <button
               onClick={() => setShowCreate(false)}
-              className="mt-4 w-full rounded-lg border border-zinc-700 py-2 text-sm text-zinc-400 hover:text-white"
+              className="mt-4 w-full border border-[var(--color-border)] py-2 text-sm text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
             >
-              Cancel
+              CANCEL
             </button>
           </div>
         </div>

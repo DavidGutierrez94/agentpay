@@ -84,33 +84,34 @@ export function Terminal({
 
   return (
     <div
-      className="flex h-full flex-col overflow-hidden rounded-xl border border-zinc-800 bg-black font-mono text-sm"
+      className="flex h-full flex-col overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg)] font-mono text-sm"
+      style={{ borderRadius: "var(--border-radius)" }}
       onClick={() => inputRef.current?.focus()}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-zinc-800 px-4 py-2">
-        <div className="h-3 w-3 rounded-full bg-red-500/60" />
-        <div className="h-3 w-3 rounded-full bg-yellow-500/60" />
-        <div className="h-3 w-3 rounded-full bg-green-500/60" />
-        <span className="ml-2 text-xs text-zinc-500">
-          agentpay terminal — devnet
+      <div className="flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2">
+        <div className="h-3 w-3 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }} />
+        <div className="h-3 w-3 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }} />
+        <div className="h-3 w-3 bg-[var(--color-primary)]" style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }} />
+        <span className="ml-2 text-xs text-[var(--color-muted)] uppercase tracking-wider">
+          AGENTPAY_TERMINAL — DEVNET
         </span>
       </div>
 
       {/* Scrollable output */}
       <div className="flex-1 overflow-y-auto p-4">
         {/* Welcome message */}
-        <div className="mb-4 text-zinc-500">
-          <p>AgentPay Terminal v0.1.0 — Solana Devnet</p>
-          <p>Type &apos;help&apos; for available commands.</p>
-          <p className="mt-1">
+        <div className="mb-4 text-[var(--color-muted)]">
+          <p className="text-[var(--color-primary)]">&gt; AgentPay Terminal v0.1.0 — Solana Devnet</p>
+          <p className="text-xs mt-1">Type &apos;help&apos; for available commands.</p>
+          <p className="mt-2">
             {publicKey ? (
-              <span className="text-emerald-400">
-                Wallet: {publicKey.toBase58().slice(0, 8)}...
+              <span className="text-[var(--color-primary)]">
+                [CONNECTED] {publicKey.toBase58().slice(0, 8)}...
               </span>
             ) : (
-              <span className="text-yellow-400">
-                Connect wallet to sign transactions
+              <span className="text-[#ffcc00]">
+                [WARN] Connect wallet to sign transactions
               </span>
             )}
           </p>
@@ -120,12 +121,12 @@ export function Terminal({
         {history.map((entry, i) => (
           <div key={i} className="mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-emerald-400">$</span>
-              <span className="text-zinc-300">{entry.input}</span>
+              <span className="text-[var(--color-primary)]">$</span>
+              <span className="text-[var(--color-text)]">{entry.input}</span>
             </div>
             <pre
               className={`mt-1 whitespace-pre-wrap text-xs ${
-                entry.result.error ? "text-red-400" : "text-zinc-400"
+                entry.result.error ? "text-[#ff3333]" : "text-[var(--color-muted)]"
               }`}
             >
               {entry.result.output}
@@ -134,8 +135,8 @@ export function Terminal({
         ))}
 
         {isExecuting && (
-          <div className="flex items-center gap-2 text-zinc-500">
-            <span className="animate-pulse">Executing...</span>
+          <div className="flex items-center gap-2 text-[var(--color-muted)]">
+            <span className="animate-pulse">[EXECUTING...]</span>
           </div>
         )}
 
@@ -143,8 +144,8 @@ export function Terminal({
       </div>
 
       {/* Input */}
-      <div className="flex items-center gap-2 border-t border-zinc-800 px-4 py-3">
-        <span className="text-emerald-400">$</span>
+      <div className="flex items-center gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
+        <span className="text-[var(--color-primary)]">$</span>
         <input
           ref={inputRef}
           value={input}
@@ -152,7 +153,7 @@ export function Terminal({
           onKeyDown={handleKeyDown}
           disabled={isExecuting}
           placeholder="Type a command..."
-          className="flex-1 bg-transparent text-zinc-300 placeholder-zinc-600 outline-none"
+          className="flex-1 bg-transparent text-[var(--color-text)] placeholder-[var(--color-muted)] outline-none"
           autoFocus
         />
       </div>

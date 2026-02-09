@@ -6,27 +6,27 @@ import type { ProtocolStats } from "@/lib/hooks/useProtocolStats";
 export function StatsCards({ stats }: { stats: ProtocolStats | undefined }) {
   const cards = [
     {
-      label: "Total Services",
+      label: "TOTAL_SERVICES",
       value: stats?.activeServices ?? "—",
-      color: "text-blue-400",
+      colorClass: "text-[var(--color-accent)]",
     },
     {
-      label: "Active Tasks",
+      label: "ACTIVE_TASKS",
       value: stats
         ? (stats.tasksByStatus.open ?? 0) +
           (stats.tasksByStatus.submitted ?? 0)
         : "—",
-      color: "text-orange-400",
+      colorClass: "text-[#ffcc00]",
     },
     {
-      label: "Completed",
+      label: "COMPLETED",
       value: stats?.tasksByStatus.completed ?? "—",
-      color: "text-emerald-400",
+      colorClass: "text-[var(--color-primary)]",
     },
     {
-      label: "Escrow Locked",
+      label: "ESCROW_LOCKED",
       value: stats ? `${stats.escrowLockedSol} SOL` : "—",
-      color: "text-violet-400",
+      colorClass: "text-[var(--color-secondary)]",
     },
   ];
 
@@ -38,10 +38,11 @@ export function StatsCards({ stats }: { stats: ProtocolStats | undefined }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1 }}
-          className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5"
+          className="border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+          style={{ borderRadius: "var(--border-radius)" }}
         >
-          <p className="text-sm text-zinc-500">{card.label}</p>
-          <p className={`mt-1 text-2xl font-bold tabular-nums ${card.color}`}>
+          <p className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">{card.label}</p>
+          <p className={`mt-1 text-2xl font-bold tabular-nums font-mono ${card.colorClass}`}>
             {card.value}
           </p>
         </motion.div>

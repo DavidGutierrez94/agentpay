@@ -22,10 +22,11 @@ export function TaskCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       onClick={() => onClick(task)}
-      className="cursor-pointer rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 transition-colors hover:border-zinc-700"
+      className="cursor-pointer border border-[var(--color-border)] bg-[var(--color-bg)] p-4 transition-colors hover:border-[var(--color-primary)]"
+      style={{ borderRadius: "var(--border-radius-sm)" }}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="flex-1 text-sm text-zinc-300 line-clamp-2">
+        <p className="flex-1 text-sm text-[var(--color-text)] line-clamp-2 font-mono">
           {task.description}
         </p>
         {task.zkVerified && <ZKBadge />}
@@ -38,13 +39,13 @@ export function TaskCard({
         )}
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-xs text-zinc-500">
+      <div className="mt-3 flex items-center justify-between text-xs text-[var(--color-muted)]">
         <div className="flex items-center gap-1">
-          <span>From:</span>
+          <span className="uppercase">from:</span>
           <AddressDisplay address={task.requester} chars={3} />
         </div>
         <div className="flex items-center gap-1">
-          <span>To:</span>
+          <span className="uppercase">to:</span>
           <AddressDisplay address={task.provider} chars={3} />
         </div>
       </div>

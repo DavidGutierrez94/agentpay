@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { WalletButton } from "./WalletButton";
+import { useTheme } from "@/lib/theme-context";
 
 const links = [
   { href: "/", label: "home", path: "~" },
@@ -20,32 +21,46 @@ const links = [
 export function Nav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, setTheme, themes } = useTheme();
 
   // Get current path for display
   const currentLink = links.find((l) => l.href === pathname);
   const currentPath = currentLink?.path || "~";
 
   return (
-    <nav className="fixed top-0 z-50 w-full border-b border-[#00ff41]/25 bg-[#0a0a0a]/95 backdrop-blur-sm font-mono">
+    <nav className="fixed top-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-bg)]/95 backdrop-blur-sm" style={{ fontFamily: 'var(--font-family)' }}>
       {/* Terminal Title Bar */}
-      <div className="border-b border-[#00ff41]/25 bg-[#111111] px-4 py-1.5">
+      <div className="border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-1.5">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Terminal dots */}
             <div className="hidden sm:flex gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ff3333]" />
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ffcc00]" />
-              <div className="h-2.5 w-2.5 rounded-full bg-[#00ff41]" />
+              <div className="h-2.5 w-2.5 bg-[var(--color-error)]" style={{ borderRadius: 'var(--border-radius)' }} />
+              <div className="h-2.5 w-2.5 bg-[var(--color-warning)]" style={{ borderRadius: 'var(--border-radius)' }} />
+              <div className="h-2.5 w-2.5 bg-[var(--color-success)]" style={{ borderRadius: 'var(--border-radius)' }} />
             </div>
             <Link
               href="/"
-              className="text-[#00ff41] text-sm font-bold tracking-wider glitch-hover"
+              className="text-[var(--color-primary)] text-sm font-bold tracking-wider glitch-hover"
             >
-              AGENTPAY_TERMINAL <span className="text-[#666666]">v2.0</span>
+              AGENTPAY <span className="text-[var(--color-text-dim)]">v2.0</span>
             </Link>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:block text-[#666666] text-xs">
+          <div className="flex items-center gap-3">
+            {/* Theme Switcher */}
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value as typeof theme)}
+              className="theme-switcher hidden sm:block"
+              title="Switch theme"
+            >
+              {themes.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+            <span className="hidden md:block text-[var(--color-text-dim)] text-xs">
               {currentPath}
             </span>
             <WalletButton />
@@ -67,20 +82,20 @@ export function Nav() {
                   className={cn(
                     "relative px-4 py-2 text-xs uppercase tracking-wider transition-colors",
                     isActive
-                      ? "text-[#00ff41] bg-[#111111]"
-                      : "text-[#666666] hover:text-[#00ff41]"
+                      ? "text-[var(--color-primary)] bg-[var(--color-surface)]"
+                      : "text-[var(--color-text-dim)] hover:text-[var(--color-primary)]"
                   )}
                 >
                   {isActive && (
                     <>
                       {/* Active indicator */}
-                      <span className="absolute left-0 top-0 bottom-0 w-px bg-[#00ff41]" />
-                      <span className="absolute right-0 top-0 bottom-0 w-px bg-[#00ff41]" />
-                      <span className="absolute bottom-0 left-0 right-0 h-px bg-[#00ff41]" />
+                      <span className="absolute left-0 top-0 bottom-0 w-px bg-[var(--color-primary)]" />
+                      <span className="absolute right-0 top-0 bottom-0 w-px bg-[var(--color-primary)]" />
+                      <span className="absolute bottom-0 left-0 right-0 h-px bg-[var(--color-primary)]" />
                     </>
                   )}
                   <span className="flex items-center gap-1.5">
-                    <span className="text-[#00ff41]/50">&gt;</span>
+                    <span className="text-[var(--color-primary)]/50">&gt;</span>
                     {link.label}
                     {isActive && <span className="animate-pulse">_</span>}
                   </span>
@@ -92,7 +107,7 @@ export function Nav() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex h-10 w-10 items-center justify-center text-[#00ff41] md:hidden"
+            className="flex h-10 w-10 items-center justify-center text-[var(--color-primary)] md:hidden"
             aria-label="Toggle menu"
           >
             <span className="text-lg">{mobileOpen ? "[×]" : "[≡]"}</span>
@@ -102,8 +117,22 @@ export function Nav() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-[#00ff41]/25 bg-[#111111] md:hidden">
+        <div className="border-t border-[var(--color-border)] bg-[var(--color-surface)] md:hidden">
           <div className="px-2 py-2">
+            {/* Mobile Theme Switcher */}
+            <div className="px-3 py-2 mb-2">
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as typeof theme)}
+                className="theme-switcher w-full"
+              >
+                {themes.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.label} — {t.description}
+                  </option>
+                ))}
+              </select>
+            </div>
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -114,13 +143,13 @@ export function Nav() {
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 text-sm transition-colors",
                     isActive
-                      ? "text-[#00ff41] bg-[#1a1a1a]"
-                      : "text-[#666666] hover:text-[#00ff41]"
+                      ? "text-[var(--color-primary)] bg-[var(--color-surface-elevated)]"
+                      : "text-[var(--color-text-dim)] hover:text-[var(--color-primary)]"
                   )}
                 >
-                  <span className="text-[#00ff41]/50">&gt;</span>
+                  <span className="text-[var(--color-primary)]/50">&gt;</span>
                   <span className="uppercase tracking-wider">{link.label}</span>
-                  <span className="ml-auto text-[#444444] text-xs">
+                  <span className="ml-auto text-[var(--color-text-dim)] text-xs">
                     {link.path}
                   </span>
                 </Link>
@@ -128,12 +157,12 @@ export function Nav() {
             })}
           </div>
           {/* Terminal prompt at bottom */}
-          <div className="border-t border-[#00ff41]/25 px-4 py-2 text-xs text-[#666666]">
-            <span className="text-[#00ff41]">guest@agentpay</span>
+          <div className="border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-text-dim)]">
+            <span className="text-[var(--color-primary)]">guest@agentpay</span>
             <span>:</span>
-            <span className="text-[#00d4ff]">{currentPath}</span>
+            <span className="text-[var(--color-accent)]">{currentPath}</span>
             <span>$ </span>
-            <span className="animate-pulse text-[#00ff41]">█</span>
+            <span className="animate-pulse text-[var(--color-primary)]">█</span>
           </div>
         </div>
       )}

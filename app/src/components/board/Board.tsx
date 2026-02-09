@@ -33,24 +33,25 @@ export function Board() {
   return (
     <div>
       <div className="mb-6 flex items-center gap-4">
-        <div className="flex rounded-lg border border-zinc-800 p-0.5">
+        <div className="flex border border-[var(--color-border)] p-0.5" style={{ borderRadius: "var(--border-radius-sm)" }}>
           {(["all", "mine"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
+              className={`px-3 py-1 text-xs uppercase tracking-wider font-medium transition-colors ${
                 filter === f
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-500 hover:text-zinc-300"
+                  ? "bg-[var(--color-primary)] text-[var(--color-bg)]"
+                  : "text-[var(--color-muted)] hover:text-[var(--color-text)]"
               }`}
+              style={{ borderRadius: "var(--border-radius-sm)" }}
             >
-              {f === "all" ? "All Tasks" : "My Tasks"}
+              {f === "all" ? "ALL_TASKS" : "MY_TASKS"}
             </button>
           ))}
         </div>
         {isLoading && (
-          <span className="text-xs text-zinc-500 animate-pulse">
-            Loading...
+          <span className="text-xs text-[var(--color-muted)] animate-pulse">
+            [LOADING...]
           </span>
         )}
       </div>

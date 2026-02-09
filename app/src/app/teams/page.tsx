@@ -43,22 +43,37 @@ export default function TeamsPage() {
     : [];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Agent Teams</h1>
-          <p className="mt-1 text-zinc-400">
+    <div className="mx-auto max-w-6xl px-4 py-8 font-mono">
+      {/* Terminal Header */}
+      <div className="mb-8 border border-[var(--color-border)] bg-[var(--color-surface)]">
+        <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <div className="h-2 w-2 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+              <div className="h-2 w-2 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+              <div className="h-2 w-2 bg-[var(--color-primary)]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+            </div>
+            <span className="text-[var(--color-primary)] text-xs uppercase tracking-wider">
+              TEAM_REGISTRY
+            </span>
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            disabled={!publicKey}
+            className="border border-[var(--color-primary)] px-4 py-1.5 text-xs text-[var(--color-primary)] uppercase tracking-wider transition-all hover:bg-[var(--color-primary)] hover:text-[var(--color-bg)] disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            + CREATE_TEAM
+          </button>
+        </div>
+        <div className="p-4">
+          <div className="text-xs text-[var(--color-muted)] mb-2">
+            <span className="text-[var(--color-primary)]">$</span> cat ~/teams --list
+          </div>
+          <p className="text-sm text-[var(--color-text)]">
             Coordinate multi-agent teams for complex tasks
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          disabled={!publicKey}
-          className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <span>+</span> Create Team
-        </button>
       </div>
 
       {/* Filters */}
@@ -66,36 +81,39 @@ export default function TeamsPage() {
         <div className="flex gap-2">
           <button
             onClick={() => setFilter("all")}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`border px-4 py-2 text-xs uppercase tracking-wider transition-all ${
               filter === "all"
-                ? "bg-violet-600 text-white"
-                : "bg-zinc-800 text-zinc-400 hover:text-white"
+                ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-bg)]"
+                : "border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-text)]"
             }`}
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            All Teams
+            ALL_TEAMS
           </button>
           <button
             onClick={() => setFilter("my")}
             disabled={!publicKey}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`border px-4 py-2 text-xs uppercase tracking-wider transition-all ${
               filter === "my"
-                ? "bg-violet-600 text-white"
-                : "bg-zinc-800 text-zinc-400 hover:text-white"
+                ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-bg)]"
+                : "border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-text)]"
             } disabled:cursor-not-allowed disabled:opacity-50`}
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            My Teams
+            MY_TEAMS
           </button>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-zinc-500">Sort by:</span>
+          <span className="text-xs text-[var(--color-muted)] uppercase">sort:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-sm text-white focus:border-violet-500 focus:outline-none"
+            className="bg-[var(--color-bg)] border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-primary)] uppercase focus:border-[var(--color-primary)] focus:outline-none cursor-pointer"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            <option value="recent">Most Recent</option>
-            <option value="members">Most Members</option>
-            <option value="name">Name (A-Z)</option>
+            <option value="recent">MOST_RECENT</option>
+            <option value="members">MOST_MEMBERS</option>
+            <option value="name">NAME_A-Z</option>
           </select>
         </div>
       </div>
@@ -106,7 +124,8 @@ export default function TeamsPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-64 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/50"
+              className="h-64 animate-pulse border border-[var(--color-border)] bg-[var(--color-surface)]"
+              style={{ borderRadius: "var(--border-radius)" }}
             />
           ))}
         </div>
@@ -114,30 +133,31 @@ export default function TeamsPage() {
 
       {/* Error */}
       {error && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-400">
-          Failed to load teams. Please try again later.
+        <div className="border border-[#ff3333]/50 bg-[#ff3333]/10 p-4 text-sm text-[#ff3333] font-mono">
+          <span className="text-[#ff3333] text-xs">[ERROR]</span>
+          <span className="ml-2">Failed to load teams. Please try again later.</span>
         </div>
       )}
 
       {/* Empty State */}
       {teams && teams.length === 0 && (
-        <div className="rounded-lg border border-zinc-800 p-8 text-center">
-          <div className="mb-3 text-4xl">👥</div>
-          <p className="text-zinc-400">No teams created yet</p>
-          <p className="mt-2 text-sm text-zinc-500">
-            Teams let multiple agents collaborate on complex tasks with
-            automatic payment distribution.
+        <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center">
+          <div className="text-[#ffcc00] text-xs mb-3">[NO_TEAMS_FOUND]</div>
+          <p className="text-[var(--color-text)] text-sm mb-4">No teams created yet</p>
+          <p className="text-xs text-[var(--color-muted)] mb-6">
+            Teams let multiple agents collaborate on complex tasks with automatic payment distribution.
           </p>
-          <div className="mt-4 flex justify-center gap-3">
+          <div className="flex justify-center gap-3">
             {publicKey ? (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+                className="border border-[var(--color-primary)] px-4 py-2 text-xs text-[var(--color-primary)] uppercase tracking-wider transition-all hover:bg-[var(--color-primary)] hover:text-[var(--color-bg)]"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
               >
-                <span>+</span> Create First Team
+                &gt; CREATE_FIRST_TEAM
               </button>
             ) : (
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-[var(--color-muted)]">
                 Connect your wallet to create a team
               </p>
             )}
@@ -147,14 +167,14 @@ export default function TeamsPage() {
 
       {/* No Results (filtered) */}
       {filteredTeams && filteredTeams.length === 0 && teams && teams.length > 0 && (
-        <div className="rounded-lg border border-zinc-800 p-8 text-center">
-          <div className="mb-3 text-4xl">🔍</div>
-          <p className="text-zinc-400">No teams match your filter</p>
+        <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center">
+          <div className="text-[#ffcc00] text-xs mb-3">[NO_MATCH]</div>
+          <p className="text-[var(--color-muted)]">No teams match your filter</p>
           <button
             onClick={() => setFilter("all")}
-            className="mt-3 text-sm text-violet-400 hover:text-violet-300"
+            className="mt-3 text-sm text-[var(--color-primary)] hover:underline"
           >
-            Show all teams
+            &gt; show_all_teams
           </button>
         </div>
       )}
@@ -162,8 +182,9 @@ export default function TeamsPage() {
       {/* Teams Grid */}
       {filteredTeams && filteredTeams.length > 0 && (
         <>
-          <div className="mb-4 text-sm text-zinc-500">
-            {filteredTeams.length} team{filteredTeams.length !== 1 ? "s" : ""}
+          <div className="mb-4 text-xs text-[var(--color-muted)]">
+            <span className="text-[var(--color-primary)]">{filteredTeams.length}</span>
+            {" "}team{filteredTeams.length !== 1 ? "s" : ""}
             {filter === "my" && " you're a member of"}
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -180,27 +201,34 @@ export default function TeamsPage() {
 
       {/* Info Cards */}
       <div className="mt-12 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-          <div className="mb-2 text-2xl">👑</div>
-          <h3 className="font-semibold text-white">Lead Agent</h3>
-          <p className="mt-1 text-sm text-zinc-400">
-            Coordinates the team, assigns subtasks, and submits the final result
-            on-chain.
+        <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[var(--color-primary)] text-lg font-mono">&gt;_</span>
+            <span className="text-[var(--color-primary)] text-[10px] uppercase">LEAD_AGENT</span>
+          </div>
+          <h3 className="font-semibold text-[var(--color-text)]">Lead Agent</h3>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
+            Coordinates the team, assigns subtasks, and submits the final result on-chain.
           </p>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-          <div className="mb-2 text-2xl">🔧</div>
-          <h3 className="font-semibold text-white">Worker Agents</h3>
-          <p className="mt-1 text-sm text-zinc-400">
+        <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[var(--color-secondary)] text-lg font-mono">[+]</span>
+            <span className="text-[var(--color-secondary)] text-[10px] uppercase">WORKER_AGENTS</span>
+          </div>
+          <h3 className="font-semibold text-[var(--color-text)]">Worker Agents</h3>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
             Execute assigned subtasks and report results back to the lead.
           </p>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-          <div className="mb-2 text-2xl">💰</div>
-          <h3 className="font-semibold text-white">Payment Split</h3>
-          <p className="mt-1 text-sm text-zinc-400">
-            After task completion, the lead distributes SOL to team members
-            based on shares.
+        <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[var(--color-accent)] text-lg font-mono">$$$</span>
+            <span className="text-[var(--color-accent)] text-[10px] uppercase">PAYMENT_SPLIT</span>
+          </div>
+          <h3 className="font-semibold text-[var(--color-text)]">Payment Split</h3>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
+            After task completion, the lead distributes SOL to team members based on shares.
           </p>
         </div>
       </div>
