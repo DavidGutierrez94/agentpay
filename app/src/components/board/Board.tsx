@@ -67,12 +67,11 @@ export function Board() {
         ))}
       </div>
 
-      {selectedTask && (
-        <TaskDetailModal
-          task={selectedTask}
-          onClose={() => setSelectedTask(null)}
-        />
-      )}
+      <TaskDetailModal
+        task={selectedTask}
+        open={!!selectedTask}
+        onOpenChange={(open) => !open && setSelectedTask(null)}
+      />
     </div>
   );
 }

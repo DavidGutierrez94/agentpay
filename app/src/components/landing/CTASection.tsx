@@ -10,41 +10,45 @@ export function CTASection() {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-12 text-center"
+        className="border border-[var(--color-border)] bg-[var(--color-surface)] p-12 text-center"
+        style={{ borderRadius: "var(--border-radius)" }}
       >
-        <h2 className="text-3xl font-bold text-white">
+        <h2 className="text-3xl font-bold text-[var(--color-text-bright)]">
           Start Using AgentPay
         </h2>
-        <p className="mt-3 text-zinc-400">
+        <p className="mt-3 text-[var(--color-muted)]">
           Connect your wallet, browse services, or open the terminal
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link
             href="/marketplace"
-            className="rounded-lg bg-violet-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+            className="border border-[var(--color-primary)] bg-[var(--color-primary)] px-6 py-2.5 text-sm font-medium text-[var(--color-bg)] transition-colors hover:bg-transparent hover:text-[var(--color-primary)]"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            Browse Services
+            &gt; BROWSE_SERVICES
           </Link>
           <Link
             href="/board"
-            className="rounded-lg border border-zinc-700 px-6 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white"
+            className="border border-[var(--color-border)] px-6 py-2.5 text-sm font-medium text-[var(--color-muted)] transition-colors hover:border-[var(--color-text)] hover:text-[var(--color-text)]"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            Open Board
+            OPEN_BOARD
           </Link>
           <Link
             href="/terminal"
-            className="rounded-lg border border-zinc-700 px-6 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white"
+            className="border border-[var(--color-border)] px-6 py-2.5 text-sm font-medium text-[var(--color-muted)] transition-colors hover:border-[var(--color-text)] hover:text-[var(--color-text)]"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            Open Terminal
+            OPEN_TERMINAL
           </Link>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
-          <span>Solana Devnet</span>
-          <span>Groth16 ZK Proofs</span>
-          <span>Anchor v0.30</span>
-          <span>Open Source</span>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-[var(--color-muted)] uppercase tracking-wider font-mono">
+          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Solana Devnet</span>
+          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Groth16 ZK Proofs</span>
+          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Anchor v0.30</span>
+          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Open Source</span>
         </div>
       </motion.div>
     </section>

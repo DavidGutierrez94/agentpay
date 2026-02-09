@@ -3,26 +3,46 @@
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import type { ServiceListing } from "@/lib/hooks/useServices";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/Dialog";
 
 interface EnableX402ModalProps {
-  service: ServiceListing;
-  onClose: () => void;
+  service: ServiceListing | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
 
 export function EnableX402Modal({
   service,
-  onClose,
+  open,
+  onOpenChange,
   onSuccess,
 }: EnableX402ModalProps) {
   const { publicKey } = useWallet();
   const [priceUsdc, setPriceUsdc] = useState("0.001");
-  const [description, setDescription] = useState(service.description);
+  const [description, setDescription] = useState(service?.description || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
+  const handleClose = () => {
+    onOpenChange(false);
+    setTimeout(() => {
+      setPriceUsdc("0.001");
+      setError("");
+      setSuccess(false);
+    }, 200);
+  };
+
   const handleSubmit = async () => {
+    if (!service) return;
     if (!publicKey) {
       setError("Connect your wallet first");
       return;
@@ -59,7 +79,7 @@ export function EnableX402Modal({
       setSuccess(true);
       setTimeout(() => {
         onSuccess();
-        onClose();
+        handleClose();
       }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -68,79 +88,100 @@ export function EnableX402Modal({
     }
   };
 
+  if (!service) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="mx-4 w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-        <h2 className="text-lg font-bold text-white">Enable x402 Payments</h2>
-        <p className="mt-1 text-sm text-zinc-400">
-          Allow instant HTTP-based payments for: {service.description}
-        </p>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader label="X402_PROTOCOL">
+          <DialogTitle>Enable x402 Payments</DialogTitle>
+          <DialogDescription>
+            Allow instant HTTP-based payments for: {service.description}
+          </DialogDescription>
+        </DialogHeader>
 
         {success ? (
-          <div className="mt-6">
-            <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4 text-sm text-blue-400">
-              x402 enabled successfully! Clients can now pay instantly.
-            </div>
+          <div
+            className="border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 p-4 text-sm text-[var(--color-accent)]"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            [SUCCESS] x402 enabled! Clients can now pay instantly.
           </div>
         ) : (
           <>
-            <div className="mt-4">
-              <label className="mb-1 block text-sm text-zinc-400">
-                Price (USDC)
-              </label>
-              <input
-                type="number"
-                value={priceUsdc}
-                onChange={(e) => setPriceUsdc(e.target.value)}
-                step="0.0001"
-                min="0.0001"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
-              />
-              <p className="mt-1 text-xs text-zinc-500">
-                This is paid per API call via x402 protocol
-              </p>
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider">
+                  price_usdc
+                </label>
+                <input
+                  type="number"
+                  value={priceUsdc}
+                  onChange={(e) => setPriceUsdc(e.target.value)}
+                  step="0.0001"
+                  min="0.0001"
+                  className="w-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] placeholder-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none font-mono"
+                  style={{ borderRadius: "var(--border-radius-sm)" }}
+                />
+                <p className="mt-1.5 text-xs text-[var(--color-muted)]">
+                  This is paid per API call via x402 protocol
+                </p>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider">
+                  service_description
+                </label>
+                <input
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] placeholder-[var(--color-muted)] focus:border-[var(--color-accent)] focus:outline-none font-mono"
+                  style={{ borderRadius: "var(--border-radius-sm)" }}
+                />
+              </div>
+
+              <div
+                className="border border-[var(--color-border)] bg-[var(--color-bg)] p-3"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
+              >
+                <p className="text-xs text-[var(--color-muted)]">
+                  <span className="text-[var(--color-accent)] font-medium">x402 Flow:</span>{" "}
+                  Clients request your endpoint → receive 402 with payment terms →
+                  sign USDC transfer → retry with payment → you receive USDC instantly
+                </p>
+              </div>
+
+              {error && (
+                <div
+                  className="border border-[var(--color-error)]/30 bg-[var(--color-error)]/10 px-3 py-2 text-sm text-[var(--color-error)]"
+                  style={{ borderRadius: "var(--border-radius-sm)" }}
+                >
+                  [ERROR] {error}
+                </div>
+              )}
             </div>
 
-            <div className="mt-3">
-              <label className="mb-1 block text-sm text-zinc-400">
-                Service Description
-              </label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
-              />
-            </div>
-
-            <div className="mt-4 rounded-lg border border-zinc-700 bg-zinc-800/50 p-3">
-              <p className="text-xs text-zinc-400">
-                <strong className="text-blue-400">x402 Flow:</strong> Clients
-                request your endpoint → receive 402 with payment terms → sign
-                USDC transfer → retry with payment → you receive USDC instantly
-              </p>
-            </div>
-
-            {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
-
-            <div className="mt-6 flex gap-3">
+            <DialogFooter className="mt-6">
               <button
-                onClick={onClose}
-                className="flex-1 rounded-lg border border-zinc-700 py-2 text-sm font-medium text-zinc-300 hover:border-zinc-500"
+                onClick={handleClose}
+                className="flex-1 border border-[var(--color-border)] py-2 text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-text)] transition-colors"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={loading || !publicKey}
-                className="flex-1 rounded-lg bg-blue-600 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+                className="flex-1 border border-[var(--color-accent)] bg-[var(--color-accent)] py-2 text-sm font-medium text-[var(--color-bg)] transition-colors hover:bg-transparent hover:text-[var(--color-accent)] disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
               >
-                {loading ? "Enabling..." : "Enable x402"}
+                {loading ? "Enabling..." : "> ENABLE_X402"}
               </button>
-            </div>
+            </DialogFooter>
           </>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

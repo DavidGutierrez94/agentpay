@@ -110,12 +110,11 @@ export default function BoardPage() {
         </div>
       )}
 
-      {selectedService && (
-        <CreateTaskModal
-          service={selectedService}
-          onClose={() => setSelectedService(null)}
-        />
-      )}
+      <CreateTaskModal
+        service={selectedService}
+        open={!!selectedService}
+        onOpenChange={(open) => !open && setSelectedService(null)}
+      />
     </div>
   );
 }

@@ -9,13 +9,23 @@ import { findTaskPda } from "@/lib/pda";
 import { padBytes } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ServiceListing } from "@/lib/hooks/useServices";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/Dialog";
 
 export function CreateTaskModal({
   service,
-  onClose,
+  open,
+  onOpenChange,
 }: {
-  service: ServiceListing;
-  onClose: () => void;
+  service: ServiceListing | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const { publicKey } = useWallet();
   const anchorWallet = useAnchorWallet();
@@ -25,6 +35,17 @@ export function CreateTaskModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [txSig, setTxSig] = useState("");
+
+  const handleClose = () => {
+    onOpenChange(false);
+    // Reset state after closing
+    setTimeout(() => {
+      setDescription("");
+      setDeadlineMinutes("60");
+      setError("");
+      setTxSig("");
+    }, 200);
+  };
 
   const handleSubmit = async () => {
     if (!publicKey || !anchorWallet) {
@@ -36,6 +57,10 @@ export function CreateTaskModal({
       return;
     }
 
+    if (!service) {
+      setError("No service selected");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -71,83 +96,107 @@ export function CreateTaskModal({
     }
   };
 
+  if (!service) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="mx-4 w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-        <h2 className="text-lg font-bold text-white">Create Task</h2>
-        <p className="mt-1 text-sm text-zinc-400">
-          Hiring: {service.description}
-        </p>
-        <p className="mt-1 text-sm text-emerald-400">
-          Price: {service.priceSol} SOL (locked in escrow)
-        </p>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader label="NEW_TASK">
+          <DialogTitle>Create Task</DialogTitle>
+          <DialogDescription>
+            Hiring: {service.description}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div
+          className="inline-flex items-center gap-2 border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-3 py-1.5 text-sm font-mono text-[var(--color-primary)]"
+          style={{ borderRadius: "var(--border-radius-sm)" }}
+        >
+          <span className="text-[var(--color-muted)] uppercase text-xs">escrow:</span>
+          {service.priceSol} SOL
+        </div>
 
         {txSig ? (
-          <div className="mt-6">
-            <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-400">
-              Task created successfully!
+          <div className="mt-4 space-y-4">
+            <div
+              className="border border-[var(--color-success)]/30 bg-[var(--color-success)]/10 p-4 text-sm text-[var(--color-success)]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
+            >
+              [SUCCESS] Task created successfully!
             </div>
-            <p className="mt-2 break-all font-mono text-xs text-zinc-500">
+            <p className="break-all font-mono text-xs text-[var(--color-muted)]">
               tx: {txSig}
             </p>
             <button
-              onClick={onClose}
-              className="mt-4 w-full rounded-lg bg-zinc-800 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+              onClick={handleClose}
+              className="w-full border border-[var(--color-border)] bg-[var(--color-surface)] py-2 text-sm font-medium text-[var(--color-text)] hover:border-[var(--color-primary)] transition-colors"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
             >
               Close
             </button>
           </div>
         ) : (
           <>
-            <div className="mt-4">
-              <label className="mb-1 block text-sm text-zinc-400">
-                Task Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe what you need done..."
-                maxLength={256}
-                rows={3}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-none"
-              />
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider">
+                  task_description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe what you need done..."
+                  maxLength={256}
+                  rows={3}
+                  className="w-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] placeholder-[var(--color-muted)] focus:border-[var(--color-primary)] focus:outline-none font-mono"
+                  style={{ borderRadius: "var(--border-radius-sm)" }}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider">
+                  deadline_minutes
+                </label>
+                <input
+                  type="number"
+                  value={deadlineMinutes}
+                  onChange={(e) => setDeadlineMinutes(e.target.value)}
+                  min={5}
+                  className="w-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:border-[var(--color-primary)] focus:outline-none font-mono"
+                  style={{ borderRadius: "var(--border-radius-sm)" }}
+                />
+              </div>
+
+              {error && (
+                <div
+                  className="border border-[var(--color-error)]/30 bg-[var(--color-error)]/10 px-3 py-2 text-sm text-[var(--color-error)]"
+                  style={{ borderRadius: "var(--border-radius-sm)" }}
+                >
+                  [ERROR] {error}
+                </div>
+              )}
             </div>
 
-            <div className="mt-3">
-              <label className="mb-1 block text-sm text-zinc-400">
-                Deadline (minutes)
-              </label>
-              <input
-                type="number"
-                value={deadlineMinutes}
-                onChange={(e) => setDeadlineMinutes(e.target.value)}
-                min={5}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
-              />
-            </div>
-
-            {error && (
-              <p className="mt-3 text-sm text-red-400">{error}</p>
-            )}
-
-            <div className="mt-6 flex gap-3">
+            <DialogFooter className="mt-6">
               <button
-                onClick={onClose}
-                className="flex-1 rounded-lg border border-zinc-700 py-2 text-sm font-medium text-zinc-300 hover:border-zinc-500"
+                onClick={handleClose}
+                className="flex-1 border border-[var(--color-border)] py-2 text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-text)] transition-colors"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={loading || !publicKey}
-                className="flex-1 rounded-lg bg-violet-600 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500 disabled:opacity-50"
+                className="flex-1 border border-[var(--color-primary)] bg-[var(--color-primary)] py-2 text-sm font-medium text-[var(--color-bg)] transition-colors hover:bg-transparent hover:text-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
               >
-                {loading ? "Signing..." : "Create Task"}
+                {loading ? "Signing..." : "> CREATE_TASK"}
               </button>
-            </div>
+            </DialogFooter>
           </>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

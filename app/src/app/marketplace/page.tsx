@@ -34,23 +34,26 @@ export default function MarketplacePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 font-mono">
       {/* Terminal Header */}
-      <div className="mb-8 border border-[#00ff41]/25 bg-[#111111]">
-        <div className="border-b border-[#00ff41]/25 bg-[#1a1a1a] px-4 py-2 flex items-center gap-2">
+      <div
+        className="mb-8 border border-[var(--color-border)] bg-[var(--color-surface)]"
+        style={{ borderRadius: "var(--border-radius)" }}
+      >
+        <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2 flex items-center gap-2">
           <div className="flex gap-1.5">
-            <div className="h-2 w-2 bg-[#ff3333]" />
-            <div className="h-2 w-2 bg-[#ffcc00]" />
-            <div className="h-2 w-2 bg-[#00ff41]" />
+            <div className="h-2 w-2 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+            <div className="h-2 w-2 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+            <div className="h-2 w-2 bg-[var(--color-primary)]" style={{ borderRadius: "var(--border-radius-sm)" }} />
           </div>
-          <span className="text-[#00ff41] text-xs uppercase tracking-wider">
+          <span className="text-[var(--color-primary)] text-xs uppercase tracking-wider">
             SERVICE_MARKETPLACE
           </span>
         </div>
         <div className="p-4">
-          <div className="text-xs text-[#666666] mb-2">
-            <span className="text-[#00ff41]">$</span> ls ~/services --available
+          <div className="text-xs text-[var(--color-muted)] mb-2">
+            <span className="text-[var(--color-primary)]">$</span> ls ~/services --available
           </div>
-          <p className="text-sm text-[#c0c0c0]">
-            Browse and hire AI agent services on <span className="text-[#ffcc00]">Solana devnet</span>
+          <p className="text-sm text-[var(--color-text)]">
+            Browse and hire AI agent services on <span className="text-[var(--color-warning)]">Solana devnet</span>
           </p>
         </div>
       </div>
@@ -61,7 +64,8 @@ export default function MarketplacePage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-48 border border-[#00ff41]/25 bg-[#111111] animate-pulse"
+              className="h-48 border border-[var(--color-border)] bg-[var(--color-surface)] animate-pulse"
+              style={{ borderRadius: "var(--border-radius)" }}
             />
           ))}
         </div>
@@ -69,9 +73,12 @@ export default function MarketplacePage() {
 
       {/* Error State */}
       {error && (
-        <div className="border border-[#ff3333]/50 bg-[#ff3333]/10 p-4 font-mono">
-          <span className="text-[#ff3333] text-xs">[ERROR]</span>
-          <span className="text-[#c0c0c0] text-sm ml-2">
+        <div
+          className="border border-[var(--color-error)]/50 bg-[var(--color-error)]/10 p-4 font-mono"
+          style={{ borderRadius: "var(--border-radius)" }}
+        >
+          <span className="text-[var(--color-error)] text-xs">[ERROR]</span>
+          <span className="text-[var(--color-text)] text-sm ml-2">
             Failed to load services. Check Solana devnet connection.
           </span>
         </div>
@@ -92,11 +99,12 @@ export default function MarketplacePage() {
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#666666] uppercase">sort:</span>
+            <span className="text-xs text-[var(--color-muted)] uppercase">sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="bg-[#0a0a0a] border border-[#00ff41]/25 px-3 py-1.5 text-xs text-[#00ff41] uppercase focus:border-[#00ff41] focus:outline-none cursor-pointer"
+              className="bg-[var(--color-bg)] border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-primary)] uppercase focus:border-[var(--color-primary)] focus:outline-none cursor-pointer"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
             >
               <option value="newest">NEWEST</option>
               <option value="price-asc">PRICE_ASC</option>
@@ -109,12 +117,12 @@ export default function MarketplacePage() {
 
       {/* Result Count */}
       {filteredServices && filteredServices.length > 0 && (
-        <div className="mb-4 text-xs text-[#666666]">
-          <span className="text-[#00ff41]">{filteredServices.length}</span>
+        <div className="mb-4 text-xs text-[var(--color-muted)]">
+          <span className="text-[var(--color-primary)]">{filteredServices.length}</span>
           {" "}service{filteredServices.length !== 1 ? "s" : ""} found
           {search && (
             <span>
-              {" "}matching <span className="text-[#00d4ff]">&quot;{search}&quot;</span>
+              {" "}matching <span className="text-[var(--color-accent)]">&quot;{search}&quot;</span>
             </span>
           )}
         </div>
@@ -122,14 +130,18 @@ export default function MarketplacePage() {
 
       {/* No Search Results */}
       {filteredServices && filteredServices.length === 0 && search && (
-        <div className="border border-[#ffcc00]/25 bg-[#111111] p-8 text-center">
-          <div className="text-[#ffcc00] text-xs mb-3">[NO_MATCH]</div>
-          <p className="text-[#c0c0c0] text-sm">
-            No services match <span className="text-[#00d4ff]">&quot;{search}&quot;</span>
+        <div
+          className="border border-[var(--color-warning)]/25 bg-[var(--color-surface)] p-8 text-center"
+          style={{ borderRadius: "var(--border-radius)" }}
+        >
+          <div className="text-[var(--color-warning)] text-xs mb-3">[NO_MATCH]</div>
+          <p className="text-[var(--color-text)] text-sm">
+            No services match <span className="text-[var(--color-accent)]">&quot;{search}&quot;</span>
           </p>
           <button
             onClick={() => setSearch("")}
-            className="mt-4 border border-[#00ff41] px-4 py-1.5 text-xs text-[#00ff41] uppercase hover:bg-[#00ff41] hover:text-[#0a0a0a] transition-colors"
+            className="mt-4 border border-[var(--color-primary)] px-4 py-1.5 text-xs text-[var(--color-primary)] uppercase hover:bg-[var(--color-primary)] hover:text-[var(--color-bg)] transition-colors"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
           >
             CLEAR_FILTER
           </button>
@@ -138,23 +150,30 @@ export default function MarketplacePage() {
 
       {/* Empty State */}
       {services && services.length === 0 && (
-        <div className="border border-[#00ff41]/25 bg-[#111111] p-8 text-center">
-          <div className="text-[#ffcc00] text-xs mb-3">[EMPTY_REGISTRY]</div>
-          <p className="text-[#c0c0c0] text-sm mb-4">
+        <div
+          className="border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center"
+          style={{ borderRadius: "var(--border-radius)" }}
+        >
+          <div className="text-[var(--color-warning)] text-xs mb-3">[EMPTY_REGISTRY]</div>
+          <p className="text-[var(--color-text)] text-sm mb-4">
             No services registered yet
           </p>
-          <div className="bg-[#0a0a0a] border border-[#00ff41]/25 p-4 text-left inline-block">
-            <div className="text-xs text-[#666666] mb-1">
-              <span className="text-[#00ff41]">$</span> register-service
+          <div
+            className="bg-[var(--color-bg)] border border-[var(--color-border)] p-4 text-left inline-block"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            <div className="text-xs text-[var(--color-muted)] mb-1">
+              <span className="text-[var(--color-primary)]">$</span> register-service
             </div>
-            <code className="text-xs text-[#00d4ff]">
+            <code className="text-xs text-[var(--color-accent)]">
               register-service -d &quot;My service&quot; -p 0.01
             </code>
           </div>
           <div className="mt-6">
             <Link
               href="/terminal"
-              className="inline-flex items-center gap-2 border border-[#00ff41] px-6 py-2 text-xs text-[#00ff41] uppercase tracking-wider hover:bg-[#00ff41] hover:text-[#0a0a0a] transition-all"
+              className="inline-flex items-center gap-2 border border-[var(--color-primary)] px-6 py-2 text-xs text-[var(--color-primary)] uppercase tracking-wider hover:bg-[var(--color-primary)] hover:text-[var(--color-bg)] transition-all"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
             >
               <span>&gt;</span> OPEN_TERMINAL
             </Link>
@@ -175,12 +194,11 @@ export default function MarketplacePage() {
         </div>
       )}
 
-      {selectedService && (
-        <CreateTaskModal
-          service={selectedService}
-          onClose={() => setSelectedService(null)}
-        />
-      )}
+      <CreateTaskModal
+        service={selectedService}
+        open={!!selectedService}
+        onOpenChange={(open) => !open && setSelectedService(null)}
+      />
     </div>
   );
 }
