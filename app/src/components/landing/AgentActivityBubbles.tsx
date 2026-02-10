@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAgentActivity, useNetworkMetrics, AgentTransaction } from "@/lib/hooks/useAgentActivity";
 
@@ -36,31 +36,33 @@ interface FloatingBubble {
 export function AgentActivityBubbles() {
   const { data: transactions, isLoading } = useAgentActivity();
   const { data: metrics } = useNetworkMetrics();
-  const [bubbles, setBubbles] = useState<FloatingBubble[]>([]);
+  // Derive bubbles from transactions (no effect needed — this is computed state)
+  const [bubbleSeeds] = useState(() =>
+    Array.from({ length: 8 }, () => ({
+      ox: (Math.random() - 0.5) * 20,
+      oy: (Math.random() - 0.5) * 15,
+      ax: (Math.random() - 0.5) * 40,
+      ay: -30 - Math.random() * 30,
+    }))
+  );
 
-  // Convert transactions to animated bubbles
-  useEffect(() => {
-    if (!transactions?.length) return;
-
-    // Create bubbles from recent transactions
-    const newBubbles = transactions.slice(0, 8).map((tx, i) => {
+  const bubbles = useMemo<FloatingBubble[]>(() => {
+    if (!transactions?.length) return [];
+    return transactions.slice(0, 8).map((tx, i) => {
       const agentPos = AGENT_POSITIONS[tx.agentRole as keyof typeof AGENT_POSITIONS] || { x: 50, y: 50 };
-
+      const seed = bubbleSeeds[i] ?? bubbleSeeds[0]!;
       return {
         id: tx.signature.slice(0, 8) + i,
-        x: agentPos.x + (Math.random() - 0.5) * 20,
-        y: agentPos.y + (Math.random() - 0.5) * 15,
+        x: agentPos.x + seed.ox,
+        y: agentPos.y + seed.oy,
         type: tx.type,
         agentColor: tx.agentColor,
         timestamp: tx.timestamp,
-        // Pre-compute random offsets for animation (avoids Math.random in render)
-        animOffsetX: (Math.random() - 0.5) * 40,
-        animOffsetY: -30 - Math.random() * 30,
+        animOffsetX: seed.ax,
+        animOffsetY: seed.ay,
       };
     });
-
-    setBubbles(newBubbles);
-  }, [transactions]);
+  }, [transactions, bubbleSeeds]);
 
   // Calculate stats
   const stats = useMemo(() => {
