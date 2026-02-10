@@ -33,9 +33,11 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
 
   // Fetch REKT Shield risk score
   useEffect(() => {
+    if (!agent) return;
+    
     async function fetchRiskScore() {
       try {
-        const res = await fetch(`/api/v1/scan/${agent.wallet}`);
+        const res = await fetch(`/api/v1/scan/${agent!.wallet}`);
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.risk) {
@@ -54,7 +56,9 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
       }
     }
     fetchRiskScore();
-  }, [agent.wallet]);
+  }, [agent]);
+
+  if (!agent) return null;
 
   const zkPercentage =
     agent.stats.totalTasksCompleted > 0
@@ -84,8 +88,6 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
       : riskScore.level === "medium"
       ? "bg-[var(--color-warning)]/10"
       : "bg-[var(--color-error)]/10";
-
-  if (!agent) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
