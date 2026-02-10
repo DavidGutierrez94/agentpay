@@ -11,3 +11,27 @@ test-ledger
 *_0000.zkey
 .vercel
 .env
+
+# OpenClaw workspace files (not part of hackathon submission)
+/AGENTS.md
+/BOOTSTRAP.md
+/SOUL.md
+/TOOLS.md
+/USER.md
+/IDENTITY.md
+/HEARTBEAT.md
+/STATUS.md
+/memory/
+/.colosseum-agent.json
+/agentpay-demo.md
+/live-demo.sh
+
+# AgentPay skill files (OpenClaw internal)
+/skills/agentpay/SKILL.md
+/skills/agentpay/MCP-SETUP.md
+/skills/agentpay/mcp-server/
+/skills/agentpay/AGENT_CONTEXT.md
+/skills/agentpay/agent-commit.sh
+
+# Housekeeping temp file
+/HOUSEKEEPING.md
