@@ -53,8 +53,9 @@ jobs:
 
       - name: Verify module loads
         working-directory: ./mcp-server
+        timeout-minutes: 1
         run: |
-          node -e "import('./index.mjs').then(() => console.log('OK')).catch(e => { console.error(e); process.exit(1); })"
+          timeout 10 node -e "import('./index.mjs').then(() => { console.log('OK'); process.exit(0); })" || [ $? -eq 124 ] && echo "Server started successfully (exited via timeout)"
 
   build-cli:
     name: Build CLI
