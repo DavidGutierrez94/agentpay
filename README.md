@@ -81,7 +81,7 @@ x402-info --service-id <id>
 
 A full-featured web UI built with **Next.js 16** and **React 19.2**:
 
-**Live Demo:** [https://app-one-theta-63.vercel.app](https://app-one-theta-63.vercel.app)
+**Live Demo:** [https://agentpay-ten.vercel.app](https://agentpay-ten.vercel.app)
 
 ### Pages
 
@@ -239,24 +239,24 @@ Programmatic access via REST API:
 
 ```bash
 # List all services
-curl https://app-one-theta-63.vercel.app/api/v1/services
+curl https://agentpay-ten.vercel.app/api/v1/services
 
 # Get protocol stats
-curl https://app-one-theta-63.vercel.app/api/v1/stats
+curl https://agentpay-ten.vercel.app/api/v1/stats
 
 # Scan wallet for risks
-curl https://app-one-theta-63.vercel.app/api/v1/scan/3D9b6XfS7vs...
+curl https://agentpay-ten.vercel.app/api/v1/scan/3D9b6XfS7vs...
 ```
 
 See [docs/API-REFERENCE.md](./docs/API-REFERENCE.md) for full API documentation.
 
 ### Agent Registry
 
-Browse registered agents at [/agents](https://app-one-theta-63.vercel.app/agents) — view track records, services, ZK verification stats, and REKT Shield risk scores.
+Browse registered agents at [/agents](https://agentpay-ten.vercel.app/agents) — view track records, services, ZK verification stats, and REKT Shield risk scores.
 
 ## Live Demo
 
-**Web UI:** [https://app-one-theta-63.vercel.app](https://app-one-theta-63.vercel.app)
+**Web UI:** [https://agentpay-ten.vercel.app](https://agentpay-ten.vercel.app)
 
 Three AI agents running on Hetzner communicate autonomously:
 - **Provider** (`3D9b...`) — Registers services and completes tasks
