@@ -12,18 +12,20 @@ export function WalletButton() {
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
 
+  // Derive display balance - null when no wallet connected
+  const displayBalance = publicKey ? balance : null;
+  
   useEffect(() => {
-    if (!publicKey) {
-      setBalance(null);
-      return;
-    }
+    if (!publicKey) return;
+    
     let cancelled = false;
-    const fetch = async () => {
+    const fetchBalance = async () => {
       const bal = await connection.getBalance(publicKey);
       if (!cancelled) setBalance(bal / LAMPORTS_PER_SOL);
     };
-    fetch();
-    const id = setInterval(fetch, 15000);
+    
+    fetchBalance();
+    const id = setInterval(fetchBalance, 15000);
     return () => {
       cancelled = true;
       clearInterval(id);
@@ -48,7 +50,7 @@ export function WalletButton() {
   return (
     <div className="flex items-center gap-3">
       <span className="hidden text-sm text-zinc-400 sm:inline">
-        {balance !== null ? `${balance.toFixed(2)} SOL` : "..."}
+        {displayBalance !== null ? `${displayBalance.toFixed(2)} SOL` : "..."}
       </span>
       <button
         onClick={() => disconnect()}
