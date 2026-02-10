@@ -1,18 +1,18 @@
 #!/usr/bin/env tsx
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import { CONFIG } from "../shared/config.js";
 import { initModelProvider } from "../shared/agent-init.js";
+import { getBudgetSummary } from "../shared/budget-monitor.js";
+import { CONFIG } from "../shared/config.js";
+import { appendToAgentContext, readAgentContext } from "../shared/context-store.js";
 import { createAgentLogger } from "../shared/logger.js";
 import { createScheduler } from "../shared/scheduler.js";
-import { appendToAgentContext, readAgentContext } from "../shared/context-store.js";
 import { listTasks } from "../shared/task-queue.js";
-import { getBudgetSummary } from "../shared/budget-monitor.js";
-import { socialJobs } from "./schedule.js";
 import type { ScheduledJob } from "../shared/types.js";
+import { socialJobs } from "./schedule.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const logger = createAgentLogger("social");
@@ -31,14 +31,18 @@ function buildContext(): string {
     const ctx = readAgentContext("marketing");
     const lines = ctx.split("\n").slice(-20);
     marketingLeadNotes = lines.join("\n");
-  } catch { /* may not exist */ }
+  } catch {
+    /* may not exist */
+  }
 
   let devUpdates = "";
   try {
     const ctx = readAgentContext("dev");
     const lines = ctx.split("\n").slice(-10);
     devUpdates = lines.join("\n");
-  } catch { /* may not exist */ }
+  } catch {
+    /* may not exist */
+  }
 
   return `
 ## Social Agent State
@@ -76,7 +80,9 @@ async function executeJob(job: ScheduledJob): Promise<void> {
         systemPrompt,
         model: CONFIG.defaultModel,
         allowedTools: [
-          "Read", "Glob", "Grep",
+          "Read",
+          "Glob",
+          "Grep",
           "mcp__agentpay__search_services",
           "mcp__agentpay__get_balance",
           "mcp__agentpay__list_my_tasks",
@@ -117,7 +123,11 @@ async function executeJob(job: ScheduledJob): Promise<void> {
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     logger.error(`Job failed: ${job.name} — ${errMsg}`);
-    appendToAgentContext("social", { type: "alert", author: "social", content: `Job "${job.name}" failed: ${errMsg}` });
+    appendToAgentContext("social", {
+      type: "alert",
+      author: "social",
+      content: `Job "${job.name}" failed: ${errMsg}`,
+    });
   }
 }
 
@@ -143,13 +153,22 @@ async function main(): Promise<void> {
 
   if (mode === "job" && jobId) {
     const job = socialJobs.find((j) => j.id === jobId);
-    if (!job) { logger.error(`Job not found: ${jobId}. Available: ${socialJobs.map((j) => j.id).join(", ")}`); process.exit(1); }
+    if (!job) {
+      logger.error(`Job not found: ${jobId}. Available: ${socialJobs.map((j) => j.id).join(", ")}`);
+      process.exit(1);
+    }
     await executeJob(job);
     return;
   }
 
   if (mode === "interactive") {
-    await executeJob({ id: "interactive", name: "Interactive", cron: "", enabled: true, prompt: prompt || "Check for pending social media tasks and engage with the community." });
+    await executeJob({
+      id: "interactive",
+      name: "Interactive",
+      cron: "",
+      enabled: true,
+      prompt: prompt || "Check for pending social media tasks and engage with the community.",
+    });
     return;
   }
 
@@ -157,10 +176,17 @@ async function main(): Promise<void> {
   scheduler.register(socialJobs);
   scheduler.start();
   logger.info("Social agent daemon running.");
-  const shutdown = () => { logger.info("Shutting down..."); scheduler.stop(); process.exit(0); };
+  const shutdown = () => {
+    logger.info("Shutting down...");
+    scheduler.stop();
+    process.exit(0);
+  };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
   await new Promise(() => {});
 }
 
-main().catch((err) => { logger.error(`Fatal: ${err}`); process.exit(1); });
+main().catch((err) => {
+  logger.error(`Fatal: ${err}`);
+  process.exit(1);
+});

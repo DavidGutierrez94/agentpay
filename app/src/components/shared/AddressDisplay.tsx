@@ -29,9 +29,7 @@ export function AddressDisplay({
       <span className="text-[#666666]">[</span>
       {shortenAddress(address, chars)}
       <span className="text-[#666666]">]</span>
-      {copied && (
-        <span className="text-[10px] text-[#00ff41] animate-pulse">COPIED</span>
-      )}
+      {copied && <span className="text-[10px] text-[#00ff41] animate-pulse">COPIED</span>}
     </button>
   );
 }

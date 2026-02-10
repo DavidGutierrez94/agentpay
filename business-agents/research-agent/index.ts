@@ -1,18 +1,18 @@
 #!/usr/bin/env tsx
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import { CONFIG } from "../shared/config.js";
 import { initModelProvider } from "../shared/agent-init.js";
+import { getBudgetSummary } from "../shared/budget-monitor.js";
+import { CONFIG } from "../shared/config.js";
+import { appendToAgentContext, readAgentContext } from "../shared/context-store.js";
 import { createAgentLogger } from "../shared/logger.js";
 import { createScheduler } from "../shared/scheduler.js";
-import { appendToAgentContext, readAgentContext } from "../shared/context-store.js";
 import { listTasks } from "../shared/task-queue.js";
-import { getBudgetSummary } from "../shared/budget-monitor.js";
-import { researchJobs } from "./schedule.js";
 import type { ScheduledJob } from "../shared/types.js";
+import { researchJobs } from "./schedule.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const logger = createAgentLogger("research");
@@ -31,7 +31,9 @@ function buildContext(): string {
     const ctx = readAgentContext("sales");
     const lines = ctx.split("\n").slice(-20);
     salesLeadNotes = lines.join("\n");
-  } catch { /* may not exist */ }
+  } catch {
+    /* may not exist */
+  }
 
   return `
 ## Research Agent State
@@ -91,7 +93,11 @@ async function executeJob(job: ScheduledJob): Promise<void> {
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     logger.error(`Job failed: ${job.name} — ${errMsg}`);
-    appendToAgentContext("research", { type: "alert", author: "research", content: `Job "${job.name}" failed: ${errMsg}` });
+    appendToAgentContext("research", {
+      type: "alert",
+      author: "research",
+      content: `Job "${job.name}" failed: ${errMsg}`,
+    });
   }
 }
 
@@ -117,13 +123,24 @@ async function main(): Promise<void> {
 
   if (mode === "job" && jobId) {
     const job = researchJobs.find((j) => j.id === jobId);
-    if (!job) { logger.error(`Job not found: ${jobId}. Available: ${researchJobs.map((j) => j.id).join(", ")}`); process.exit(1); }
+    if (!job) {
+      logger.error(
+        `Job not found: ${jobId}. Available: ${researchJobs.map((j) => j.id).join(", ")}`,
+      );
+      process.exit(1);
+    }
     await executeJob(job);
     return;
   }
 
   if (mode === "interactive") {
-    await executeJob({ id: "interactive", name: "Interactive", cron: "", enabled: true, prompt: prompt || "Research potential clients and add qualified leads to the CRM." });
+    await executeJob({
+      id: "interactive",
+      name: "Interactive",
+      cron: "",
+      enabled: true,
+      prompt: prompt || "Research potential clients and add qualified leads to the CRM.",
+    });
     return;
   }
 
@@ -131,10 +148,17 @@ async function main(): Promise<void> {
   scheduler.register(researchJobs);
   scheduler.start();
   logger.info("Research agent daemon running.");
-  const shutdown = () => { logger.info("Shutting down..."); scheduler.stop(); process.exit(0); };
+  const shutdown = () => {
+    logger.info("Shutting down...");
+    scheduler.stop();
+    process.exit(0);
+  };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
   await new Promise(() => {});
 }
 
-main().catch((err) => { logger.error(`Fatal: ${err}`); process.exit(1); });
+main().catch((err) => {
+  logger.error(`Fatal: ${err}`);
+  process.exit(1);
+});

@@ -16,23 +16,18 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
-
-// Tools
-import { searchServices, getService, serviceTools } from "./tools/services.mjs";
-import { createTask, getTask, listMyTasks, taskTools } from "./tools/tasks.mjs";
-import { submitResult, submitResultZk, providerTools } from "./tools/provider.mjs";
-import { acceptResult, disputeTask, requesterTools } from "./tools/requester.mjs";
-import { getBalance, scanWallet, walletTools } from "./tools/wallet.mjs";
-import { teamTools, teamHandlers } from "./tools/teams.mjs";
-
-// Security
-import { validateToolParams, SecurityError } from "./security/input-validator.mjs";
-import { rateLimiter, RateLimitError } from "./security/rate-limiter.mjs";
+import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { auditLogger } from "./security/audit-log.mjs";
+// Security
+import { SecurityError, validateToolParams } from "./security/input-validator.mjs";
+import { RateLimitError, rateLimiter } from "./security/rate-limiter.mjs";
+import { providerTools, submitResult, submitResultZk } from "./tools/provider.mjs";
+import { acceptResult, disputeTask, requesterTools } from "./tools/requester.mjs";
+// Tools
+import { getService, searchServices, serviceTools } from "./tools/services.mjs";
+import { createTask, getTask, listMyTasks, taskTools } from "./tools/tasks.mjs";
+import { teamHandlers, teamTools } from "./tools/teams.mjs";
+import { getBalance, scanWallet, walletTools } from "./tools/wallet.mjs";
 
 // ============================================================================
 // Server Configuration
@@ -93,7 +88,7 @@ class AgentPayMCPServer {
         capabilities: {
           tools: {},
         },
-      }
+      },
     );
 
     this.setupHandlers();
@@ -115,7 +110,7 @@ class AgentPayMCPServer {
       // Get client ID (wallet address if available, otherwise "anonymous")
       let clientId = "anonymous";
       try {
-        const { keypair } = await import("./tools/program.mjs").then(m => m.getProgram());
+        const { keypair } = await import("./tools/program.mjs").then((m) => m.getProgram());
         clientId = keypair.publicKey.toBase58();
       } catch {
         // Use anonymous if keypair not available

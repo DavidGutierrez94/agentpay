@@ -1,0 +1,171 @@
+version: "3.8"
+
+x-agent-base: &agent-base
+  build:
+    context: .
+    dockerfile: Dockerfile.base
+  env_file: .env
+  volumes:
+    - shared-data:/data/shared
+    - ./shared:/app/shared:ro
+  restart: unless-stopped
+
+services:
+  # ---- Leadership ----
+  ops-agent:
+    <<: *agent-base
+    container_name: agentpay-ops
+    command: ["npx", "tsx", "ops-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../mcp-server:/mcp-server:ro
+    environment:
+      - AGENT_NAME=ops-agent
+      - OPS_KEYPAIR=/keys/ops.json
+
+  # ---- Engineering Team ----
+  dev-agent:
+    <<: *agent-base
+    container_name: agentpay-dev
+    command: ["npx", "tsx", "dev-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../:/project:ro
+      - ../mcp-server:/mcp-server:ro
+    environment:
+      - AGENT_NAME=dev-agent
+      - DEV_KEYPAIR=/keys/dev.json
+
+  frontend-agent:
+    <<: *agent-base
+    container_name: agentpay-frontend
+    command: ["npx", "tsx", "frontend-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../app:/project-app:ro
+    environment:
+      - AGENT_NAME=frontend-agent
+
+  backend-agent:
+    <<: *agent-base
+    container_name: agentpay-backend
+    command: ["npx", "tsx", "backend-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../mcp-server:/mcp-server:ro
+      - ../cli:/project-cli:ro
+      - ../security:/project-security:ro
+    environment:
+      - AGENT_NAME=backend-agent
+      - BACKEND_KEYPAIR=/keys/backend.json
+
+  web3-agent:
+    <<: *agent-base
+    container_name: agentpay-web3
+    command: ["npx", "tsx", "web3-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../programs:/project-programs:ro
+      - ../circuits:/project-circuits:ro
+      - ../tests:/project-tests:ro
+      - ../mcp-server:/mcp-server:ro
+    environment:
+      - AGENT_NAME=web3-agent
+      - WEB3_KEYPAIR=/keys/web3.json
+
+  # ---- Marketing Team ----
+  marketing-agent:
+    <<: *agent-base
+    container_name: agentpay-marketing
+    command: ["npx", "tsx", "marketing-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../mcp-server:/mcp-server:ro
+    environment:
+      - AGENT_NAME=marketing-agent
+      - MARKETING_KEYPAIR=/keys/marketing.json
+
+  content-agent:
+    <<: *agent-base
+    container_name: agentpay-content
+    command: ["npx", "tsx", "content-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+    environment:
+      - AGENT_NAME=content-agent
+
+  social-agent:
+    <<: *agent-base
+    container_name: agentpay-social
+    command: ["npx", "tsx", "social-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../mcp-server:/mcp-server:ro
+    environment:
+      - AGENT_NAME=social-agent
+
+  analytics-agent:
+    <<: *agent-base
+    container_name: agentpay-analytics
+    command: ["npx", "tsx", "analytics-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../mcp-server:/mcp-server:ro
+    environment:
+      - AGENT_NAME=analytics-agent
+
+  # ---- Sales Team ----
+  sales-agent:
+    <<: *agent-base
+    container_name: agentpay-sales
+    command: ["npx", "tsx", "sales-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+      - ../mcp-server:/mcp-server:ro
+    environment:
+      - AGENT_NAME=sales-agent
+      - SALES_KEYPAIR=/keys/sales.json
+
+  research-agent:
+    <<: *agent-base
+    container_name: agentpay-research
+    command: ["npx", "tsx", "research-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+    environment:
+      - AGENT_NAME=research-agent
+
+  outreach-agent:
+    <<: *agent-base
+    container_name: agentpay-outreach
+    command: ["npx", "tsx", "outreach-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+    environment:
+      - AGENT_NAME=outreach-agent
+
+  proposals-agent:
+    <<: *agent-base
+    container_name: agentpay-proposals
+    command: ["npx", "tsx", "proposals-agent/index.ts"]
+    volumes:
+      - shared-data:/data/shared
+      - ./:/app
+    environment:
+      - AGENT_NAME=proposals-agent
+
+volumes:
+  shared-data:
+    driver: local

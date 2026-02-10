@@ -1,13 +1,10 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
-import {
-  ConnectionProvider,
-  WalletProvider,
-} from "@solana/wallet-adapter-react";
+import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type ReactNode, useMemo } from "react";
 import { DEVNET_RPC } from "@/lib/constants";
 import { ThemeProvider } from "@/lib/theme-context";
 

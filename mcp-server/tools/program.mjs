@@ -2,22 +2,23 @@
  * Shared Anchor program setup for AgentPay MCP tools
  */
 
-import { readFileSync } from "fs";
-import { homedir } from "os";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import web3 from "@solana/web3.js";
+
 const { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } = web3;
+
 import anchor from "@coral-xyz/anchor";
+
 const { AnchorProvider, Program, Wallet } = anchor;
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-export const PROGRAM_ID = new PublicKey(
-  "2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw"
-);
+export const PROGRAM_ID = new PublicKey("2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw");
 
 export const DEFAULT_RPC = process.env.AGENTPAY_RPC || "https://api.devnet.solana.com";
 
@@ -92,7 +93,7 @@ export function getProgram() {
 export function deriveServicePda(provider, serviceId) {
   const [pda] = PublicKey.findProgramAddressSync(
     [Buffer.from("service"), provider.toBuffer(), Buffer.from(serviceId)],
-    PROGRAM_ID
+    PROGRAM_ID,
   );
   return pda;
 }
@@ -100,7 +101,7 @@ export function deriveServicePda(provider, serviceId) {
 export function deriveTaskPda(requester, taskId) {
   const [pda] = PublicKey.findProgramAddressSync(
     [Buffer.from("task"), requester.toBuffer(), Buffer.from(taskId)],
-    PROGRAM_ID
+    PROGRAM_ID,
   );
   return pda;
 }

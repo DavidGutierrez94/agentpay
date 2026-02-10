@@ -1,19 +1,18 @@
 #!/usr/bin/env tsx
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import { CONFIG } from "../shared/config.js";
 import { initModelProvider } from "../shared/agent-init.js";
-import { createAgentLogger, auditLog } from "../shared/logger.js";
-import { preToolUseHook, postToolUseHook } from "../shared/hooks.js";
+import { getAllBudgetSummaries } from "../shared/budget-monitor.js";
+import { CONFIG } from "../shared/config.js";
+import { appendToAgentContext } from "../shared/context-store.js";
+import { createAgentLogger } from "../shared/logger.js";
 import { createScheduler } from "../shared/scheduler.js";
-import { readGlobalContext, readAllAgentContexts, appendToAgentContext } from "../shared/context-store.js";
-import { listTasks, getQueueStats } from "../shared/task-queue.js";
-import { getAllBudgetSummaries, getBudgetSummary } from "../shared/budget-monitor.js";
-import { opsJobs } from "./schedule.js";
+import { getQueueStats, listTasks } from "../shared/task-queue.js";
 import type { ScheduledJob } from "../shared/types.js";
+import { opsJobs } from "./schedule.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const logger = createAgentLogger("ops");
@@ -60,7 +59,11 @@ async function executeJob(job: ScheduledJob): Promise<void> {
         systemPrompt,
         model: CONFIG.leaderModel,
         allowedTools: [
-          "Read", "Write", "Glob", "Grep", "Bash",
+          "Read",
+          "Write",
+          "Glob",
+          "Grep",
+          "Bash",
           "mcp__agentpay__get_balance",
           "mcp__agentpay__list_my_tasks",
           "mcp__agentpay__get_task",
@@ -154,7 +157,8 @@ async function main(): Promise<void> {
 
   if (mode === "interactive") {
     // Run an interactive query
-    const interactivePrompt = prompt || "Check the current status of the AgentPay business team and report.";
+    const interactivePrompt =
+      prompt || "Check the current status of the AgentPay business team and report.";
     await executeJob({
       id: "interactive",
       name: "Interactive Query",

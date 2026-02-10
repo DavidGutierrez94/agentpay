@@ -5,9 +5,9 @@
  * Based on patterns from Kevin Simback and Khaliq Gant.
  */
 
+import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import * as teamsStorage from "../teams/storage.mjs";
 import { getProgram } from "./program.mjs";
-import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 // ============================================================================
 // Tool Definitions
@@ -83,8 +83,7 @@ export const teamTools = [
   },
   {
     name: "list_teams",
-    description:
-      "List all teams or filter by member wallet. Returns active teams by default.",
+    description: "List all teams or filter by member wallet. Returns active teams by default.",
     inputSchema: {
       type: "object",
       properties: {
@@ -156,8 +155,7 @@ export const teamTools = [
   },
   {
     name: "assign_subtask",
-    description:
-      "Lead assigns a subtask to a team member. The member must be part of the team.",
+    description: "Lead assigns a subtask to a team member. The member must be part of the team.",
     inputSchema: {
       type: "object",
       properties: {
@@ -515,9 +513,7 @@ export async function completeSubtask(params) {
       result: params.result,
     });
 
-    const completedCount = teamTask.subtasks.filter(
-      (s) => s.status === "completed"
-    ).length;
+    const completedCount = teamTask.subtasks.filter((s) => s.status === "completed").length;
     const totalCount = teamTask.subtasks.length;
     const allComplete = teamTask.status === "review";
 
@@ -645,10 +641,7 @@ export async function distributePayment(params) {
     const totalLamports = taskAccount.priceLamports.toNumber();
 
     // Calculate distribution
-    const distribution = teamsStorage.calculateDistribution(
-      params.teamTaskId,
-      totalLamports
-    );
+    const distribution = teamsStorage.calculateDistribution(params.teamTaskId, totalLamports);
 
     // Execute transfers (skip lead, they already received the payment)
     const txSignatures = [];
@@ -661,9 +654,9 @@ export async function distributePayment(params) {
             fromPubkey: keypair.publicKey,
             toPubkey: new PublicKey(wallet),
             lamports: amount,
-          })
+          }),
         ),
-        [keypair]
+        [keypair],
       );
 
       txSignatures.push({ wallet, amount, role, tx });
@@ -677,9 +670,7 @@ export async function distributePayment(params) {
 
     // Update context
     const distributionSummary = distribution
-      .map(
-        (d) => `- ${d.role} (${d.wallet.slice(0, 8)}...): ${d.amount / LAMPORTS_PER_SOL} SOL`
-      )
+      .map((d) => `- ${d.role} (${d.wallet.slice(0, 8)}...): ${d.amount / LAMPORTS_PER_SOL} SOL`)
       .join("\n");
 
     teamsStorage.appendToContext(team.id, {

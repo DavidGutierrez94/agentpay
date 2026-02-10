@@ -1,0 +1,67 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json ./
+RUN npm install
+
+# Copy source
+COPY tsconfig.json ./
+COPY shared/ ./shared/
+COPY ops-agent/ ./ops-agent/
+COPY dev-agent/ ./dev-agent/
+COPY frontend-agent/ ./frontend-agent/
+COPY backend-agent/ ./backend-agent/
+COPY web3-agent/ ./web3-agent/
+COPY marketing-agent/ ./marketing-agent/
+COPY content-agent/ ./content-agent/
+COPY social-agent/ ./social-agent/
+COPY analytics-agent/ ./analytics-agent/
+COPY sales-agent/ ./sales-agent/
+COPY research-agent/ ./research-agent/
+COPY outreach-agent/ ./outreach-agent/
+COPY proposals-agent/ ./proposals-agent/
+
+# Build TypeScript
+RUN npx tsc
+
+# ---- Production stage ----
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
+# Install only production deps
+COPY package.json ./
+RUN npm install --omit=dev
+
+# Copy compiled JS
+COPY --from=builder /app/dist/ ./dist/
+
+# Copy SOUL.md files (read at runtime)
+COPY ops-agent/SOUL.md ./dist/ops-agent/SOUL.md
+COPY dev-agent/SOUL.md ./dist/dev-agent/SOUL.md
+COPY frontend-agent/SOUL.md ./dist/frontend-agent/SOUL.md
+COPY backend-agent/SOUL.md ./dist/backend-agent/SOUL.md
+COPY web3-agent/SOUL.md ./dist/web3-agent/SOUL.md
+COPY marketing-agent/SOUL.md ./dist/marketing-agent/SOUL.md
+COPY content-agent/SOUL.md ./dist/content-agent/SOUL.md
+COPY social-agent/SOUL.md ./dist/social-agent/SOUL.md
+COPY analytics-agent/SOUL.md ./dist/analytics-agent/SOUL.md
+COPY sales-agent/SOUL.md ./dist/sales-agent/SOUL.md
+COPY research-agent/SOUL.md ./dist/research-agent/SOUL.md
+COPY outreach-agent/SOUL.md ./dist/outreach-agent/SOUL.md
+COPY proposals-agent/SOUL.md ./dist/proposals-agent/SOUL.md
+
+# Shared data directory
+RUN mkdir -p /data/shared/contexts /data/shared/audit
+
+ENV SHARED_STATE_DIR=/data/shared
+ENV AUDIT_LOG_DIR=/data/shared/audit
+ENV NODE_ENV=production
+
+# Default: run ops agent
+ARG AGENT=ops-agent
+ENV AGENT_NAME=${AGENT}
+
+CMD ["node", "dist/${AGENT_NAME}/index.js"]

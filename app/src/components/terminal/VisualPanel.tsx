@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import type { CommandResult } from "./CommandRegistry";
+import { AnimatePresence, motion } from "framer-motion";
 import { AddressDisplay } from "../shared/AddressDisplay";
 import { EscrowBadge } from "../shared/EscrowBadge";
 import { StatusBadge } from "../shared/StatusBadge";
+import type { CommandResult } from "./CommandRegistry";
 
 export function VisualPanel({ result }: { result: CommandResult | null }) {
   if (!result || !result.data) {
@@ -15,9 +15,7 @@ export function VisualPanel({ result }: { result: CommandResult | null }) {
       >
         <div className="text-center text-[var(--color-muted)]">
           <p className="text-lg font-medium text-[var(--color-text)]">[OUTPUT_PANEL]</p>
-          <p className="mt-1 text-sm">
-            Run a command to see visual output here
-          </p>
+          <p className="mt-1 text-sm">Run a command to see visual output here</p>
         </div>
       </div>
     );
@@ -53,9 +51,7 @@ export function VisualPanel({ result }: { result: CommandResult | null }) {
                 className="mb-2 border border-[var(--color-border)] bg-[var(--color-bg)] p-3"
                 style={{ borderRadius: "var(--border-radius-sm)" }}
               >
-                <p className="text-sm text-[var(--color-text)]">
-                  {s.description as string}
-                </p>
+                <p className="text-sm text-[var(--color-text)]">{s.description as string}</p>
                 <div className="mt-2 flex items-center gap-3">
                   <EscrowBadge sol={s.priceSol as string} />
                   <AddressDisplay address={s.provider as string} chars={4} />
@@ -64,7 +60,7 @@ export function VisualPanel({ result }: { result: CommandResult | null }) {
                   </span>
                 </div>
               </motion.div>
-            )
+            ),
           )}
         </AnimatePresence>
       </div>
@@ -103,11 +99,9 @@ export function VisualPanel({ result }: { result: CommandResult | null }) {
                   <StatusBadge status={t.status as "open"} />
                   <EscrowBadge sol={t.amountSol as string} />
                 </div>
-                <p className="mt-1 text-sm text-[var(--color-text)]">
-                  {t.description as string}
-                </p>
+                <p className="mt-1 text-sm text-[var(--color-text)]">{t.description as string}</p>
               </motion.div>
-            )
+            ),
           )}
         </AnimatePresence>
       </div>

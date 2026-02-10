@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getReadonlyProgram, getConnection } from "../program";
-import { trimBytes, lamportsToSol } from "../utils";
 import { PROGRAM_ID } from "../constants";
+import { getConnection, getReadonlyProgram } from "../program";
+import { lamportsToSol, trimBytes } from "../utils";
 
 // Account sizes for filtering
 const SERVICE_LISTING_SIZE = 218;
@@ -62,10 +62,7 @@ export function useAgents() {
         for (const { pubkey, account } of rawServiceAccounts) {
           try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded = (program.coder.accounts as any).decode(
-              "serviceListing",
-              account.data
-            );
+            const decoded = (program.coder.accounts as any).decode("serviceListing", account.data);
 
             const providerAddress = decoded.provider.toBase58();
             const createdAt = decoded.createdAt.toNumber();
@@ -104,10 +101,7 @@ export function useAgents() {
         for (const { account } of rawTaskAccounts) {
           try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded = (program.coder.accounts as any).decode(
-              "taskRequest",
-              account.data
-            );
+            const decoded = (program.coder.accounts as any).decode("taskRequest", account.data);
 
             const providerAddress = decoded.provider.toBase58();
             const requesterAddress = decoded.requester.toBase58();
@@ -116,26 +110,23 @@ export function useAgents() {
             // Track requester task count
             requesterTaskCount.set(
               requesterAddress,
-              (requesterTaskCount.get(requesterAddress) || 0) + 1
+              (requesterTaskCount.get(requesterAddress) || 0) + 1,
             );
 
             if (decoded.zkVerified) {
-              providerZkCount.set(
-                providerAddress,
-                (providerZkCount.get(providerAddress) || 0) + 1
-              );
+              providerZkCount.set(providerAddress, (providerZkCount.get(providerAddress) || 0) + 1);
             }
 
             if (statusKey === "disputed") {
               // Provider got disputed
               providerDisputeCount.set(
                 providerAddress,
-                (providerDisputeCount.get(providerAddress) || 0) + 1
+                (providerDisputeCount.get(providerAddress) || 0) + 1,
               );
               // Requester initiated the dispute
               requesterDisputeCount.set(
                 requesterAddress,
-                (requesterDisputeCount.get(requesterAddress) || 0) + 1
+                (requesterDisputeCount.get(requesterAddress) || 0) + 1,
               );
             }
           } catch {
@@ -147,16 +138,12 @@ export function useAgents() {
         const agents: Agent[] = [];
 
         for (const [wallet, services] of agentServices) {
-          const totalTasksCompleted = services.reduce(
-            (sum, s) => sum + s.tasksCompleted,
-            0
-          );
+          const totalTasksCompleted = services.reduce((sum, s) => sum + s.tasksCompleted, 0);
 
           const tasksCreated = requesterTaskCount.get(wallet) || 0;
           const disputesInitiated = requesterDisputeCount.get(wallet) || 0;
-          const disputeRate = tasksCreated > 0
-            ? Math.round((disputesInitiated / tasksCreated) * 100)
-            : 0;
+          const disputeRate =
+            tasksCreated > 0 ? Math.round((disputesInitiated / tasksCreated) * 100) : 0;
 
           agents.push({
             wallet,
@@ -170,17 +157,13 @@ export function useAgents() {
               disputeCountAsRequester: disputesInitiated,
               tasksCreatedAsRequester: tasksCreated,
               disputeRateAsRequester: disputeRate,
-              firstSeen: new Date(
-                (agentFirstSeen.get(wallet) || 0) * 1000
-              ).toISOString(),
+              firstSeen: new Date((agentFirstSeen.get(wallet) || 0) * 1000).toISOString(),
             },
           });
         }
 
         // Sort by total tasks completed
-        agents.sort(
-          (a, b) => b.stats.totalTasksCompleted - a.stats.totalTasksCompleted
-        );
+        agents.sort((a, b) => b.stats.totalTasksCompleted - a.stats.totalTasksCompleted);
 
         return agents;
       } catch (e) {
@@ -195,9 +178,7 @@ export function useAgents() {
 export function useAgent(wallet: string | undefined) {
   const { data: agents, ...rest } = useAgents();
 
-  const agent = wallet
-    ? agents?.find((a) => a.wallet === wallet)
-    : undefined;
+  const agent = wallet ? agents?.find((a) => a.wallet === wallet) : undefined;
 
   return {
     data: agent,

@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
@@ -28,7 +28,7 @@ const TooltipContent = React.forwardRef<
         "data-[side=left]:slide-in-from-right-2",
         "data-[side=right]:slide-in-from-left-2",
         "data-[side=top]:slide-in-from-bottom-2",
-        className
+        className,
       )}
       style={{ borderRadius: "var(--border-radius-sm)" }}
       {...props}
@@ -49,10 +49,7 @@ const TooltipWrapper = ({
   content: React.ReactNode;
   side?: "top" | "right" | "bottom" | "left";
   delayDuration?: number;
-} & Omit<
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>,
-  "content"
->) => (
+} & Omit<React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, "content">) => (
   <TooltipProvider delayDuration={delayDuration}>
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
@@ -63,10 +60,4 @@ const TooltipWrapper = ({
   </TooltipProvider>
 );
 
-export {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-  TooltipWrapper,
-};
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipWrapper };

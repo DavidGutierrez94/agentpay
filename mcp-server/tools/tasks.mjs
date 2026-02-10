@@ -5,20 +5,20 @@
  * - list_my_tasks: List tasks for the current agent
  */
 
-import { createHash, randomBytes } from "crypto";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { randomBytes } from "node:crypto";
 import anchor from "@coral-xyz/anchor";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
+
 const { BN } = anchor;
+
 import {
-  getProgram,
   getConnection,
-  PROGRAM_ID,
-  TASK_REQUEST_SIZE,
-  SERVICE_LISTING_SIZE,
-  deriveTaskPda,
-  padBytes,
-  trimBytes,
+  getProgram,
   lamportsToSol,
+  PROGRAM_ID,
+  padBytes,
+  TASK_REQUEST_SIZE,
+  trimBytes,
 } from "./program.mjs";
 
 /**
@@ -63,16 +63,12 @@ export async function createTask({ servicePda, description, deadlineMinutes = 60
   // Derive task PDA
   const [taskPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("task"), keypair.publicKey.toBuffer(), taskId],
-    PROGRAM_ID
+    PROGRAM_ID,
   );
 
   try {
     const tx = await program.methods
-      .createTask(
-        Array.from(taskId),
-        padBytes(description, 256),
-        new BN(deadline)
-      )
+      .createTask(Array.from(taskId), padBytes(description, 256), new BN(deadline))
       .accounts({
         requester: keypair.publicKey,
         serviceListing: servicePubkey,

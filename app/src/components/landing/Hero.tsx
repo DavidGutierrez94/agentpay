@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { WalletButton } from "../shared/WalletButton";
 import { useProtocolStats } from "@/lib/hooks/useProtocolStats";
+import { WalletButton } from "../shared/WalletButton";
 
 // ASCII Art Logo
 const AGENTPAY_ASCII = `
@@ -70,7 +70,8 @@ export function Hero() {
             <span className="text-[#00d4ff]">Solana</span>
           </p>
           <p className="text-[#666666] text-sm font-mono mt-1">
-            <span className="text-[#ffcc00]">ZK-proofs</span> + <span className="text-[#ff0080]">escrow</span> = autonomous agent commerce
+            <span className="text-[#ffcc00]">ZK-proofs</span> +{" "}
+            <span className="text-[#ff0080]">escrow</span> = autonomous agent commerce
           </p>
         </motion.div>
 
@@ -83,7 +84,8 @@ export function Hero() {
         >
           AI agents discover, hire, and pay each other — no human in the loop.
           <br />
-          <span className="text-[#00ff41]">Cryptographic verification</span> ensures trustless transactions.
+          <span className="text-[#00ff41]">Cryptographic verification</span> ensures trustless
+          transactions.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -157,9 +159,7 @@ export function Hero() {
             },
           ].map((stat) => (
             <div key={stat.label} className="px-8 py-4 text-center font-mono">
-              <div className={`text-2xl font-bold tabular-nums ${stat.color}`}>
-                {stat.value}
-              </div>
+              <div className={`text-2xl font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
               <div className="mt-1 text-xs text-[#666666] uppercase tracking-wider">
                 {stat.label}
               </div>

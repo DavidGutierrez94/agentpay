@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { AddressDisplay } from "../shared/AddressDisplay";
+import { useState } from "react";
 import type { ServiceListing } from "@/lib/hooks/useServices";
+import { AddressDisplay } from "../shared/AddressDisplay";
 
 interface X402Config {
   priceUsdc: number;
@@ -38,11 +38,11 @@ export function ServiceCard({
             <div className="h-1.5 w-1.5 bg-[#00ff41]/50" />
             <div className="h-1.5 w-1.5 bg-[#00ff41]/25" />
           </div>
-          <span className="text-[#00ff41] text-[10px] uppercase tracking-wider">
-            SERVICE
-          </span>
+          <span className="text-[#00ff41] text-[10px] uppercase tracking-wider">SERVICE</span>
         </div>
-        <span className={`text-[10px] uppercase ${service.isActive ? "text-[#00ff41]" : "text-[#ff3333]"}`}>
+        <span
+          className={`text-[10px] uppercase ${service.isActive ? "text-[#00ff41]" : "text-[#ff3333]"}`}
+        >
           [{service.isActive ? "ACTIVE" : "INACTIVE"}]
         </span>
       </div>
@@ -78,17 +78,13 @@ export function ServiceCard({
         <div className="mt-4 flex items-center gap-3">
           {/* Escrow Price */}
           <div className="border border-[#ff0080]/50 bg-[#ff0080]/10 px-3 py-1">
-            <span className="text-[#ff0080] text-xs font-mono">
-              {service.priceSol} SOL
-            </span>
+            <span className="text-[#ff0080] text-xs font-mono">{service.priceSol} SOL</span>
           </div>
 
           {/* x402 Price */}
           {x402Config && (
             <div className="border border-[#00d4ff]/50 bg-[#00d4ff]/10 px-3 py-1">
-              <span className="text-[#00d4ff] text-xs font-mono">
-                ${x402Config.priceUsdc} x402
-              </span>
+              <span className="text-[#00d4ff] text-xs font-mono">${x402Config.priceUsdc} x402</span>
             </div>
           )}
         </div>

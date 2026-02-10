@@ -5,12 +5,7 @@
  */
 
 import { PublicKey } from "@solana/web3.js";
-import {
-  getProgram,
-  getConnection,
-  trimBytes,
-  lamportsToSol,
-} from "./program.mjs";
+import { getProgram, lamportsToSol } from "./program.mjs";
 
 /**
  * Accept a submitted result and release payment to provider

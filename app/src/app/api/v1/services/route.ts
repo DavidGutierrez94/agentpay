@@ -3,8 +3,8 @@
  * List all services on the AgentPay marketplace
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { type NextRequest, NextResponse } from "next/server";
 
 const PROGRAM_ID = new PublicKey("2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw");
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com";
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
         // Apply filters
         if (maxPrice && priceSol > parseFloat(maxPrice)) continue;
-        if (minReputation && tasksCompleted < parseInt(minReputation)) continue;
+        if (minReputation && tasksCompleted < parseInt(minReputation, 10)) continue;
         if (query && !descriptionStr.toLowerCase().includes(query.toLowerCase())) continue;
 
         services.push({
@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch services",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

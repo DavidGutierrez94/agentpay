@@ -1,0 +1,86 @@
+{
+  "tasks": [
+    {
+      "id": "0a26689f-05d1-4138-865b-39d840bd0b61",
+      "title": "Test task from infra smoke test",
+      "description": "This is an automated test task",
+      "assignedTo": "dev",
+      "assignedBy": "ops",
+      "priority": "medium",
+      "status": "completed",
+      "tags": [
+        "test",
+        "infra"
+      ],
+      "createdAt": "2026-02-09T04:53:11.598Z",
+      "updatedAt": "2026-02-09T04:53:11.598Z",
+      "result": "Test passed"
+    },
+    {
+      "id": "618865f5-b09f-429a-a4ba-7e4c84f6f8e2",
+      "title": "Market Analysis for Q1 2026",
+      "description": "Conduct comprehensive market research for fintech trends in Q1 2026, focusing on payment processors and Web3 integrations",
+      "assignedTo": "research",
+      "assignedBy": "sales",
+      "priority": "high",
+      "status": "pending",
+      "tags": [
+        "market-analysis",
+        "fintech",
+        "web3"
+      ],
+      "createdAt": "2026-02-09T05:06:01.376Z",
+      "updatedAt": "2026-02-09T05:06:01.376Z",
+      "dueDate": "2026-02-16T05:06:01.376Z"
+    },
+    {
+      "id": "5896fa55-aed5-44e0-bbfb-3776af294f51",
+      "title": "Competitor Analysis - Payment Solutions",
+      "description": "Research top 5 competitors in the payment solutions space, analyze their pricing models, features, and market positioning",
+      "assignedTo": "research",
+      "assignedBy": "marketing",
+      "priority": "medium",
+      "status": "pending",
+      "tags": [
+        "competitor-analysis",
+        "payments",
+        "pricing"
+      ],
+      "createdAt": "2026-02-09T05:06:01.377Z",
+      "updatedAt": "2026-02-09T05:06:01.377Z"
+    },
+    {
+      "id": "caf39452-7b22-45a4-8927-1a344cb501e9",
+      "title": "Customer Feedback Analysis",
+      "description": "Analyze recent customer feedback and support tickets to identify pain points and improvement opportunities",
+      "assignedTo": "research",
+      "assignedBy": "ops",
+      "priority": "critical",
+      "status": "in_progress",
+      "tags": [
+        "customer-feedback",
+        "analysis",
+        "improvement"
+      ],
+      "createdAt": "2026-02-09T05:06:01.378Z",
+      "updatedAt": "2026-02-09T05:07:40.500Z"
+    },
+    {
+      "id": "42a628da-8d9e-49b6-bfb4-9beb375fb2ce",
+      "title": "Industry Compliance Requirements",
+      "description": "Research latest PCI DSS and financial compliance requirements that may impact our payment processing features",
+      "assignedTo": "research",
+      "assignedBy": "ops",
+      "priority": "low",
+      "status": "pending",
+      "tags": [
+        "compliance",
+        "pci-dss",
+        "regulatory"
+      ],
+      "createdAt": "2026-02-09T05:06:01.378Z",
+      "updatedAt": "2026-02-09T05:06:01.378Z"
+    }
+  ],
+  "lastUpdated": "2026-02-09T05:07:40.500Z"
+}

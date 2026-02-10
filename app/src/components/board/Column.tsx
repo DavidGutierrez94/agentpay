@@ -1,9 +1,9 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { TaskCard } from "./TaskCard";
-import type { TaskRequest } from "@/lib/hooks/useTasks";
 import type { TaskStatus } from "@/lib/constants";
+import type { TaskRequest } from "@/lib/hooks/useTasks";
+import { TaskCard } from "./TaskCard";
 
 const statusLabels: Record<TaskStatus, string> = {
   open: "OPEN",

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useAllTasks, type TaskRequest } from "@/lib/hooks/useTasks";
+import { useState } from "react";
 import { TASK_STATUSES } from "@/lib/constants";
+import { type TaskRequest, useAllTasks } from "@/lib/hooks/useTasks";
 import { Column } from "./Column";
 import { TaskDetailModal } from "./TaskDetailModal";
 
@@ -16,24 +16,25 @@ export function Board() {
   const tasks =
     filter === "mine" && publicKey
       ? (allTasks ?? []).filter(
-          (t) =>
-            t.requester === publicKey.toBase58() ||
-            t.provider === publicKey.toBase58()
+          (t) => t.requester === publicKey.toBase58() || t.provider === publicKey.toBase58(),
         )
-      : allTasks ?? [];
+      : (allTasks ?? []);
 
   const tasksByStatus = TASK_STATUSES.reduce(
     (acc, status) => {
       acc[status] = tasks.filter((t) => t.status === status);
       return acc;
     },
-    {} as Record<string, TaskRequest[]>
+    {} as Record<string, TaskRequest[]>,
   );
 
   return (
     <div>
       <div className="mb-6 flex items-center gap-4">
-        <div className="flex border border-[var(--color-border)] p-0.5" style={{ borderRadius: "var(--border-radius-sm)" }}>
+        <div
+          className="flex border border-[var(--color-border)] p-0.5"
+          style={{ borderRadius: "var(--border-radius-sm)" }}
+        >
           {(["all", "mine"] as const).map((f) => (
             <button
               key={f}
@@ -50,9 +51,7 @@ export function Board() {
           ))}
         </div>
         {isLoading && (
-          <span className="text-xs text-[var(--color-muted)] animate-pulse">
-            [LOADING...]
-          </span>
+          <span className="text-xs text-[var(--color-muted)] animate-pulse">[LOADING...]</span>
         )}
       </div>
 

@@ -3,33 +3,22 @@
  * Handles the full 402 payment flow with Solana wallet
  */
 
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import {
-  Transaction,
-  PublicKey,
-  TransactionInstruction,
-} from "@solana/web3.js";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { useCallback, useState } from "react";
 import type { X402CallResult, X402PaymentRequired } from "../x402/types";
 
 // SPL Token Program
-const TOKEN_PROGRAM_ID = new PublicKey(
-  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-);
+const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 
 // Associated Token Program
-const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
-  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
-);
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
 // Derive Associated Token Address
-function getAssociatedTokenAddress(
-  mint: PublicKey,
-  owner: PublicKey
-): PublicKey {
+function getAssociatedTokenAddress(mint: PublicKey, owner: PublicKey): PublicKey {
   const [address] = PublicKey.findProgramAddressSync(
     [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-    ASSOCIATED_TOKEN_PROGRAM_ID
+    ASSOCIATED_TOKEN_PROGRAM_ID,
   );
   return address;
 }
@@ -39,7 +28,7 @@ function createTransferInstruction(
   source: PublicKey,
   destination: PublicKey,
   owner: PublicKey,
-  amount: number
+  amount: number,
 ): TransactionInstruction {
   // SPL Token Transfer instruction layout:
   // [0]: instruction (3 = Transfer)
@@ -60,10 +49,7 @@ function createTransferInstruction(
 }
 
 export interface UseX402Return {
-  callWithPayment: (
-    endpoint: string,
-    body?: unknown
-  ) => Promise<X402CallResult>;
+  callWithPayment: (endpoint: string, body?: unknown) => Promise<X402CallResult>;
   isLoading: boolean;
   error: string | null;
 }
@@ -105,9 +91,7 @@ export function useX402(): UseX402Return {
         }
 
         // Step 2: Parse payment requirements from 402 response
-        const paymentRequiredHeader = initialResponse.headers.get(
-          "X-Payment-Required"
-        );
+        const paymentRequiredHeader = initialResponse.headers.get("X-Payment-Required");
         if (!paymentRequiredHeader) {
           const err = "Missing X-Payment-Required header";
           setError(err);
@@ -115,7 +99,7 @@ export function useX402(): UseX402Return {
         }
 
         const paymentTerms: X402PaymentRequired = JSON.parse(
-          Buffer.from(paymentRequiredHeader, "base64").toString("utf-8")
+          Buffer.from(paymentRequiredHeader, "base64").toString("utf-8"),
         );
 
         const scheme = paymentTerms.schemes[0];
@@ -128,7 +112,7 @@ export function useX402(): UseX402Return {
         // Step 3: Build payment transaction
         const mint = new PublicKey(scheme.asset);
         const recipient = new PublicKey(scheme.recipient);
-        const amount = parseInt(scheme.maxAmountRequired);
+        const amount = parseInt(scheme.maxAmountRequired, 10);
 
         // Get payer's and recipient's token accounts
         const payerAta = getAssociatedTokenAddress(mint, publicKey);
@@ -137,7 +121,7 @@ export function useX402(): UseX402Return {
         // Check balance
         try {
           const balance = await connection.getTokenAccountBalance(payerAta);
-          if (parseInt(balance.value.amount) < amount) {
+          if (parseInt(balance.value.amount, 10) < amount) {
             const err = `Insufficient USDC balance. Need ${amount / 1_000_000} USDC`;
             setError(err);
             return { success: false, error: err };
@@ -150,13 +134,10 @@ export function useX402(): UseX402Return {
 
         // Build transaction
         const tx = new Transaction();
-        tx.add(
-          createTransferInstruction(payerAta, recipientAta, publicKey, amount)
-        );
+        tx.add(createTransferInstruction(payerAta, recipientAta, publicKey, amount));
 
         tx.feePayer = publicKey;
-        const { blockhash, lastValidBlockHeight } =
-          await connection.getLatestBlockhash();
+        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
         tx.recentBlockhash = blockhash;
         tx.lastValidBlockHeight = lastValidBlockHeight;
 
@@ -175,9 +156,7 @@ export function useX402(): UseX402Return {
           },
         };
 
-        const xPaymentHeader = Buffer.from(
-          JSON.stringify(paymentPayload)
-        ).toString("base64");
+        const xPaymentHeader = Buffer.from(JSON.stringify(paymentPayload)).toString("base64");
 
         // Step 6: Retry with payment
         const finalResponse = await fetch(endpoint, {
@@ -210,7 +189,7 @@ export function useX402(): UseX402Return {
         setIsLoading(false);
       }
     },
-    [publicKey, signTransaction, connection]
+    [publicKey, signTransaction, connection],
   );
 
   return { callWithPayment, isLoading, error };

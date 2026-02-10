@@ -17,11 +17,7 @@ export function X402Badge({ priceUsdc, className = "" }: X402BadgeProps) {
         stroke="currentColor"
         strokeWidth={2}
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M13 10V3L4 14h7v7l9-11h-7z"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
       <span>x402</span>
       <span className="text-blue-300">${priceUsdc.toFixed(4)}</span>

@@ -1,0 +1,12 @@
+{"timestamp":"2026-02-09T04:53:11.595Z","level":"info","agent":"ops","message":"Test log message"}
+{"timestamp":"2026-02-09T04:53:11.596Z","level":"warn","agent":"ops","message":"Test warning"}
+{"timestamp":"2026-02-09T04:53:11.598Z","level":"info","agent":"ops","message":"Task created: \"Test task from infra smoke test\" -> dev [medium]"}
+{"timestamp":"2026-02-09T04:53:11.600Z","level":"warn","agent":"ops","message":"Blocked dangerous bash command: rm -rf /","command":"rm -rf /"}
+{"timestamp":"2026-02-09T04:53:11.602Z","level":"info","agent":"ops","message":"Registered job: Test Job [*/5 * * * *]"}
+{"timestamp":"2026-02-09T04:53:11.602Z","level":"info","agent":"ops","message":"Skipping disabled job: Disabled Job"}
+{"timestamp":"2026-02-09T04:59:09.253Z","level":"info","agent":"ops","message":"Starting ops agent in job mode"}
+{"timestamp":"2026-02-09T04:59:09.254Z","level":"info","agent":"ops","message":"Executing job: Health Check (health-check)"}
+{"timestamp":"2026-02-09T04:59:35.615Z","level":"info","agent":"ops","message":"Job result: ## 🟢 AgentPay Business Team Health Check - HEALTHY\n\n### Task Queue Status\n- **Clean slate**: All tasks completed (1/1), no pending or blocked items\n- **No escalations needed**: Zero tasks blocked >24 hours\n- **No bottlenecks**: Team capacity available for new work\n\n### Budget Analysis  \n- **All agents within limits**: Highest spend is ops at $0.01 API (well under 80% threshold)\n- **Minimal burn rate**: Total team spend <$0.02 today\n- **No budget warnings**: All agents operating efficiently\n\n###"}
+{"timestamp":"2026-02-09T04:59:36.189Z","level":"info","agent":"ops","message":"Job completed: Health Check"}
+{"timestamp":"2026-02-09T05:06:01.378Z","level":"info","agent":"ops","message":"Task created: \"Customer Feedback Analysis\" -> research [critical]"}
+{"timestamp":"2026-02-09T05:06:01.378Z","level":"info","agent":"ops","message":"Task created: \"Industry Compliance Requirements\" -> research [low]"}

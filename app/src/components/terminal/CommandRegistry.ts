@@ -1,10 +1,10 @@
-import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import type { AnchorWallet } from "@solana/wallet-adapter-react";
-import { getProgram, getConnection, getReadonlyProgram } from "@/lib/program";
-import { findTaskPda } from "@/lib/pda";
-import { padBytes, trimBytes, lamportsToSol } from "@/lib/utils";
+import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { PROGRAM_ID } from "@/lib/constants";
+import { findTaskPda } from "@/lib/pda";
+import { getConnection, getProgram, getReadonlyProgram } from "@/lib/program";
+import { lamportsToSol, padBytes, trimBytes } from "@/lib/utils";
 
 // Account sizes for filtering (to skip incompatible legacy accounts)
 const SERVICE_LISTING_SIZE = 218;
@@ -22,7 +22,7 @@ export interface CommandResult {
 type CommandHandler = (
   args: string[],
   wallet: AnchorWallet | undefined,
-  publicKey: PublicKey | null
+  publicKey: PublicKey | null,
 ) => Promise<CommandResult>;
 
 function parseArgs(raw: string[]): Record<string, string> {
@@ -38,7 +38,7 @@ function parseArgs(raw: string[]): Record<string, string> {
       i++;
     } else if (!raw[i].startsWith("-")) {
       // Positional argument
-      map[`_${Object.keys(map).filter(k => k.startsWith("_")).length}`] = raw[i];
+      map[`_${Object.keys(map).filter((k) => k.startsWith("_")).length}`] = raw[i];
     }
   }
   return map;
@@ -103,7 +103,13 @@ Type a command to get started. Example: stats
 
     let activeServices = 0;
     let totalTasksCompleted = 0;
-    const tasksByStatus: Record<string, number> = { open: 0, submitted: 0, completed: 0, disputed: 0, expired: 0 };
+    const tasksByStatus: Record<string, number> = {
+      open: 0,
+      submitted: 0,
+      completed: 0,
+      disputed: 0,
+      expired: 0,
+    };
     let escrowLocked = 0;
 
     for (const { account } of serviceAccounts) {
@@ -112,7 +118,9 @@ Type a command to get started. Example: stats
         const decoded = (program.coder.accounts as any).decode("serviceListing", account.data);
         if (decoded.isActive) activeServices++;
         totalTasksCompleted += decoded.tasksCompleted.toNumber();
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     for (const { account } of taskAccounts) {
@@ -124,7 +132,9 @@ Type a command to get started. Example: stats
         if (status === "open" || status === "submitted") {
           escrowLocked += decoded.amountLamports.toNumber();
         }
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     const output = `
@@ -141,7 +151,10 @@ Type a command to get started. Example: stats
 ║  💰 Escrow Locked: ${(escrowLocked / LAMPORTS_PER_SOL).toFixed(4)} SOL${" ".repeat(30)}║
 ╚═══════════════════════════════════════════════════════════════╝`;
 
-    return { output, data: { services: serviceAccounts.length, activeServices, tasksByStatus, escrowLocked } };
+    return {
+      output,
+      data: { services: serviceAccounts.length, activeServices, tasksByStatus, escrowLocked },
+    };
   },
 
   health: async () => {
@@ -164,7 +177,7 @@ Type a command to get started. Example: stats
 ║                      🏥 Health Check                          ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  RPC: Solana Devnet                                           ║
-║  Latency: ${String(latency + "ms").padEnd(50)}║
+║  Latency: ${String(`${latency}ms`).padEnd(50)}║
 ║  Slot: ${String(slot).padEnd(53)}║
 ║  Block Height: ${String(blockHeight).padEnd(45)}║
 ║  Version: ${String(version["solana-core"]).padEnd(50)}║
@@ -175,7 +188,10 @@ Type a command to get started. Example: stats
 
       return { output, data: { latency, slot, blockHeight, programStatus } };
     } catch (err) {
-      return { output: `❌ Health check failed: ${err instanceof Error ? err.message : "Unknown error"}`, error: true };
+      return {
+        output: `❌ Health check failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+        error: true,
+      };
     }
   },
 
@@ -221,7 +237,9 @@ Type a command to get started. Example: stats
           tasks: existing.tasks + decoded.tasksCompleted.toNumber(),
           services: existing.services + 1,
         });
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     const sorted = Array.from(providerStats.entries())
@@ -261,7 +279,7 @@ Type a command to get started. Example: stats
 ║                      💰 Wallet Balance                        ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  Address: ${shortAddr(publicKey.toBase58()).padEnd(50)}║
-║  Balance: ${(solBalance + " SOL").padEnd(50)}║
+║  Balance: ${(`${solBalance} SOL`).padEnd(50)}║
 ║  Network: Devnet${" ".repeat(44)}║
 ╚═══════════════════════════════════════════════════════════════╝`;
 
@@ -269,7 +287,7 @@ Type a command to get started. Example: stats
   },
 
   scan: async (args) => {
-    const wallet = args[0] || parseArgs(args)["_0"];
+    const wallet = args[0] || parseArgs(args)._0;
     if (!wallet) return { output: "Usage: scan <wallet_address>", error: true };
 
     try {
@@ -293,7 +311,7 @@ Type a command to get started. Example: stats
 ║                    🔍 REKT Shield Scan                        ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  Wallet: ${shortAddr(wallet).padEnd(51)}║
-║  Risk Score: ${(emoji + " " + score + "/100").padEnd(47)}║
+║  Risk Score: ${(`${emoji} ${score}/100`).padEnd(47)}║
 ║  Risk Level: ${level.padEnd(47)}║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  Powered by REKT Shield (@Youth)                              ║
@@ -301,7 +319,10 @@ Type a command to get started. Example: stats
 
       return { output, data: { wallet, score, level, details: riskData } };
     } catch (err) {
-      return { output: `❌ Could not reach REKT Shield: ${err instanceof Error ? err.message : "Unknown"}`, error: true };
+      return {
+        output: `❌ Could not reach REKT Shield: ${err instanceof Error ? err.message : "Unknown"}`,
+        error: true,
+      };
     }
   },
 
@@ -319,7 +340,10 @@ Type a command to get started. Example: stats
         data: { signature: sig, newBalance: newBal / LAMPORTS_PER_SOL },
       };
     } catch (err) {
-      return { output: `❌ Airdrop failed: ${err instanceof Error ? err.message : "Rate limited?"}`, error: true };
+      return {
+        output: `❌ Airdrop failed: ${err instanceof Error ? err.message : "Rate limited?"}`,
+        error: true,
+      };
     }
   },
 
@@ -359,7 +383,8 @@ Type a command to get started. Example: stats
       filters: [{ dataSize: TASK_REQUEST_SIZE }],
     });
 
-    const myTasks: { pda: string; role: string; status: string; amount: string; desc: string }[] = [];
+    const myTasks: { pda: string; role: string; status: string; amount: string; desc: string }[] =
+      [];
 
     for (const { pubkey, account } of taskAccounts) {
       try {
@@ -378,7 +403,9 @@ Type a command to get started. Example: stats
             desc: trimBytes(decoded.description).slice(0, 30),
           });
         }
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     if (myTasks.length === 0) {
@@ -391,7 +418,14 @@ Type a command to get started. Example: stats
 ╠═══════════════════════════════════════════════════════════════╣`;
 
     myTasks.forEach((t, i) => {
-      const statusEmoji = t.status === "open" ? "🟡" : t.status === "completed" ? "✅" : t.status === "submitted" ? "📤" : "❓";
+      const statusEmoji =
+        t.status === "open"
+          ? "🟡"
+          : t.status === "completed"
+            ? "✅"
+            : t.status === "submitted"
+              ? "📤"
+              : "❓";
       output += `\n║  ${i + 1}. [${t.role}] ${statusEmoji} ${t.status.padEnd(10)} ${t.amount} SOL${" ".repeat(15)}║`;
       output += `\n║     ${t.desc.padEnd(55)}║`;
     });
@@ -412,7 +446,10 @@ Type a command to get started. Example: stats
     });
 
     if (serviceAccounts.length === 0) {
-      return { output: "You haven't registered any services yet.\nUse the CLI: agentpay register-service -d \"Your service\" -p 0.01" };
+      return {
+        output:
+          'You haven\'t registered any services yet.\nUse the CLI: agentpay register-service -d "Your service" -p 0.01',
+      };
     }
 
     let output = `
@@ -428,7 +465,9 @@ Type a command to get started. Example: stats
         output += `\n║  ${status} - ${trimBytes(decoded.description).slice(0, 40).padEnd(40)}║`;
         output += `\n║    Price: ${lamportsToSol(decoded.priceLamports)} SOL | Completed: ${decoded.tasksCompleted.toNumber()} tasks${" ".repeat(15)}║`;
         output += `\n║    PDA: ${shortAddr(pubkey.toBase58()).padEnd(51)}║`;
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
     output += `\n╚═══════════════════════════════════════════════════════════════╝`;
 
@@ -456,7 +495,9 @@ Type a command to get started. Example: stats
             deadline: new Date(decoded.deadline.toNumber() * 1000).toLocaleString(),
           });
         }
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     if (openTasks.length === 0) {
@@ -481,7 +522,7 @@ Type a command to get started. Example: stats
   hire: async (args, wallet, publicKey) => {
     if (!wallet || !publicKey) return { output: "❌ Connect wallet first", error: true };
 
-    const serviceNum = parseInt(args[0] || parseArgs(args)["_0"] || "1");
+    const serviceNum = parseInt(args[0] || parseArgs(args)._0 || "1", 10);
 
     // Fetch services
     const connection = getConnection();
@@ -502,7 +543,9 @@ Type a command to get started. Example: stats
             price: decoded.priceLamports.toNumber(),
           });
         }
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     if (services.length === 0) {
@@ -544,7 +587,10 @@ Type a command to get started. Example: stats
         data: { taskPda: taskRequestPda.toBase58(), tx },
       };
     } catch (err) {
-      return { output: `❌ Failed: ${err instanceof Error ? err.message : "Unknown error"}`, error: true };
+      return {
+        output: `❌ Failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+        error: true,
+      };
     }
   },
 
@@ -572,7 +618,9 @@ Type a command to get started. Example: stats
           isActive: decoded.isActive,
           tasksCompleted: decoded.tasksCompleted.toNumber(),
         });
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     const data = { status: "ok", count: services.length, services };
@@ -602,7 +650,9 @@ Type a command to get started. Example: stats
           deadline: new Date(decoded.deadline.toNumber() * 1000).toISOString(),
           zkVerified: decoded.zkVerified ?? false,
         });
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
 
     const data = { status: "ok", count: tasks.length, tasks };
@@ -618,7 +668,8 @@ Type a command to get started. Example: stats
     const program = getProgram(wallet) as any;
     const taskId = crypto.getRandomValues(new Uint8Array(16));
     const [taskRequestPda] = findTaskPda(publicKey, taskId);
-    const deadline = Math.floor(Date.now() / 1000) + parseInt(opts["deadline-minutes"] || "60") * 60;
+    const deadline =
+      Math.floor(Date.now() / 1000) + parseInt(opts["deadline-minutes"] || "60", 10) * 60;
     const tx = await program.methods
       .createTask(Array.from(taskId), padBytes(opts.d, 256), new BN(deadline))
       .accounts({
@@ -687,7 +738,7 @@ Type a command to get started. Example: stats
   },
 
   "x402-info": async (args) => {
-    const serviceId = args[0] || parseArgs(args)["_0"] || parseArgs(args)["service-id"];
+    const serviceId = args[0] || parseArgs(args)._0 || parseArgs(args)["service-id"];
     if (!serviceId) return { output: "Usage: x402-info <service-id>", error: true };
 
     const response = await fetch(`/api/x402/${serviceId}`);
@@ -702,7 +753,7 @@ Type a command to get started. Example: stats
 export async function executeCommand(
   input: string,
   wallet: AnchorWallet | undefined,
-  publicKey: PublicKey | null
+  publicKey: PublicKey | null,
 ): Promise<CommandResult> {
   const parts = input.trim().split(/\s+/);
   const cmd = parts[0];

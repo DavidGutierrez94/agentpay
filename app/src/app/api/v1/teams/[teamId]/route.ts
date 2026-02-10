@@ -5,12 +5,13 @@
  * Multi-Agent Teams API for AgentPay
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import { type NextRequest, NextResponse } from "next/server";
 
 // Storage paths
-const DATA_DIR = process.env.AGENTPAY_TEAMS_DIR || path.join(process.cwd(), "..", "mcp-server", "teams-data");
+const DATA_DIR =
+  process.env.AGENTPAY_TEAMS_DIR || path.join(process.cwd(), "..", "mcp-server", "teams-data");
 const TEAMS_FILE = path.join(DATA_DIR, "teams.json");
 const CONTEXT_DIR = path.join(DATA_DIR, "contexts");
 
@@ -84,8 +85,8 @@ async function writeStore(store: TeamsStore) {
 
 // GET /api/v1/teams/:teamId
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ teamId: string }> }
+  _request: NextRequest,
+  { params }: { params: Promise<{ teamId: string }> },
 ) {
   const { teamId } = await params;
 
@@ -94,10 +95,7 @@ export async function GET(
     const team = store.teams.find((t) => t.id === teamId);
 
     if (!team) {
-      return NextResponse.json(
-        { success: false, error: "Team not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: "Team not found" }, { status: 404 });
     }
 
     // Get team tasks
@@ -120,7 +118,7 @@ export async function GET(
       totalSubtasks: teamTasks.reduce((sum, t) => sum + t.subtasks.length, 0),
       completedSubtasks: teamTasks.reduce(
         (sum, t) => sum + t.subtasks.filter((s) => s.status === "completed").length,
-        0
+        0,
       ),
     };
 
@@ -162,7 +160,7 @@ export async function GET(
         error: "Failed to fetch team",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -170,7 +168,7 @@ export async function GET(
 // PATCH /api/v1/teams/:teamId
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ teamId: string }> }
+  { params }: { params: Promise<{ teamId: string }> },
 ) {
   const { teamId } = await params;
 
@@ -180,10 +178,7 @@ export async function PATCH(
     const teamIndex = store.teams.findIndex((t) => t.id === teamId);
 
     if (teamIndex === -1) {
-      return NextResponse.json(
-        { success: false, error: "Team not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: "Team not found" }, { status: 404 });
     }
 
     const team = store.teams[teamIndex];
@@ -228,7 +223,7 @@ export async function PATCH(
         error: "Failed to update team",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

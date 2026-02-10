@@ -1,8 +1,8 @@
-import { AnchorProvider, Program, Idl } from "@coral-xyz/anchor";
+import { AnchorProvider, type Idl, Program } from "@coral-xyz/anchor";
+import type { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
-import { DEVNET_RPC } from "./constants";
 import idl from "../../public/idl.json";
+import { DEVNET_RPC } from "./constants";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyProgram = Program<any>;

@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import type { ServiceListing } from "@/lib/hooks/useServices";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/Dialog";
+import type { ServiceListing } from "@/lib/hooks/useServices";
 
 interface EnableX402ModalProps {
   service: ServiceListing | null;
@@ -19,12 +19,7 @@ interface EnableX402ModalProps {
   onSuccess: () => void;
 }
 
-export function EnableX402Modal({
-  service,
-  open,
-  onOpenChange,
-  onSuccess,
-}: EnableX402ModalProps) {
+export function EnableX402Modal({ service, open, onOpenChange, onSuccess }: EnableX402ModalProps) {
   const { publicKey } = useWallet();
   const [priceUsdc, setPriceUsdc] = useState("0.001");
   const [description, setDescription] = useState(service?.description || "");
@@ -49,7 +44,7 @@ export function EnableX402Modal({
     }
 
     const price = parseFloat(priceUsdc);
-    if (isNaN(price) || price <= 0) {
+    if (Number.isNaN(price) || price <= 0) {
       setError("Enter a valid price");
       return;
     }
@@ -146,9 +141,9 @@ export function EnableX402Modal({
                 style={{ borderRadius: "var(--border-radius-sm)" }}
               >
                 <p className="text-xs text-[var(--color-muted)]">
-                  <span className="text-[var(--color-accent)] font-medium">x402 Flow:</span>{" "}
-                  Clients request your endpoint → receive 402 with payment terms →
-                  sign USDC transfer → retry with payment → you receive USDC instantly
+                  <span className="text-[var(--color-accent)] font-medium">x402 Flow:</span> Clients
+                  request your endpoint → receive 402 with payment terms → sign USDC transfer →
+                  retry with payment → you receive USDC instantly
                 </p>
               </div>
 

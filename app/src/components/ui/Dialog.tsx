@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
@@ -20,7 +20,7 @@ const DialogOverlay = React.forwardRef<
       "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
+      className,
     )}
     {...props}
   />
@@ -49,7 +49,7 @@ const DialogContent = React.forwardRef<
         "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]",
         "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
         "duration-200",
-        className
+        className,
       )}
       style={{ borderRadius: "var(--border-radius)" }}
       {...props}
@@ -61,7 +61,7 @@ const DialogContent = React.forwardRef<
             "absolute right-4 top-4",
             "text-[var(--color-muted)] hover:text-[var(--color-text)]",
             "transition-colors focus:outline-none",
-            "disabled:pointer-events-none"
+            "disabled:pointer-events-none",
           )}
         >
           <X className="h-4 w-4" />
@@ -86,14 +86,8 @@ const DialogHeader = ({
   <div className={cn("mb-4", className)}>
     <div className="flex items-center gap-2 mb-3">
       <div className="flex gap-1.5">
-        <div
-          className="h-2 w-2 bg-[#ff3333]"
-          style={{ borderRadius: "var(--border-radius-sm)" }}
-        />
-        <div
-          className="h-2 w-2 bg-[#ffcc00]"
-          style={{ borderRadius: "var(--border-radius-sm)" }}
-        />
+        <div className="h-2 w-2 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+        <div className="h-2 w-2 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)" }} />
         <div
           className="h-2 w-2 bg-[var(--color-primary)]"
           style={{ borderRadius: "var(--border-radius-sm)" }}
@@ -115,10 +109,7 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn(
-      "text-lg font-bold text-[var(--color-text-bright)]",
-      className
-    )}
+    className={cn("text-lg font-bold text-[var(--color-text-bright)]", className)}
     {...props}
   />
 ));
@@ -143,12 +134,7 @@ const DialogFooter = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div
-    className={cn(
-      "mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2",
-      className
-    )}
-  >
+  <div className={cn("mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2", className)}>
     {children}
   </div>
 );

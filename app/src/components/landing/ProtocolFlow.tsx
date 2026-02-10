@@ -74,9 +74,7 @@ export function ProtocolFlow() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
             className={`relative mb-12 flex items-start gap-8 ${
-              i % 2 === 0
-                ? "md:flex-row"
-                : "md:flex-row-reverse md:text-right"
+              i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse md:text-right"
             }`}
           >
             {/* Connector dot */}
@@ -109,11 +107,7 @@ export function ProtocolFlow() {
                     stroke="currentColor"
                     strokeWidth={1.5}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d={step.icon}
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d={step.icon} />
                   </svg>
                 </div>
                 <h3 className="mt-3 text-lg font-semibold text-[var(--color-text-bright)]">

@@ -3,8 +3,8 @@
  * Get protocol statistics
  */
 
-import { NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { NextResponse } from "next/server";
 
 const PROGRAM_ID = new PublicKey("2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw");
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com";
@@ -96,10 +96,7 @@ export async function GET() {
     // Top providers by tasks completed
     const providerMap = new Map<string, number>();
     for (const s of services) {
-      providerMap.set(
-        s.provider,
-        (providerMap.get(s.provider) || 0) + s.tasksCompleted
-      );
+      providerMap.set(s.provider, (providerMap.get(s.provider) || 0) + s.tasksCompleted);
     }
 
     const topProviders = Array.from(providerMap.entries())
@@ -119,7 +116,7 @@ export async function GET() {
           byStatus: tasksByStatus,
           zkVerified: zkVerifiedCount,
           zkVerificationRate:
-            tasks.length > 0 ? ((zkVerifiedCount / tasks.length) * 100).toFixed(1) + "%" : "0%",
+            tasks.length > 0 ? `${((zkVerifiedCount / tasks.length) * 100).toFixed(1)}%` : "0%",
         },
         escrow: {
           lockedSol: (Number(escrowLockedLamports) / 1e9).toFixed(4),
@@ -137,7 +134,7 @@ export async function GET() {
         error: "Failed to fetch stats",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

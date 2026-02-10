@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useTeams } from "@/lib/hooks/useTeams";
+import { useState } from "react";
+import { CreateTeamModal } from "@/components/teams/CreateTeamModal";
 import { TeamCard } from "@/components/teams/TeamCard";
 import { TeamProfileModal } from "@/components/teams/TeamProfileModal";
-import { CreateTeamModal } from "@/components/teams/CreateTeamModal";
+import { useTeams } from "@/lib/hooks/useTeams";
 
 export default function TeamsPage() {
   const { publicKey } = useWallet();
@@ -20,9 +20,7 @@ export default function TeamsPage() {
     ? teams
         .filter((team) => {
           if (filter === "my" && publicKey) {
-            return team.members.some(
-              (m) => m.wallet === publicKey.toBase58()
-            );
+            return team.members.some((m) => m.wallet === publicKey.toBase58());
           }
           return true;
         })
@@ -32,11 +30,8 @@ export default function TeamsPage() {
               return b.memberCount - a.memberCount;
             case "name":
               return a.name.localeCompare(b.name);
-            case "recent":
             default:
-              return (
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-              );
+              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
           }
         })
     : [];
@@ -48,9 +43,18 @@ export default function TeamsPage() {
         <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
-              <div className="h-2 w-2 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)" }} />
-              <div className="h-2 w-2 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)" }} />
-              <div className="h-2 w-2 bg-[var(--color-primary)]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+              <div
+                className="h-2 w-2 bg-[#ff3333]"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
+              />
+              <div
+                className="h-2 w-2 bg-[#ffcc00]"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
+              />
+              <div
+                className="h-2 w-2 bg-[var(--color-primary)]"
+                style={{ borderRadius: "var(--border-radius-sm)" }}
+              />
             </div>
             <span className="text-[var(--color-primary)] text-xs uppercase tracking-wider">
               TEAM_REGISTRY
@@ -144,7 +148,8 @@ export default function TeamsPage() {
           <div className="text-[#ffcc00] text-xs mb-3">[NO_TEAMS_FOUND]</div>
           <p className="text-[var(--color-text)] text-sm mb-4">No teams created yet</p>
           <p className="text-xs text-[var(--color-muted)] mb-6">
-            Teams let multiple agents collaborate on complex tasks with automatic payment distribution.
+            Teams let multiple agents collaborate on complex tasks with automatic payment
+            distribution.
           </p>
           <div className="flex justify-center gap-3">
             {publicKey ? (
@@ -182,17 +187,13 @@ export default function TeamsPage() {
       {filteredTeams && filteredTeams.length > 0 && (
         <>
           <div className="mb-4 text-xs text-[var(--color-muted)]">
-            <span className="text-[var(--color-primary)]">{filteredTeams.length}</span>
-            {" "}team{filteredTeams.length !== 1 ? "s" : ""}
+            <span className="text-[var(--color-primary)]">{filteredTeams.length}</span> team
+            {filteredTeams.length !== 1 ? "s" : ""}
             {filter === "my" && " you're a member of"}
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredTeams.map((team) => (
-              <TeamCard
-                key={team.id}
-                team={team}
-                onView={() => setSelectedTeamId(team.id)}
-              />
+              <TeamCard key={team.id} team={team} onView={() => setSelectedTeamId(team.id)} />
             ))}
           </div>
         </>
@@ -213,7 +214,9 @@ export default function TeamsPage() {
         <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[var(--color-secondary)] text-lg font-mono">[+]</span>
-            <span className="text-[var(--color-secondary)] text-[10px] uppercase">WORKER_AGENTS</span>
+            <span className="text-[var(--color-secondary)] text-[10px] uppercase">
+              WORKER_AGENTS
+            </span>
           </div>
           <h3 className="font-semibold text-[var(--color-text)]">Worker Agents</h3>
           <p className="mt-1 text-sm text-[var(--color-muted)]">

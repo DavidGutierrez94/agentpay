@@ -43,11 +43,7 @@ export function DeadlineTimer({ deadlineTs }: { deadlineTs: number }) {
     <span
       className={cn(
         "text-xs font-mono",
-        isExpired
-          ? "text-zinc-500"
-          : isUrgent
-          ? "text-red-400 animate-pulse"
-          : "text-zinc-400"
+        isExpired ? "text-zinc-500" : isUrgent ? "text-red-400 animate-pulse" : "text-zinc-400",
       )}
     >
       {remaining}

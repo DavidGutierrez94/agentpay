@@ -1,18 +1,18 @@
 #!/usr/bin/env tsx
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import { CONFIG } from "../shared/config.js";
 import { initModelProvider } from "../shared/agent-init.js";
+import { getBudgetSummary } from "../shared/budget-monitor.js";
+import { CONFIG } from "../shared/config.js";
+import { appendToAgentContext } from "../shared/context-store.js";
 import { createAgentLogger } from "../shared/logger.js";
 import { createScheduler } from "../shared/scheduler.js";
-import { appendToAgentContext } from "../shared/context-store.js";
-import { listTasks, getQueueStats } from "../shared/task-queue.js";
-import { getBudgetSummary } from "../shared/budget-monitor.js";
-import { devJobs } from "./schedule.js";
+import { listTasks } from "../shared/task-queue.js";
 import type { ScheduledJob } from "../shared/types.js";
+import { devJobs } from "./schedule.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const logger = createAgentLogger("dev");
@@ -57,7 +57,12 @@ async function executeJob(job: ScheduledJob): Promise<void> {
         systemPrompt,
         model: CONFIG.defaultModel,
         allowedTools: [
-          "Read", "Write", "Edit", "Glob", "Grep", "Bash",
+          "Read",
+          "Write",
+          "Edit",
+          "Glob",
+          "Grep",
+          "Bash",
           "mcp__agentpay__get_balance",
           "mcp__agentpay__list_my_tasks",
           "mcp__agentpay__get_task",
@@ -99,7 +104,11 @@ async function executeJob(job: ScheduledJob): Promise<void> {
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     logger.error(`Job failed: ${job.name} — ${errMsg}`);
-    appendToAgentContext("dev", { type: "alert", author: "dev", content: `Job "${job.name}" failed: ${errMsg}` });
+    appendToAgentContext("dev", {
+      type: "alert",
+      author: "dev",
+      content: `Job "${job.name}" failed: ${errMsg}`,
+    });
   }
 }
 
@@ -135,7 +144,10 @@ async function main(): Promise<void> {
 
   if (mode === "interactive") {
     await executeJob({
-      id: "interactive", name: "Interactive", cron: "", enabled: true,
+      id: "interactive",
+      name: "Interactive",
+      cron: "",
+      enabled: true,
       prompt: prompt || "Check for pending dev tasks and work on the highest priority one.",
     });
     return;
@@ -146,10 +158,17 @@ async function main(): Promise<void> {
   scheduler.start();
   logger.info("Dev agent daemon running.");
 
-  const shutdown = () => { logger.info("Shutting down..."); scheduler.stop(); process.exit(0); };
+  const shutdown = () => {
+    logger.info("Shutting down...");
+    scheduler.stop();
+    process.exit(0);
+  };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
   await new Promise(() => {});
 }
 
-main().catch((err) => { logger.error(`Fatal: ${err}`); process.exit(1); });
+main().catch((err) => {
+  logger.error(`Fatal: ${err}`);
+  process.exit(1);
+});

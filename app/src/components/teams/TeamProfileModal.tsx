@@ -1,13 +1,8 @@
 "use client";
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 import { useTeam } from "@/lib/hooks/useTeams";
 import { AddressDisplay } from "../shared/AddressDisplay";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
 
 const roleIcons: Record<string, string> = {
   lead: "👑",
@@ -60,7 +55,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
           )}
 
           {error && (
-            <div 
+            <div
               className="border border-[var(--color-error)]/20 bg-[var(--color-error)]/5 p-4 text-sm text-[var(--color-error)]"
               style={{ borderRadius: "var(--border-radius-sm)" }}
             >
@@ -83,7 +78,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div 
+                <div
                   className="bg-[var(--color-surface)] p-3 text-center"
                   style={{ borderRadius: "var(--border-radius-sm)" }}
                 >
@@ -92,7 +87,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
                   </div>
                   <div className="text-xs text-[var(--color-muted)]">Total Tasks</div>
                 </div>
-                <div 
+                <div
                   className="bg-[var(--color-surface)] p-3 text-center"
                   style={{ borderRadius: "var(--border-radius-sm)" }}
                 >
@@ -101,7 +96,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
                   </div>
                   <div className="text-xs text-[var(--color-muted)]">Completed</div>
                 </div>
-                <div 
+                <div
                   className="bg-[var(--color-surface)] p-3 text-center"
                   style={{ borderRadius: "var(--border-radius-sm)" }}
                 >
@@ -110,7 +105,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
                   </div>
                   <div className="text-xs text-[var(--color-muted)]">In Progress</div>
                 </div>
-                <div 
+                <div
                   className="bg-[var(--color-surface)] p-3 text-center"
                   style={{ borderRadius: "var(--border-radius-sm)" }}
                 >
@@ -137,9 +132,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
                       }`}
                       style={{ borderRadius: "var(--border-radius-sm)" }}
                     >
-                      <span className="text-lg">
-                        {roleIcons[member.role] || "🔧"}
-                      </span>
+                      <span className="text-lg">{roleIcons[member.role] || "🔧"}</span>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <AddressDisplay address={member.wallet} chars={6} />
@@ -154,8 +147,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
                         </div>
                         <div className="mt-1 text-xs text-[var(--color-muted)]">
                           {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                          {member.sharePercentage > 0 &&
-                            ` • ${member.sharePercentage}% share`}
+                          {member.sharePercentage > 0 && ` • ${member.sharePercentage}% share`}
                         </div>
                       </div>
                       {member.skills && member.skills.length > 0 && (
@@ -190,20 +182,21 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
                         style={{ borderRadius: "var(--border-radius-sm)" }}
                       >
                         <div className="flex-1">
-                          <p className="text-sm text-[var(--color-text-bright)]">{task.description}</p>
+                          <p className="text-sm text-[var(--color-text-bright)]">
+                            {task.description}
+                          </p>
                           <div className="mt-1 flex items-center gap-3 text-xs text-[var(--color-muted)]">
                             <span>
                               {task.completedSubtasks}/{task.subtaskCount} subtasks
                             </span>
                             <span>•</span>
-                            <span>
-                              {new Date(task.createdAt).toLocaleDateString()}
-                            </span>
+                            <span>{new Date(task.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
                         <span
                           className={`px-2 py-0.5 text-xs ${
-                            statusColors[task.status] || "bg-[var(--color-muted)] text-[var(--color-text)]"
+                            statusColors[task.status] ||
+                            "bg-[var(--color-muted)] text-[var(--color-text)]"
                           }`}
                           style={{ borderRadius: "var(--border-radius-sm)" }}
                         >
@@ -221,7 +214,7 @@ export function TeamProfileModal({ teamId, open, onOpenChange }: TeamProfileModa
                   <h3 className="mb-3 text-sm font-semibold text-[var(--color-muted)] uppercase tracking-wider">
                     Shared Context
                   </h3>
-                  <div 
+                  <div
                     className="bg-[var(--color-surface)] p-4"
                     style={{ borderRadius: "var(--border-radius-sm)" }}
                   >

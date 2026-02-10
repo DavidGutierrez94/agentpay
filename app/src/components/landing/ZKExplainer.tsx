@@ -47,7 +47,9 @@ export function ZKExplainer() {
             viewport={{ once: true }}
             transition={{ delay: 0.4, duration: 0.5 }}
             className="hidden h-px w-24 md:block"
-            style={{ background: `linear-gradient(to right, var(--color-border), var(--color-primary))` }}
+            style={{
+              background: `linear-gradient(to right, var(--color-border), var(--color-primary))`,
+            }}
           />
 
           {/* Poseidon */}
@@ -78,7 +80,9 @@ export function ZKExplainer() {
             viewport={{ once: true }}
             transition={{ delay: 0.6, duration: 0.5 }}
             className="hidden h-px w-24 md:block"
-            style={{ background: `linear-gradient(to right, var(--color-primary), var(--color-success))` }}
+            style={{
+              background: `linear-gradient(to right, var(--color-primary), var(--color-success))`,
+            }}
           />
 
           {/* Output */}
@@ -102,9 +106,8 @@ export function ZKExplainer() {
             Poseidon(result) == expectedHash
           </code>
           <p className="mt-4 text-sm text-[var(--color-muted)]">
-            The provider proves they know the result pre-image without revealing
-            it on-chain. Groth16 proof verified in under 200K compute units via
-            Solana&apos;s{" "}
+            The provider proves they know the result pre-image without revealing it on-chain.
+            Groth16 proof verified in under 200K compute units via Solana&apos;s{" "}
             <code className="text-[var(--color-primary)]">alt_bn128</code> syscall.
           </p>
         </div>

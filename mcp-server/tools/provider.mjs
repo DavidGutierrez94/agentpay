@@ -4,17 +4,12 @@
  * - submit_result_zk: Submit result with ZK proof verification
  */
 
-import { createHash } from "crypto";
-import { readFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { PublicKey } from "@solana/web3.js";
-import {
-  getProgram,
-  getConnection,
-  trimBytes,
-  lamportsToSol,
-} from "./program.mjs";
+import { getProgram } from "./program.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -216,13 +211,13 @@ export async function submitResultZk({ taskPda, result }) {
     // Compute Poseidon hash of result for the circuit
     // For simplicity, we use the first 31 bytes of SHA256 as the preimage
     const sha256Hash = createHash("sha256").update(result).digest();
-    const preimage = BigInt("0x" + sha256Hash.subarray(0, 31).toString("hex"));
+    const preimage = BigInt(`0x${sha256Hash.subarray(0, 31).toString("hex")}`);
 
     // Generate ZK proof
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
       { preimage },
       WASM_PATH,
-      ZKEY_PATH
+      ZKEY_PATH,
     );
 
     // Format proof for Solana
@@ -234,12 +229,7 @@ export async function submitResultZk({ taskPda, result }) {
     bigIntToBytes32BE(hashBigInt).copy(resultHash);
 
     const tx = await program.methods
-      .submitResultZk(
-        Array.from(a),
-        Array.from(b),
-        Array.from(c),
-        Array.from(resultHash)
-      )
+      .submitResultZk(Array.from(a), Array.from(b), Array.from(c), Array.from(resultHash))
       .accounts({
         provider: keypair.publicKey,
         taskRequest: taskPubkey,

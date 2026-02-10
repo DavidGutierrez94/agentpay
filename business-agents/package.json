@@ -1,0 +1,33 @@
+{
+  "name": "agentpay-business-agents",
+  "version": "1.0.0",
+  "description": "Multi-agent business team for AgentPay — 13 agents across Leadership, Engineering, Marketing, and Sales teams",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev:ops": "tsx ops-agent/index.ts",
+    "dev:dev": "tsx dev-agent/index.ts",
+    "dev:frontend": "tsx frontend-agent/index.ts",
+    "dev:backend": "tsx backend-agent/index.ts",
+    "dev:web3": "tsx web3-agent/index.ts",
+    "dev:marketing": "tsx marketing-agent/index.ts",
+    "dev:content": "tsx content-agent/index.ts",
+    "dev:social": "tsx social-agent/index.ts",
+    "dev:analytics": "tsx analytics-agent/index.ts",
+    "dev:sales": "tsx sales-agent/index.ts",
+    "dev:research": "tsx research-agent/index.ts",
+    "dev:outreach": "tsx outreach-agent/index.ts",
+    "dev:proposals": "tsx proposals-agent/index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.1.31",
+    "node-cron": "^3.0.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

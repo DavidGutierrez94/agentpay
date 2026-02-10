@@ -178,7 +178,7 @@ export class RateLimiter {
       const retryAfter = globalBucket.getRetryAfter();
       throw new RateLimitError(
         `Global rate limit exceeded. Try again in ${Math.ceil(retryAfter / 1000)}s`,
-        retryAfter
+        retryAfter,
       );
     }
 
@@ -188,7 +188,7 @@ export class RateLimiter {
       const retryAfter = bucket.getRetryAfter();
       throw new RateLimitError(
         `Rate limit exceeded for ${tool}. Try again in ${Math.ceil(retryAfter / 1000)}s`,
-        retryAfter
+        retryAfter,
       );
     }
   }

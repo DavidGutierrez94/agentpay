@@ -3,14 +3,14 @@
  * Builds HTTP 402 Payment Required responses with payment terms
  */
 
+import { SOLANA_NETWORK_X402, USDC_MINT_DEVNET } from "../constants";
 import type { X402PaymentRequired } from "./types";
-import { USDC_MINT_DEVNET, SOLANA_NETWORK_X402 } from "../constants";
 
 export function buildPaymentRequiredHeader(
   recipientWallet: string,
   amountUsdc: number,
   serviceName?: string,
-  serviceDescription?: string
+  serviceDescription?: string,
 ): string {
   const payload: X402PaymentRequired = {
     x402Version: 1,

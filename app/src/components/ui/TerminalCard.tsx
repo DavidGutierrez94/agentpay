@@ -1,7 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
 
 interface TerminalCardProps {
   children: ReactNode;
@@ -49,7 +49,7 @@ export function TerminalCard({
         "bg-[#111111] border transition-all duration-200",
         styles.border,
         styles.glow,
-        className
+        className,
       )}
     >
       {title && (
@@ -61,18 +61,11 @@ export function TerminalCard({
               <div className="h-2 w-2 bg-[#ffcc00]" />
               <div className="h-2 w-2 bg-[#00ff41]" />
             </div>
-            <span
-              className={cn(
-                "text-xs font-medium uppercase tracking-wider",
-                styles.title
-              )}
-            >
+            <span className={cn("text-xs font-medium uppercase tracking-wider", styles.title)}>
               {title}
             </span>
           </div>
-          {headerRight && (
-            <div className="text-xs text-[#666666]">{headerRight}</div>
-          )}
+          {headerRight && <div className="text-xs text-[#666666]">{headerRight}</div>}
         </div>
       )}
       <div className="p-4">{children}</div>
@@ -120,11 +113,7 @@ const statusConfig = {
 
 export function TerminalStatus({ status, className }: TerminalStatusProps) {
   const config = statusConfig[status];
-  return (
-    <span className={cn("font-mono text-xs", config.color, className)}>
-      [{config.text}]
-    </span>
-  );
+  return <span className={cn("font-mono text-xs", config.color, className)}>[{config.text}]</span>;
 }
 
 // Terminal Loader
@@ -170,7 +159,7 @@ export function TerminalButton({
         "border px-4 py-2 font-mono text-xs uppercase tracking-wider transition-all duration-200",
         buttonVariants[variant],
         disabled && "cursor-not-allowed opacity-50",
-        className
+        className,
       )}
     >
       {children}
@@ -195,7 +184,12 @@ export function TerminalInput({
   prefix = ">",
 }: TerminalInputProps) {
   return (
-    <div className={cn("flex items-center gap-2 bg-[#0a0a0a] border border-[#00ff41]/25 px-3 py-2", className)}>
+    <div
+      className={cn(
+        "flex items-center gap-2 bg-[#0a0a0a] border border-[#00ff41]/25 px-3 py-2",
+        className,
+      )}
+    >
       <span className="text-[#00ff41] font-mono text-sm">{prefix}</span>
       <input
         type="text"

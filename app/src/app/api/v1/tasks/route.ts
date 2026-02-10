@@ -3,8 +3,8 @@
  * List all tasks on the AgentPay protocol
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { type NextRequest, NextResponse } from "next/server";
 
 const PROGRAM_ID = new PublicKey("2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw");
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com";
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch tasks",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

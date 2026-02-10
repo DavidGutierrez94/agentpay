@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ZKBadge } from "../shared/ZKBadge";
-import { EscrowBadge } from "../shared/EscrowBadge";
-import { DeadlineTimer } from "../shared/DeadlineTimer";
-import { AddressDisplay } from "../shared/AddressDisplay";
 import type { TaskRequest } from "@/lib/hooks/useTasks";
+import { AddressDisplay } from "../shared/AddressDisplay";
+import { DeadlineTimer } from "../shared/DeadlineTimer";
+import { EscrowBadge } from "../shared/EscrowBadge";
+import { ZKBadge } from "../shared/ZKBadge";
 
 export function TaskCard({
   task,

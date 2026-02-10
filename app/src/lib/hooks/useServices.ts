@@ -1,8 +1,8 @@
+import { type GetProgramAccountsFilter, PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
-import { PublicKey, GetProgramAccountsFilter } from "@solana/web3.js";
-import { getReadonlyProgram, getConnection } from "../program";
-import { trimBytes, lamportsToSol } from "../utils";
 import { PROGRAM_ID } from "../constants";
+import { getConnection, getReadonlyProgram } from "../program";
+import { lamportsToSol, trimBytes } from "../utils";
 
 export interface ServiceListing {
   pda: string;
@@ -26,9 +26,7 @@ export function useServices(providerFilter?: string) {
         // Use raw getProgramAccounts to fetch all accounts, then decode individually
         // This allows us to skip accounts that don't match the current schema
         // Filter by dataSize=218 to only get accounts with current ServiceListing schema
-        const filters: GetProgramAccountsFilter[] = [
-          { dataSize: 218 },
-        ];
+        const filters: GetProgramAccountsFilter[] = [{ dataSize: 218 }];
 
         if (providerFilter) {
           filters.push({
@@ -48,10 +46,7 @@ export function useServices(providerFilter?: string) {
         for (const { pubkey, account } of rawAccounts) {
           try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded = (program.coder.accounts as any).decode(
-              "serviceListing",
-              account.data
-            );
+            const decoded = (program.coder.accounts as any).decode("serviceListing", account.data);
 
             if (decoded.isActive) {
               validServices.push({

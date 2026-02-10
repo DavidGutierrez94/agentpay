@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useAgents, type Agent } from "@/lib/hooks/useAgents";
+import { useState } from "react";
 import { AgentCard } from "@/components/agents/AgentCard";
 import { AgentProfileModal } from "@/components/agents/AgentProfileModal";
+import { type Agent, useAgents } from "@/lib/hooks/useAgents";
 
 export default function AgentsPage() {
   const { data: agents, isLoading, error } = useAgents();
@@ -19,10 +19,7 @@ export default function AgentsPage() {
           case "services":
             return b.stats.totalServices - a.stats.totalServices;
           case "recent":
-            return (
-              new Date(b.stats.firstSeen).getTime() -
-              new Date(a.stats.firstSeen).getTime()
-            );
+            return new Date(b.stats.firstSeen).getTime() - new Date(a.stats.firstSeen).getTime();
           default:
             return 0;
         }
@@ -40,9 +37,7 @@ export default function AgentsPage() {
               <div className="h-2 w-2 bg-[#ffcc00]" />
               <div className="h-2 w-2 bg-[#00ff41]" />
             </div>
-            <span className="text-[#00ff41] text-xs uppercase tracking-wider">
-              AGENT_REGISTRY
-            </span>
+            <span className="text-[#00ff41] text-xs uppercase tracking-wider">AGENT_REGISTRY</span>
           </div>
 
           {/* Sort Control */}
@@ -64,7 +59,8 @@ export default function AgentsPage() {
             <span className="text-[#00ff41]">$</span> cat ~/agents --list
           </div>
           <p className="text-sm text-[#c0c0c0]">
-            Discover AI agents and their track records on <span className="text-[#00ff41]">AgentPay</span>
+            Discover AI agents and their track records on{" "}
+            <span className="text-[#00ff41]">AgentPay</span>
           </p>
         </div>
       </div>
@@ -73,10 +69,7 @@ export default function AgentsPage() {
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-64 border border-[#00ff41]/25 bg-[#111111] animate-pulse"
-            />
+            <div key={i} className="h-64 border border-[#00ff41]/25 bg-[#111111] animate-pulse" />
           ))}
         </div>
       )}
@@ -95,9 +88,7 @@ export default function AgentsPage() {
       {agents && agents.length === 0 && (
         <div className="border border-[#00ff41]/25 bg-[#111111] p-8 text-center">
           <div className="text-[#ffcc00] text-xs mb-3">[NO_AGENTS_FOUND]</div>
-          <p className="text-[#c0c0c0] text-sm mb-4">
-            No agents registered yet
-          </p>
+          <p className="text-[#c0c0c0] text-sm mb-4">No agents registered yet</p>
           <div className="bg-[#0a0a0a] border border-[#00ff41]/25 p-4 text-left inline-block mb-6">
             <div className="text-xs text-[#666666] mb-1">
               <span className="text-[#00ff41]">$</span> register-service
@@ -127,16 +118,12 @@ export default function AgentsPage() {
       {sortedAgents.length > 0 && (
         <>
           <div className="mb-4 text-xs text-[#666666]">
-            <span className="text-[#00ff41]">{sortedAgents.length}</span>
-            {" "}agent{sortedAgents.length !== 1 ? "s" : ""} registered
+            <span className="text-[#00ff41]">{sortedAgents.length}</span> agent
+            {sortedAgents.length !== 1 ? "s" : ""} registered
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {sortedAgents.map((agent) => (
-              <AgentCard
-                key={agent.wallet}
-                agent={agent}
-                onView={() => setSelectedAgent(agent)}
-              />
+              <AgentCard key={agent.wallet} agent={agent} onView={() => setSelectedAgent(agent)} />
             ))}
           </div>
         </>

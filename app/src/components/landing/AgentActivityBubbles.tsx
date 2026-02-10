@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useAgentActivity, useNetworkMetrics, AgentTransaction } from "@/lib/hooks/useAgentActivity";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import {
+  type AgentTransaction,
+  useAgentActivity,
+  useNetworkMetrics,
+} from "@/lib/hooks/useAgentActivity";
 
 // Agent node positions (fixed layout)
 const AGENT_POSITIONS = {
@@ -43,13 +47,16 @@ export function AgentActivityBubbles() {
       oy: (Math.random() - 0.5) * 15,
       ax: (Math.random() - 0.5) * 40,
       ay: -30 - Math.random() * 30,
-    }))
+    })),
   );
 
   const bubbles = useMemo<FloatingBubble[]>(() => {
     if (!transactions?.length) return [];
     return transactions.slice(0, 8).map((tx, i) => {
-      const agentPos = AGENT_POSITIONS[tx.agentRole as keyof typeof AGENT_POSITIONS] || { x: 50, y: 50 };
+      const agentPos = AGENT_POSITIONS[tx.agentRole as keyof typeof AGENT_POSITIONS] || {
+        x: 50,
+        y: 50,
+      };
       const seed = bubbleSeeds[i] ?? bubbleSeeds[0]!;
       return {
         id: tx.signature.slice(0, 8) + i,
@@ -68,15 +75,21 @@ export function AgentActivityBubbles() {
   const stats = useMemo(() => {
     if (!transactions?.length) return null;
 
-    const byType = transactions.reduce((acc, tx) => {
-      acc[tx.type] = (acc[tx.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const byType = transactions.reduce(
+      (acc, tx) => {
+        acc[tx.type] = (acc[tx.type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const byAgent = transactions.reduce((acc, tx) => {
-      acc[tx.agentRole] = (acc[tx.agentRole] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const byAgent = transactions.reduce(
+      (acc, tx) => {
+        acc[tx.agentRole] = (acc[tx.agentRole] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return { byType, byAgent, total: transactions.length };
   }, [transactions]);
@@ -112,28 +125,36 @@ export function AgentActivityBubbles() {
               <div className="font-mono text-lg font-bold text-[var(--color-primary)]">
                 {metrics.tvlSol.toFixed(2)}
               </div>
-              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">TVL (SOL)</div>
+              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">
+                TVL (SOL)
+              </div>
             </div>
             <div className="w-px bg-[var(--color-border)]" />
             <div className="text-center">
               <div className="font-mono text-lg font-bold text-[var(--color-success)]">
                 {metrics.txPerMinute}
               </div>
-              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">TX/MIN</div>
+              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">
+                TX/MIN
+              </div>
             </div>
             <div className="w-px bg-[var(--color-border)]" />
             <div className="text-center">
               <div className="font-mono text-lg font-bold text-[var(--color-warning)]">
                 {metrics.completionRate.toFixed(0)}%
               </div>
-              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">COMPLETION</div>
+              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">
+                COMPLETION
+              </div>
             </div>
             <div className="w-px bg-[var(--color-border)]" />
             <div className="text-center">
               <div className="font-mono text-lg font-bold text-[var(--color-accent)]">
                 {metrics.activeAgents}
               </div>
-              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">AGENTS</div>
+              <div className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">
+                AGENTS
+              </div>
             </div>
           </div>
         </motion.div>
@@ -150,16 +171,34 @@ export function AgentActivityBubbles() {
         {/* Connection lines between agents */}
         <svg className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
           <line
-            x1="20%" y1="30%" x2="80%" y2="30%"
-            stroke="var(--color-primary)" strokeOpacity="0.2" strokeWidth="2" strokeDasharray="4 4"
+            x1="20%"
+            y1="30%"
+            x2="80%"
+            y2="30%"
+            stroke="var(--color-primary)"
+            strokeOpacity="0.2"
+            strokeWidth="2"
+            strokeDasharray="4 4"
           />
           <line
-            x1="20%" y1="30%" x2="50%" y2="75%"
-            stroke="var(--color-warning)" strokeOpacity="0.2" strokeWidth="2" strokeDasharray="4 4"
+            x1="20%"
+            y1="30%"
+            x2="50%"
+            y2="75%"
+            stroke="var(--color-warning)"
+            strokeOpacity="0.2"
+            strokeWidth="2"
+            strokeDasharray="4 4"
           />
           <line
-            x1="80%" y1="30%" x2="50%" y2="75%"
-            stroke="var(--color-success)" strokeOpacity="0.2" strokeWidth="2" strokeDasharray="4 4"
+            x1="80%"
+            y1="30%"
+            x2="50%"
+            y2="75%"
+            stroke="var(--color-success)"
+            strokeOpacity="0.2"
+            strokeWidth="2"
+            strokeDasharray="4 4"
           />
         </svg>
 
@@ -222,9 +261,7 @@ export function AgentActivityBubbles() {
         {/* Loading state */}
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg)]/80">
-            <div className="animate-pulse text-[var(--color-muted)]">
-              Loading agent activity...
-            </div>
+            <div className="animate-pulse text-[var(--color-muted)]">Loading agent activity...</div>
           </div>
         )}
       </div>
@@ -251,7 +288,9 @@ export function AgentActivityBubbles() {
           className="mt-4 flex justify-center gap-6 text-center text-sm"
         >
           <div>
-            <div className="font-mono text-lg font-bold text-[var(--color-text-bright)]">{stats.total}</div>
+            <div className="font-mono text-lg font-bold text-[var(--color-text-bright)]">
+              {stats.total}
+            </div>
             <div className="text-[var(--color-muted)] text-xs uppercase">Recent Txs</div>
           </div>
           <div>

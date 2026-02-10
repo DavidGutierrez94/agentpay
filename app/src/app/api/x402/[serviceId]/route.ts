@@ -3,12 +3,12 @@
  * Protected x402 endpoint - requires payment
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { USDC_MINT_DEVNET } from "@/lib/constants";
+import { getConnection } from "@/lib/program";
 import { getX402Service } from "@/lib/x402/config";
 import { buildPaymentRequiredHeader } from "@/lib/x402/response";
 import { verifyAndSubmitPayment } from "@/lib/x402/verify";
-import { getConnection } from "@/lib/program";
-import { USDC_MINT_DEVNET } from "@/lib/constants";
 
 interface RouteParams {
   params: Promise<{ serviceId: string }>;
@@ -19,10 +19,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const config = getX402Service(serviceId);
 
   if (!config) {
-    return NextResponse.json(
-      { error: "Service not found", serviceId },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Service not found", serviceId }, { status: 404 });
   }
 
   const paymentHeader = request.headers.get("X-Payment");
@@ -42,10 +39,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           "X-Payment-Required": buildPaymentRequiredHeader(
             config.recipientWallet,
             config.priceUsdc,
-            config.description
+            config.description,
           ),
         },
-      }
+      },
     );
   }
 
@@ -56,7 +53,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     paymentHeader,
     config.recipientTokenAccount,
     config.priceUsdc,
-    USDC_MINT_DEVNET
+    USDC_MINT_DEVNET,
   );
 
   if (!result.success) {
@@ -65,7 +62,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         error: "Payment verification failed",
         details: result.error,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -94,15 +91,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 }
 
 // Also support GET for service info
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   const { serviceId } = await params;
   const config = getX402Service(serviceId);
 
   if (!config) {
-    return NextResponse.json(
-      { error: "Service not found", serviceId },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Service not found", serviceId }, { status: 404 });
   }
 
   return NextResponse.json({

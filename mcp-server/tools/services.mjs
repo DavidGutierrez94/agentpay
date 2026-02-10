@@ -6,12 +6,12 @@
 
 import { PublicKey } from "@solana/web3.js";
 import {
-  getProgram,
   getConnection,
+  getProgram,
+  lamportsToSol,
   PROGRAM_ID,
   SERVICE_LISTING_SIZE,
   trimBytes,
-  lamportsToSol,
 } from "./program.mjs";
 
 /**

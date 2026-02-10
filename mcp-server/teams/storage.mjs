@@ -5,9 +5,9 @@
  * In production, this would be replaced with a database.
  */
 
-import fs from "fs";
-import path from "path";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 
 // ============================================================================
 // Configuration
@@ -172,9 +172,7 @@ export function listTeams(filters = {}) {
   let teams = store.teams;
 
   if (filters.memberWallet) {
-    teams = teams.filter((t) =>
-      t.members.some((m) => m.wallet === filters.memberWallet)
-    );
+    teams = teams.filter((t) => t.members.some((m) => m.wallet === filters.memberWallet));
   }
 
   if (filters.activeOnly !== false) {
@@ -416,7 +414,7 @@ export function completeSubtask({ teamTaskId, subtaskId, result }) {
 
   // Check if all subtasks are complete
   const allComplete = teamTask.subtasks.every(
-    (s) => s.status === "completed" || s.status === "failed"
+    (s) => s.status === "completed" || s.status === "failed",
   );
   if (allComplete) {
     teamTask.status = "review";
@@ -502,7 +500,7 @@ export function appendToContext(teamId, { type, author, content }) {
   }
 
   const timestamp = new Date().toISOString();
-  const shortAuthor = author.slice(0, 8) + "...";
+  const shortAuthor = `${author.slice(0, 8)}...`;
   const entry = `
 ### [${timestamp}] ${type.toUpperCase()} by ${shortAuthor}
 

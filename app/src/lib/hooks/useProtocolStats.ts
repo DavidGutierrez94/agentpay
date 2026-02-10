@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getReadonlyProgram, getConnection } from "../program";
-import { lamportsToSol } from "../utils";
 import { PROGRAM_ID } from "../constants";
+import { getConnection, getReadonlyProgram } from "../program";
+import { lamportsToSol } from "../utils";
 
 // Account sizes for filtering
 const SERVICE_LISTING_SIZE = 218;
@@ -50,10 +50,7 @@ export function useProtocolStats() {
         for (const { account } of rawServiceAccounts) {
           try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded = (program.coder.accounts as any).decode(
-              "serviceListing",
-              account.data
-            );
+            const decoded = (program.coder.accounts as any).decode("serviceListing", account.data);
             services.push({
               provider: decoded.provider.toBase58(),
               tasksCompleted: decoded.tasksCompleted.toNumber(),
@@ -69,10 +66,7 @@ export function useProtocolStats() {
         for (const { account } of rawTaskAccounts) {
           try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded = (program.coder.accounts as any).decode(
-              "taskRequest",
-              account.data
-            );
+            const decoded = (program.coder.accounts as any).decode("taskRequest", account.data);
             tasks.push({
               status: Object.keys(decoded.status)[0],
               amountLamports: decoded.amountLamports.toNumber(),
@@ -102,10 +96,7 @@ export function useProtocolStats() {
         // Top providers by tasks completed
         const providerMap = new Map<string, number>();
         for (const s of services) {
-          providerMap.set(
-            s.provider,
-            (providerMap.get(s.provider) || 0) + s.tasksCompleted
-          );
+          providerMap.set(s.provider, (providerMap.get(s.provider) || 0) + s.tasksCompleted);
         }
 
         const topProviders = Array.from(providerMap.entries())

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import type { CommandResult } from "@/components/terminal/CommandRegistry";
 import { Terminal } from "@/components/terminal/Terminal";
 import { VisualPanel } from "@/components/terminal/VisualPanel";
-import type { CommandResult } from "@/components/terminal/CommandRegistry";
 
 export default function TerminalPage() {
   const [lastResult, setLastResult] = useState<CommandResult | null>(null);

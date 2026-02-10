@@ -4,13 +4,11 @@
  * - scan_wallet: REKT Shield risk scan
  */
 
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { getProgram, getConnection, lamportsToSol } from "./program.mjs";
+import { getConnection, getProgram, lamportsToSol } from "./program.mjs";
 
 // REKT Shield API endpoint
 const REKT_SHIELD_API =
-  process.env.REKT_SHIELD_API ||
-  "https://web-production-c5ac4.up.railway.app/api/scan";
+  process.env.REKT_SHIELD_API || "https://web-production-c5ac4.up.railway.app/api/scan";
 
 /**
  * Get wallet SOL balance

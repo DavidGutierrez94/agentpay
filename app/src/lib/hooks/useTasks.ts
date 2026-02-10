@@ -1,9 +1,9 @@
+import { type GetProgramAccountsFilter, PublicKey } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
-import { PublicKey, GetProgramAccountsFilter } from "@solana/web3.js";
-import { getReadonlyProgram, getConnection } from "../program";
-import { trimBytes, lamportsToSol } from "../utils";
-import { PROGRAM_ID } from "../constants";
 import type { TaskStatus } from "../constants";
+import { PROGRAM_ID } from "../constants";
+import { getConnection, getReadonlyProgram } from "../program";
+import { lamportsToSol, trimBytes } from "../utils";
 
 // TaskRequest account size: 435 bytes
 const TASK_REQUEST_SIZE = 435;
@@ -24,11 +24,7 @@ export interface TaskRequest {
   zkVerified: boolean;
 }
 
-export function useTasks(opts?: {
-  requester?: string;
-  provider?: string;
-  status?: TaskStatus;
-}) {
+export function useTasks(opts?: { requester?: string; provider?: string; status?: TaskStatus }) {
   return useQuery<TaskRequest[]>({
     queryKey: ["tasks", opts?.requester, opts?.provider, opts?.status],
     queryFn: async () => {
@@ -37,9 +33,7 @@ export function useTasks(opts?: {
 
       try {
         // Filter by dataSize to only get compatible TaskRequest accounts
-        const filters: GetProgramAccountsFilter[] = [
-          { dataSize: TASK_REQUEST_SIZE },
-        ];
+        const filters: GetProgramAccountsFilter[] = [{ dataSize: TASK_REQUEST_SIZE }];
 
         if (opts?.requester) {
           filters.push({
@@ -67,10 +61,7 @@ export function useTasks(opts?: {
         for (const { pubkey, account } of rawAccounts) {
           try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded = (program.coder.accounts as any).decode(
-              "taskRequest",
-              account.data
-            );
+            const decoded = (program.coder.accounts as any).decode("taskRequest", account.data);
 
             const statusKey = Object.keys(decoded.status)[0] as TaskStatus;
             const deadlineTs = decoded.deadline.toNumber();
@@ -131,10 +122,7 @@ export function useAllTasks() {
         for (const { pubkey, account } of rawAccounts) {
           try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded = (program.coder.accounts as any).decode(
-              "taskRequest",
-              account.data
-            );
+            const decoded = (program.coder.accounts as any).decode("taskRequest", account.data);
 
             const statusKey = Object.keys(decoded.status)[0] as TaskStatus;
             const deadlineTs = decoded.deadline.toNumber();

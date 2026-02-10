@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { ProtocolStats } from "@/lib/hooks/useProtocolStats";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -11,11 +11,7 @@ const STATUS_COLORS: Record<string, string> = {
   expired: "#666666",
 };
 
-export function TaskStatusChart({
-  stats,
-}: {
-  stats: ProtocolStats | undefined;
-}) {
+export function TaskStatusChart({ stats }: { stats: ProtocolStats | undefined }) {
   if (!stats) return null;
 
   const data = Object.entries(stats.tasksByStatus)

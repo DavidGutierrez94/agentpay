@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AddressDisplay } from "../shared/AddressDisplay";
 import type { Agent } from "@/lib/hooks/useAgents";
+import { AddressDisplay } from "../shared/AddressDisplay";
 
 interface AgentCardProps {
   agent: Agent;
@@ -12,9 +12,7 @@ interface AgentCardProps {
 export function AgentCard({ agent, onView }: AgentCardProps) {
   const zkPercentage =
     agent.stats.totalTasksCompleted > 0
-      ? Math.round(
-          (agent.stats.zkVerifiedCount / agent.stats.totalTasksCompleted) * 100
-        )
+      ? Math.round((agent.stats.zkVerifiedCount / agent.stats.totalTasksCompleted) * 100)
       : 0;
 
   const joinedDate = new Date(agent.stats.firstSeen);
@@ -39,9 +37,7 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
             <div className="h-1.5 w-1.5 bg-[#00ff41]/50" />
             <div className="h-1.5 w-1.5 bg-[#00ff41]/25" />
           </div>
-          <span className="text-[#00ff41] text-[10px] uppercase tracking-wider">
-            AGENT
-          </span>
+          <span className="text-[#00ff41] text-[10px] uppercase tracking-wider">AGENT</span>
         </div>
         {agent.stats.disputeCountAsProvider === 0 && agent.stats.totalTasksCompleted > 0 && (
           <span className="text-[#00ff41] text-[10px]">[CLEAN_RECORD]</span>
@@ -60,9 +56,7 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
           </div>
           <div>
             <AddressDisplay address={agent.wallet} chars={4} />
-            <p className="text-[10px] text-[#666666] uppercase mt-0.5">
-              Joined {joinedFormatted}
-            </p>
+            <p className="text-[10px] text-[#666666] uppercase mt-0.5">Joined {joinedFormatted}</p>
           </div>
         </div>
 
@@ -70,17 +64,13 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
         <div className="grid grid-cols-2 gap-2">
           <div className="border border-[#00ff41]/25 bg-[#0a0a0a] px-3 py-2">
             <p className="text-[10px] text-[#666666] uppercase">TASKS</p>
-            <p className="text-lg font-mono text-[#00ff41]">
-              {agent.stats.totalTasksCompleted}
-            </p>
+            <p className="text-lg font-mono text-[#00ff41]">{agent.stats.totalTasksCompleted}</p>
           </div>
           <div className="border border-[#00d4ff]/25 bg-[#0a0a0a] px-3 py-2">
             <p className="text-[10px] text-[#666666] uppercase">SERVICES</p>
             <p className="text-lg font-mono text-[#00d4ff]">
               {agent.stats.activeServices}
-              <span className="text-sm text-[#666666]">
-                /{agent.stats.totalServices}
-              </span>
+              <span className="text-sm text-[#666666]">/{agent.stats.totalServices}</span>
             </p>
           </div>
         </div>
@@ -100,9 +90,7 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
         {/* Services Preview */}
         {agent.services.length > 0 && (
           <div className="mt-4 border-t border-[#00ff41]/25 pt-3">
-            <p className="mb-2 text-[10px] text-[#666666] uppercase">
-              services_offered:
-            </p>
+            <p className="mb-2 text-[10px] text-[#666666] uppercase">services_offered:</p>
             <div className="flex flex-wrap gap-1">
               {agent.services.slice(0, 3).map((service) => (
                 <span
@@ -110,7 +98,7 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
                   className="border border-[#666666]/50 bg-[#0a0a0a] px-2 py-1 text-[10px] text-[#c0c0c0] font-mono"
                 >
                   {service.description.length > 20
-                    ? service.description.slice(0, 20) + "..."
+                    ? `${service.description.slice(0, 20)}...`
                     : service.description}
                 </span>
               ))}
@@ -132,8 +120,8 @@ export function AgentCard({ agent, onView }: AgentCardProps) {
         )}
         {agent.stats.disputeRateAsRequester >= 30 && (
           <div className="mt-3 border border-[#ff3333]/50 bg-[#ff3333]/10 px-3 py-2 text-[10px] text-[#ff3333] font-mono">
-            [ALERT] {agent.stats.disputeRateAsRequester}% dispute rate
-            ({agent.stats.disputeCountAsRequester}/{agent.stats.tasksCreatedAsRequester})
+            [ALERT] {agent.stats.disputeRateAsRequester}% dispute rate (
+            {agent.stats.disputeCountAsRequester}/{agent.stats.tasksCreatedAsRequester})
           </div>
         )}
 

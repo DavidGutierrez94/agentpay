@@ -3,10 +3,10 @@
  * Logs all tool calls for security review and debugging
  */
 
-import { createHash } from "crypto";
-import { appendFileSync, existsSync, mkdirSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { createHash } from "node:crypto";
+import { appendFileSync, existsSync, mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -80,7 +80,7 @@ function truncateParams(params, maxLength = 100) {
 
   for (const [key, value] of Object.entries(params)) {
     if (typeof value === "string" && value.length > maxLength) {
-      truncated[key] = value.slice(0, maxLength) + `... [${value.length} chars]`;
+      truncated[key] = `${value.slice(0, maxLength)}... [${value.length} chars]`;
     } else if (typeof value === "object" && value !== null) {
       truncated[key] = truncateParams(value, maxLength);
     } else {
@@ -95,7 +95,7 @@ function truncateParams(params, maxLength = 100) {
  * Format log entry
  */
 function formatLogEntry(entry) {
-  return JSON.stringify(entry) + "\n";
+  return `${JSON.stringify(entry)}\n`;
 }
 
 /**
@@ -131,16 +131,7 @@ export class AuditLogger {
   /**
    * Log a tool call
    */
-  logToolCall({
-    tool,
-    clientId,
-    params,
-    result,
-    error,
-    duration,
-    txSignature,
-    ip,
-  }) {
+  logToolCall({ tool, clientId, params, result, error, duration, txSignature, ip }) {
     if (!this.enabled) return;
 
     const entry = {
@@ -148,7 +139,7 @@ export class AuditLogger {
       level: error ? LogLevel.ERROR : LogLevel.INFO,
       type: "TOOL_CALL",
       tool,
-      clientId: clientId ? clientId.slice(0, 8) + "..." : null,
+      clientId: clientId ? `${clientId.slice(0, 8)}...` : null,
       params: truncateParams(redactSensitive(params)),
       success: !error,
       error: error ? { message: error.message, code: error.code } : null,
@@ -168,13 +159,7 @@ export class AuditLogger {
   /**
    * Log a security event
    */
-  logSecurityEvent({
-    event,
-    clientId,
-    details,
-    severity = "MEDIUM",
-    ip,
-  }) {
+  logSecurityEvent({ event, clientId, details, severity = "MEDIUM", ip }) {
     if (!this.enabled) return;
 
     const entry = {
@@ -183,7 +168,7 @@ export class AuditLogger {
       type: "SECURITY_EVENT",
       event,
       severity,
-      clientId: clientId ? clientId.slice(0, 8) + "..." : null,
+      clientId: clientId ? `${clientId.slice(0, 8)}...` : null,
       details: redactSensitive(details),
       ipHash: ip ? hashForPrivacy(ip) : null,
     };

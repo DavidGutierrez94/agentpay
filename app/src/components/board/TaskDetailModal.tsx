@@ -1,23 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { getProgram } from "@/lib/program";
 import { useQueryClient } from "@tanstack/react-query";
-import { StatusBadge } from "../shared/StatusBadge";
-import { ZKBadge } from "../shared/ZKBadge";
-import { EscrowBadge } from "../shared/EscrowBadge";
-import { DeadlineTimer } from "../shared/DeadlineTimer";
-import { AddressDisplay } from "../shared/AddressDisplay";
-import type { TaskRequest } from "@/lib/hooks/useTasks";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/Dialog";
+import type { TaskRequest } from "@/lib/hooks/useTasks";
+import { getProgram } from "@/lib/program";
+import { AddressDisplay } from "../shared/AddressDisplay";
+import { DeadlineTimer } from "../shared/DeadlineTimer";
+import { EscrowBadge } from "../shared/EscrowBadge";
+import { StatusBadge } from "../shared/StatusBadge";
+import { ZKBadge } from "../shared/ZKBadge";
 
 export function TaskDetailModal({
   task,
@@ -48,9 +48,7 @@ export function TaskDetailModal({
     }, 200);
   };
 
-  const handleAction = async (
-    action: "accept" | "dispute" | "submit"
-  ) => {
+  const handleAction = async (action: "accept" | "dispute" | "submit") => {
     if (!task) return;
     if (!publicKey || !anchorWallet) {
       setError("Please connect your wallet first");
@@ -131,9 +129,7 @@ export function TaskDetailModal({
             className="border border-[var(--color-border)] bg-[var(--color-bg)] p-3"
             style={{ borderRadius: "var(--border-radius-sm)" }}
           >
-            <p className="text-sm text-[var(--color-text)] font-mono">
-              {task.description}
-            </p>
+            <p className="text-sm text-[var(--color-text)] font-mono">{task.description}</p>
           </div>
 
           {/* Details Grid */}

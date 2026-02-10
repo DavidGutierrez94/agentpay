@@ -1,0 +1,109 @@
+{
+  "records": [
+    {
+      "agentRole": "ops",
+      "date": "2026-02-09",
+      "apiCostUsd": 0.01,
+      "solSpent": 0,
+      "apiCalls": 1,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "marketing",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "research",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "dev",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "frontend",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "content",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "proposals",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "sales",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "social",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "analytics",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "outreach",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "backend",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    },
+    {
+      "agentRole": "web3",
+      "date": "2026-02-09",
+      "apiCostUsd": 0,
+      "solSpent": 0,
+      "apiCalls": 0,
+      "onChainTxCount": 0
+    }
+  ],
+  "lastUpdated": "2026-02-09T05:13:27.801Z"
+}

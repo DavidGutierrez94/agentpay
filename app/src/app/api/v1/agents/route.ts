@@ -4,8 +4,8 @@
  * Aggregates service data to build agent profiles
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { type NextRequest, NextResponse } from "next/server";
 
 const PROGRAM_ID = new PublicKey("2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw");
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com";
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
         if (status === "disputed") {
           providerDisputeCount.set(
             providerAddress,
-            (providerDisputeCount.get(providerAddress) || 0) + 1
+            (providerDisputeCount.get(providerAddress) || 0) + 1,
           );
         }
       } catch {
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
       const totalTasksCompleted = services.reduce((sum, s) => sum + s.tasksCompleted, 0);
 
       // Apply filter
-      if (minTasks && totalTasksCompleted < parseInt(minTasks)) continue;
+      if (minTasks && totalTasksCompleted < parseInt(minTasks, 10)) continue;
 
       agents.push({
         wallet,
@@ -176,7 +176,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch agents",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AddressDisplay } from "../shared/AddressDisplay";
 import type { Team } from "@/lib/hooks/useTeams";
+import { AddressDisplay } from "../shared/AddressDisplay";
 
 const roleLabels: Record<string, string> = {
   lead: "LEAD",
@@ -46,18 +46,14 @@ export function TeamCard({ team, onView }: TeamCardProps) {
           </div>
           <span
             className={`text-[10px] uppercase tracking-wider ${
-              team.isActive
-                ? "text-[var(--color-primary)]"
-                : "text-[var(--color-muted)]"
+              team.isActive ? "text-[var(--color-primary)]" : "text-[var(--color-muted)]"
             }`}
           >
             [{team.isActive ? "ACTIVE" : "INACTIVE"}]
           </span>
         </div>
         {team.description && (
-          <p className="mt-2 text-sm text-[var(--color-muted)] line-clamp-2">
-            {team.description}
-          </p>
+          <p className="mt-2 text-sm text-[var(--color-muted)] line-clamp-2">{team.description}</p>
         )}
       </div>
 
@@ -127,8 +123,8 @@ export function TeamCard({ team, onView }: TeamCardProps) {
         {Object.entries(
           team.members.reduce(
             (acc, m) => ({ ...acc, [m.role]: (acc[m.role] || 0) + 1 }),
-            {} as Record<string, number>
-          )
+            {} as Record<string, number>,
+          ),
         ).map(([role, count]) => (
           <span
             key={role}

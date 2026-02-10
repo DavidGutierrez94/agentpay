@@ -12,10 +12,7 @@ export function StatsCards({ stats }: { stats: ProtocolStats | undefined }) {
     },
     {
       label: "ACTIVE_TASKS",
-      value: stats
-        ? (stats.tasksByStatus.open ?? 0) +
-          (stats.tasksByStatus.submitted ?? 0)
-        : "—",
+      value: stats ? (stats.tasksByStatus.open ?? 0) + (stats.tasksByStatus.submitted ?? 0) : "—",
       colorClass: "text-[#ffcc00]",
     },
     {
@@ -41,7 +38,9 @@ export function StatsCards({ stats }: { stats: ProtocolStats | undefined }) {
           className="border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
           style={{ borderRadius: "var(--border-radius)" }}
         >
-          <p className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">{card.label}</p>
+          <p className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider">
+            {card.label}
+          </p>
           <p className={`mt-1 text-2xl font-bold tabular-nums font-mono ${card.colorClass}`}>
             {card.value}
           </p>

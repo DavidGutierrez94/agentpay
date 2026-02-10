@@ -1,5 +1,5 @@
+import { Connection, type ParsedTransactionWithMeta } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
-import { Connection, ParsedTransactionWithMeta } from "@solana/web3.js";
 import { DEVNET_RPC, PROGRAM_ID } from "../constants";
 
 // Known agent wallets on Hetzner
@@ -14,7 +14,7 @@ const KNOWN_AGENTS = {
     role: "client",
     color: "#10b981", // emerald
   },
-  "B4MbqYjaNHruegRTwUJYeUz4CrxWGFX4tUEquV42MsDQ": {
+  B4MbqYjaNHruegRTwUJYeUz4CrxWGFX4tUEquV42MsDQ: {
     name: "Sentinel",
     role: "sentinel",
     color: "#f59e0b", // amber
@@ -26,9 +26,9 @@ const INSTRUCTION_DISCRIMINATORS: Record<string, AgentTransaction["type"]> = {
   // register_service: [11, 133, 158, 232, 193, 19, 229, 73]
   "0b859ee8c113e549": "service",
   // create_task: [194, 80, 6, 180, 232, 127, 48, 171]
-  "c25006b4e87f30ab": "task",
+  c25006b4e87f30ab: "task",
   // submit_result: [240, 42, 89, 180, 10, 239, 9, 214]
-  "f02a59b40aef09d6": "proof",
+  f02a59b40aef09d6: "proof",
   // submit_result_zk: [98, 173, 167, 164, 217, 231, 142, 199]
   "62ada7a4d9e78ec7": "proof",
   // accept_result: [136, 134, 91, 171, 167, 202, 234, 181]
@@ -38,9 +38,9 @@ const INSTRUCTION_DISCRIMINATORS: Record<string, AgentTransaction["type"]> = {
   // expire_task: [116, 94, 206, 205, 170, 51, 156, 98]
   "745ececdaa339c62": "unknown",
   // deactivate_service: [251, 86, 29, 182, 216, 170, 85, 155]
-  "fb561db6d8aa559b": "service",
+  fb561db6d8aa559b: "service",
   // verify_reputation: [182, 23, 57, 13, 214, 61, 83, 208]
-  "b617390dd63d53d0": "proof",
+  b617390dd63d53d0: "proof",
 };
 
 export interface AgentTransaction {
@@ -168,7 +168,7 @@ export function useNetworkMetrics() {
       const now = Date.now() / 1000;
       const oneMinuteAgo = now - 60;
       const recentTxCount = signatures.filter(
-        (sig) => sig.blockTime && sig.blockTime > oneMinuteAgo
+        (sig) => sig.blockTime && sig.blockTime > oneMinuteAgo,
       ).length;
 
       // Get unique signers (active agents)

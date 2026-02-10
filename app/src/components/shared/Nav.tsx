@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { useTheme } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 import { WalletButton } from "./WalletButton";
-import { useTheme } from "@/lib/theme-context";
 
 const links = [
   { href: "/", label: "home", path: "~" },
@@ -28,16 +28,28 @@ export function Nav() {
   const currentPath = currentLink?.path || "~";
 
   return (
-    <nav className="fixed top-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-bg)]/95 backdrop-blur-sm" style={{ fontFamily: 'var(--font-family)' }}>
+    <nav
+      className="fixed top-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-bg)]/95 backdrop-blur-sm"
+      style={{ fontFamily: "var(--font-family)" }}
+    >
       {/* Terminal Title Bar */}
       <div className="border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-1.5">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Terminal dots */}
             <div className="hidden sm:flex gap-1.5">
-              <div className="h-2.5 w-2.5 bg-[var(--color-error)]" style={{ borderRadius: 'var(--border-radius)' }} />
-              <div className="h-2.5 w-2.5 bg-[var(--color-warning)]" style={{ borderRadius: 'var(--border-radius)' }} />
-              <div className="h-2.5 w-2.5 bg-[var(--color-success)]" style={{ borderRadius: 'var(--border-radius)' }} />
+              <div
+                className="h-2.5 w-2.5 bg-[var(--color-error)]"
+                style={{ borderRadius: "var(--border-radius)" }}
+              />
+              <div
+                className="h-2.5 w-2.5 bg-[var(--color-warning)]"
+                style={{ borderRadius: "var(--border-radius)" }}
+              />
+              <div
+                className="h-2.5 w-2.5 bg-[var(--color-success)]"
+                style={{ borderRadius: "var(--border-radius)" }}
+              />
             </div>
             <Link
               href="/"
@@ -83,7 +95,7 @@ export function Nav() {
                     "relative px-4 py-2 text-xs uppercase tracking-wider transition-colors",
                     isActive
                       ? "text-[var(--color-primary)] bg-[var(--color-surface)]"
-                      : "text-[var(--color-text-dim)] hover:text-[var(--color-primary)]"
+                      : "text-[var(--color-text-dim)] hover:text-[var(--color-primary)]",
                   )}
                 >
                   {isActive && (
@@ -144,14 +156,12 @@ export function Nav() {
                     "flex items-center gap-2 px-3 py-2 text-sm transition-colors",
                     isActive
                       ? "text-[var(--color-primary)] bg-[var(--color-surface-elevated)]"
-                      : "text-[var(--color-text-dim)] hover:text-[var(--color-primary)]"
+                      : "text-[var(--color-text-dim)] hover:text-[var(--color-primary)]",
                   )}
                 >
                   <span className="text-[var(--color-primary)]/50">&gt;</span>
                   <span className="uppercase tracking-wider">{link.label}</span>
-                  <span className="ml-auto text-[var(--color-text-dim)] text-xs">
-                    {link.path}
-                  </span>
+                  <span className="ml-auto text-[var(--color-text-dim)] text-xs">{link.path}</span>
                 </Link>
               );
             })}

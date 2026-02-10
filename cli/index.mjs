@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 
-import { readFileSync } from "fs";
-import { homedir } from "os";
-import { join } from "path";
-import { createHash, randomBytes } from "crypto";
-import { Command } from "commander";
+import { createHash, randomBytes } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { homedir } from "node:os";
 import web3 from "@solana/web3.js";
+import { Command } from "commander";
+
 const { Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL } = web3;
+
 import anchor from "@coral-xyz/anchor";
+
 const { AnchorProvider, Program, BN, Wallet } = anchor;
 
 // ============================================================================
 // Config
 // ============================================================================
 
-const PROGRAM_ID = new PublicKey(
-  "2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw"
-);
+const PROGRAM_ID = new PublicKey("2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw");
 const DEFAULT_RPC = "https://api.devnet.solana.com";
 const IDL_PATH = new URL("./idl.json", import.meta.url);
 
@@ -103,14 +103,14 @@ function unstringifyProof(proof) {
 function findServicePda(provider, serviceId) {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("service"), provider.toBuffer(), Buffer.from(serviceId)],
-    PROGRAM_ID
+    PROGRAM_ID,
   );
 }
 
 function findTaskPda(requester, taskId) {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("task"), requester.toBuffer(), Buffer.from(taskId)],
-    PROGRAM_ID
+    PROGRAM_ID,
   );
 }
 
@@ -126,7 +126,7 @@ cli
   .option(
     "-k, --keypair <path>",
     "Path to Solana keypair",
-    process.env.AGENTPAY_KEYPAIR || "~/.config/solana/id.json"
+    process.env.AGENTPAY_KEYPAIR || "~/.config/solana/id.json",
   )
   .option("-u, --url <rpc>", "Solana RPC URL", DEFAULT_RPC);
 
@@ -139,10 +139,7 @@ cli
   .requiredOption("-p, --price <sol>", "Price per task in SOL")
   .option("--min-reputation <n>", "Minimum reputation score required (0 = no minimum)", "0")
   .action(async (opts) => {
-    const { program, keypair } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { program, keypair } = getProgram(cli.opts().url, cli.opts().keypair);
     const serviceId = randomBytes(16);
     const [serviceListingPda] = findServicePda(keypair.publicKey, serviceId);
 
@@ -151,7 +148,7 @@ cli
         Array.from(serviceId),
         padBytes(opts.description, 128),
         new BN(solToLamports(opts.price)),
-        new BN(parseInt(opts.minReputation))
+        new BN(parseInt(opts.minReputation, 10)),
       )
       .accounts({
         provider: keypair.publicKey,
@@ -168,7 +165,7 @@ cli
         description: opts.description,
         priceSol: opts.price,
         tx,
-      })
+      }),
     );
   });
 
@@ -248,10 +245,7 @@ cli
   .option("--scan-provider", "Scan provider wallet for risk using REKT Shield before creating task")
   .option("--risk-threshold <score>", "Max acceptable risk score (0-100, default 70)", "70")
   .action(async (opts) => {
-    const { program, keypair } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { program, keypair } = getProgram(cli.opts().url, cli.opts().keypair);
 
     const serviceListingPda = new PublicKey(opts.servicePda);
 
@@ -266,11 +260,15 @@ cli
 
       if (riskData) {
         const riskScore = riskData.score || riskData.riskScore || 0;
-        const threshold = parseInt(opts.riskThreshold);
+        const threshold = parseInt(opts.riskThreshold, 10);
 
         if (riskScore > threshold) {
-          console.error(`🚨 Provider risk score: ${riskScore}/100 — exceeds threshold of ${threshold}`);
-          console.error(`   Reason: ${riskData.reason || riskData.summary || 'High risk detected'}`);
+          console.error(
+            `🚨 Provider risk score: ${riskScore}/100 — exceeds threshold of ${threshold}`,
+          );
+          console.error(
+            `   Reason: ${riskData.reason || riskData.summary || "High risk detected"}`,
+          );
           console.error(`   Aborting task creation to protect your funds.`);
           process.exit(1);
         }
@@ -283,15 +281,11 @@ cli
 
     const taskId = randomBytes(16);
     const [taskRequestPda] = findTaskPda(keypair.publicKey, taskId);
-    const deadlineMinutes = parseInt(opts.deadlineMinutes);
+    const deadlineMinutes = parseInt(opts.deadlineMinutes, 10);
     const deadline = Math.floor(Date.now() / 1000) + deadlineMinutes * 60;
 
     const tx = await program.methods
-      .createTask(
-        Array.from(taskId),
-        padBytes(opts.description, 256),
-        new BN(deadline)
-      )
+      .createTask(Array.from(taskId), padBytes(opts.description, 256), new BN(deadline))
       .accounts({
         requester: keypair.publicKey,
         serviceListing: serviceListingPda,
@@ -309,7 +303,7 @@ cli
         provider: providerPubkey,
         deadlineMinutes,
         tx,
-      })
+      }),
     );
   });
 
@@ -379,10 +373,7 @@ cli
   .requiredOption("--task-pda <pda>", "Task request PDA address")
   .requiredOption("-r, --result <text>", "Result text (will be SHA256 hashed)")
   .action(async (opts) => {
-    const { program, keypair } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { program, keypair } = getProgram(cli.opts().url, cli.opts().keypair);
 
     const resultHash = createHash("sha256").update(opts.result).digest();
 
@@ -400,7 +391,7 @@ cli
         taskPda: opts.taskPda,
         resultHash: resultHash.toString("hex"),
         tx,
-      })
+      }),
     );
   });
 
@@ -411,12 +402,13 @@ cli
   .description("Submit a ZK-verified result for a task (Groth16 proof verified on-chain)")
   .requiredOption("--task-pda <pda>", "Task request PDA address")
   .requiredOption("-r, --result <text>", "Result text (will be Poseidon hashed & ZK proved)")
-  .option("--circuits-dir <path>", "Path to compiled circuits directory", new URL("../circuits", import.meta.url).pathname)
+  .option(
+    "--circuits-dir <path>",
+    "Path to compiled circuits directory",
+    new URL("../circuits", import.meta.url).pathname,
+  )
   .action(async (opts) => {
-    const { program, keypair } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { program, keypair } = getProgram(cli.opts().url, cli.opts().keypair);
 
     // Dynamically import snarkjs and circomlibjs
     const snarkjs = await import("snarkjs");
@@ -426,7 +418,7 @@ cli
     const poseidon = await buildPoseidon();
     // Convert result text to a field element (use first 31 bytes of SHA256 to stay in field)
     const resultSha = createHash("sha256").update(opts.result).digest();
-    const resultField = BigInt("0x" + resultSha.subarray(0, 31).toString("hex"));
+    const resultField = BigInt(`0x${resultSha.subarray(0, 31).toString("hex")}`);
     const poseidonHash = poseidon.F.toString(poseidon([resultField]));
 
     console.error("Generating ZK proof...");
@@ -436,7 +428,7 @@ cli
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
       { result: resultField.toString(), expectedHash: poseidonHash },
       `${circuitsDir}/task_verify_js/task_verify.wasm`,
-      `${circuitsDir}/task_verify.zkey`
+      `${circuitsDir}/task_verify.zkey`,
     );
 
     console.error("ZK proof generated. Submitting to Solana...");
@@ -454,7 +446,7 @@ cli
         Array.from(proofParsed.a),
         Array.from(proofParsed.b),
         Array.from(proofParsed.c),
-        Array.from(resultHashBytes)
+        Array.from(resultHashBytes),
       )
       .accounts({
         provider: keypair.publicKey,
@@ -469,7 +461,7 @@ cli
         resultHash: Buffer.from(resultHashBytes).toString("hex"),
         zkVerified: true,
         tx,
-      })
+      }),
     );
   });
 
@@ -482,10 +474,7 @@ cli
   .requiredOption("--provider <pubkey>", "Provider wallet pubkey")
   .requiredOption("--service-pda <pda>", "Service listing PDA address")
   .action(async (opts) => {
-    const { program, keypair } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { program, keypair } = getProgram(cli.opts().url, cli.opts().keypair);
 
     const tx = await program.methods
       .acceptResult()
@@ -503,7 +492,7 @@ cli
         taskPda: opts.taskPda,
         action: "accepted",
         tx,
-      })
+      }),
     );
   });
 
@@ -514,10 +503,7 @@ cli
   .description("Dispute a submitted result and get refund")
   .requiredOption("--task-pda <pda>", "Task request PDA address")
   .action(async (opts) => {
-    const { program, keypair } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { program, keypair } = getProgram(cli.opts().url, cli.opts().keypair);
 
     const tx = await program.methods
       .disputeTask()
@@ -533,7 +519,7 @@ cli
         taskPda: opts.taskPda,
         action: "disputed",
         tx,
-      })
+      }),
     );
   });
 
@@ -561,7 +547,7 @@ cli
         taskPda: opts.taskPda,
         action: "expired",
         tx,
-      })
+      }),
     );
   });
 
@@ -572,10 +558,7 @@ cli
   .description("Deactivate a service listing")
   .requiredOption("--service-pda <pda>", "Service listing PDA address")
   .action(async (opts) => {
-    const { program, keypair } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { program, keypair } = getProgram(cli.opts().url, cli.opts().keypair);
 
     const tx = await program.methods
       .deactivateService()
@@ -591,7 +574,7 @@ cli
         servicePda: opts.servicePda,
         action: "deactivated",
         tx,
-      })
+      }),
     );
   });
 
@@ -606,24 +589,28 @@ cli
     const riskData = await scanProviderRisk(opts.wallet);
 
     if (!riskData) {
-      console.log(JSON.stringify({
-        status: "error",
-        message: "Could not reach REKT Shield API",
-      }));
+      console.log(
+        JSON.stringify({
+          status: "error",
+          message: "Could not reach REKT Shield API",
+        }),
+      );
       return;
     }
 
     const riskScore = riskData.score || riskData.riskScore || 0;
-    const emoji = riskScore <= 30 ? "✅" : riskScore <= 70 ? "⚠️" : "🚨";
+    const _emoji = riskScore <= 30 ? "✅" : riskScore <= 70 ? "⚠️" : "🚨";
 
-    console.log(JSON.stringify({
-      status: "ok",
-      wallet: opts.wallet,
-      riskScore,
-      riskLevel: riskScore <= 30 ? "LOW" : riskScore <= 70 ? "MEDIUM" : "HIGH",
-      details: riskData,
-      poweredBy: "REKT Shield (@Youth)",
-    }));
+    console.log(
+      JSON.stringify({
+        status: "ok",
+        wallet: opts.wallet,
+        riskScore,
+        riskLevel: riskScore <= 30 ? "LOW" : riskScore <= 70 ? "MEDIUM" : "HIGH",
+        details: riskData,
+        poweredBy: "REKT Shield (@Youth)",
+      }),
+    );
   });
 
 // ── balance ─────────────────────────────────────────────────────────────────
@@ -632,17 +619,14 @@ cli
   .command("balance")
   .description("Show wallet SOL balance")
   .action(async () => {
-    const { keypair, connection } = getProgram(
-      cli.opts().url,
-      cli.opts().keypair
-    );
+    const { keypair, connection } = getProgram(cli.opts().url, cli.opts().keypair);
     const balance = await connection.getBalance(keypair.publicKey);
     console.log(
       JSON.stringify({
         status: "ok",
         wallet: keypair.publicKey.toBase58(),
         balanceSol: lamportsToSol(balance),
-      })
+      }),
     );
   });
 
@@ -657,7 +641,7 @@ cli
       JSON.stringify({
         status: "ok",
         wallet: keypair.publicKey.toBase58(),
-      })
+      }),
     );
   });
 

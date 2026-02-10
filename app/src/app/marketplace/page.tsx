@@ -1,17 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useServices, type ServiceListing } from "@/lib/hooks/useServices";
-import { ServiceCard } from "@/components/marketplace/ServiceCard";
+import { useState } from "react";
 import { CreateTaskModal } from "@/components/board/CreateTaskModal";
+import { ServiceCard } from "@/components/marketplace/ServiceCard";
 import { TerminalInput } from "@/components/ui/TerminalCard";
+import { type ServiceListing, useServices } from "@/lib/hooks/useServices";
 
 export default function MarketplacePage() {
   const { data: services, isLoading, error } = useServices();
-  const [selectedService, setSelectedService] = useState<ServiceListing | null>(
-    null
-  );
+  const [selectedService, setSelectedService] = useState<ServiceListing | null>(null);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"newest" | "price-asc" | "price-desc" | "tasks">("newest");
 
@@ -40,9 +38,18 @@ export default function MarketplacePage() {
       >
         <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2 flex items-center gap-2">
           <div className="flex gap-1.5">
-            <div className="h-2 w-2 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)" }} />
-            <div className="h-2 w-2 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)" }} />
-            <div className="h-2 w-2 bg-[var(--color-primary)]" style={{ borderRadius: "var(--border-radius-sm)" }} />
+            <div
+              className="h-2 w-2 bg-[#ff3333]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
+            />
+            <div
+              className="h-2 w-2 bg-[#ffcc00]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
+            />
+            <div
+              className="h-2 w-2 bg-[var(--color-primary)]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
+            />
           </div>
           <span className="text-[var(--color-primary)] text-xs uppercase tracking-wider">
             SERVICE_MARKETPLACE
@@ -53,7 +60,8 @@ export default function MarketplacePage() {
             <span className="text-[var(--color-primary)]">$</span> ls ~/services --available
           </div>
           <p className="text-sm text-[var(--color-text)]">
-            Browse and hire AI agent services on <span className="text-[var(--color-warning)]">Solana devnet</span>
+            Browse and hire AI agent services on{" "}
+            <span className="text-[var(--color-warning)]">Solana devnet</span>
           </p>
         </div>
       </div>
@@ -118,11 +126,12 @@ export default function MarketplacePage() {
       {/* Result Count */}
       {filteredServices && filteredServices.length > 0 && (
         <div className="mb-4 text-xs text-[var(--color-muted)]">
-          <span className="text-[var(--color-primary)]">{filteredServices.length}</span>
-          {" "}service{filteredServices.length !== 1 ? "s" : ""} found
+          <span className="text-[var(--color-primary)]">{filteredServices.length}</span> service
+          {filteredServices.length !== 1 ? "s" : ""} found
           {search && (
             <span>
-              {" "}matching <span className="text-[var(--color-accent)]">&quot;{search}&quot;</span>
+              {" "}
+              matching <span className="text-[var(--color-accent)]">&quot;{search}&quot;</span>
             </span>
           )}
         </div>
@@ -136,7 +145,8 @@ export default function MarketplacePage() {
         >
           <div className="text-[var(--color-warning)] text-xs mb-3">[NO_MATCH]</div>
           <p className="text-[var(--color-text)] text-sm">
-            No services match <span className="text-[var(--color-accent)]">&quot;{search}&quot;</span>
+            No services match{" "}
+            <span className="text-[var(--color-accent)]">&quot;{search}&quot;</span>
           </p>
           <button
             onClick={() => setSearch("")}
@@ -155,9 +165,7 @@ export default function MarketplacePage() {
           style={{ borderRadius: "var(--border-radius)" }}
         >
           <div className="text-[var(--color-warning)] text-xs mb-3">[EMPTY_REGISTRY]</div>
-          <p className="text-[var(--color-text)] text-sm mb-4">
-            No services registered yet
-          </p>
+          <p className="text-[var(--color-text)] text-sm mb-4">No services registered yet</p>
           <div
             className="bg-[var(--color-bg)] border border-[var(--color-border)] p-4 text-left inline-block"
             style={{ borderRadius: "var(--border-radius-sm)" }}
@@ -185,11 +193,7 @@ export default function MarketplacePage() {
       {filteredServices && filteredServices.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredServices.map((service) => (
-            <ServiceCard
-              key={service.pda}
-              service={service}
-              onHire={setSelectedService}
-            />
+            <ServiceCard key={service.pda} service={service} onHire={setSelectedService} />
           ))}
         </div>
       )}

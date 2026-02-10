@@ -1,23 +1,15 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
-import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
-import {
-  executeCommand,
-  COMMAND_NAMES,
-  type CommandResult,
-} from "./CommandRegistry";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { COMMAND_NAMES, type CommandResult, executeCommand } from "./CommandRegistry";
 
 interface HistoryEntry {
   input: string;
   result: CommandResult;
 }
 
-export function Terminal({
-  onResult,
-}: {
-  onResult: (result: CommandResult) => void;
-}) {
+export function Terminal({ onResult }: { onResult: (result: CommandResult) => void }) {
   const { publicKey } = useWallet();
   const anchorWallet = useAnchorWallet();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -30,7 +22,7 @@ export function Terminal({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [history]);
+  }, []);
 
   const execute = useCallback(
     async (cmd: string) => {
@@ -51,7 +43,7 @@ export function Terminal({
       onResult(result);
       setIsExecuting(false);
     },
-    [anchorWallet, publicKey, onResult]
+    [anchorWallet, publicKey, onResult],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -90,9 +82,18 @@ export function Terminal({
     >
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2">
-        <div className="h-3 w-3 bg-[#ff3333]" style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }} />
-        <div className="h-3 w-3 bg-[#ffcc00]" style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }} />
-        <div className="h-3 w-3 bg-[var(--color-primary)]" style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }} />
+        <div
+          className="h-3 w-3 bg-[#ff3333]"
+          style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }}
+        />
+        <div
+          className="h-3 w-3 bg-[#ffcc00]"
+          style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }}
+        />
+        <div
+          className="h-3 w-3 bg-[var(--color-primary)]"
+          style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }}
+        />
         <span className="ml-2 text-xs text-[var(--color-muted)] uppercase tracking-wider">
           AGENTPAY_TERMINAL — DEVNET
         </span>
@@ -102,7 +103,9 @@ export function Terminal({
       <div className="flex-1 overflow-y-auto p-4">
         {/* Welcome message */}
         <div className="mb-4 text-[var(--color-muted)]">
-          <p className="text-[var(--color-primary)]">&gt; AgentPay Terminal v0.1.0 — Solana Devnet</p>
+          <p className="text-[var(--color-primary)]">
+            &gt; AgentPay Terminal v0.1.0 — Solana Devnet
+          </p>
           <p className="text-xs mt-1">Type &apos;help&apos; for available commands.</p>
           <p className="mt-2">
             {publicKey ? (
@@ -110,9 +113,7 @@ export function Terminal({
                 [CONNECTED] {publicKey.toBase58().slice(0, 8)}...
               </span>
             ) : (
-              <span className="text-[#ffcc00]">
-                [WARN] Connect wallet to sign transactions
-              </span>
+              <span className="text-[#ffcc00]">[WARN] Connect wallet to sign transactions</span>
             )}
           </p>
         </div>
@@ -154,7 +155,6 @@ export function Terminal({
           disabled={isExecuting}
           placeholder="Type a command..."
           className="flex-1 bg-transparent text-[var(--color-text)] placeholder-[var(--color-muted)] outline-none"
-          autoFocus
         />
       </div>
     </div>

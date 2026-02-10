@@ -1,15 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
+import type { Agent } from "@/lib/hooks/useAgents";
 import { AddressDisplay } from "../shared/AddressDisplay";
 import { ZKBadge } from "../shared/ZKBadge";
-import type { Agent } from "@/lib/hooks/useAgents";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
 
 interface AgentProfileModalProps {
   agent: Agent | null;
@@ -34,7 +29,7 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
   // Fetch REKT Shield risk score
   useEffect(() => {
     if (!agent) return;
-    
+
     async function fetchRiskScore() {
       try {
         const res = await fetch(`/api/v1/scan/${agent!.wallet}`);
@@ -42,8 +37,7 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
           const data = await res.json();
           if (data.success && data.risk) {
             const score = data.risk.score ?? 0;
-            const level =
-              score < 30 ? "low" : score < 60 ? "medium" : "high";
+            const level = score < 30 ? "low" : score < 60 ? "medium" : "high";
             setRiskScore({ score, level, loading: false });
           } else {
             setRiskScore({ score: 0, level: "low", loading: false });
@@ -62,9 +56,7 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
 
   const zkPercentage =
     agent.stats.totalTasksCompleted > 0
-      ? Math.round(
-          (agent.stats.zkVerifiedCount / agent.stats.totalTasksCompleted) * 100
-        )
+      ? Math.round((agent.stats.zkVerifiedCount / agent.stats.totalTasksCompleted) * 100)
       : 0;
 
   const joinedDate = new Date(agent.stats.firstSeen);
@@ -79,22 +71,22 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
     riskScore.level === "low"
       ? "text-[var(--color-success)]"
       : riskScore.level === "medium"
-      ? "text-[var(--color-warning)]"
-      : "text-[var(--color-error)]";
+        ? "text-[var(--color-warning)]"
+        : "text-[var(--color-error)]";
 
   const riskBgClass =
     riskScore.level === "low"
       ? "bg-[var(--color-success)]/10"
       : riskScore.level === "medium"
-      ? "bg-[var(--color-warning)]/10"
-      : "bg-[var(--color-error)]/10";
+        ? "bg-[var(--color-warning)]/10"
+        : "bg-[var(--color-error)]/10";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader label="AGENT_PROFILE">
           <div className="flex items-center gap-4">
-            <div 
+            <div
               className="flex h-16 w-16 items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-3xl"
               style={{ borderRadius: "var(--border-radius)" }}
             >
@@ -111,10 +103,9 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
         </DialogHeader>
 
         <div className="space-y-6">
-
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div 
+            <div
               className="bg-[var(--color-surface)] p-4 text-center"
               style={{ borderRadius: "var(--border-radius)" }}
             >
@@ -123,7 +114,7 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
               </p>
               <p className="mt-1 text-xs text-[var(--color-muted)]">Tasks Completed</p>
             </div>
-            <div 
+            <div
               className="bg-[var(--color-surface)] p-4 text-center"
               style={{ borderRadius: "var(--border-radius)" }}
             >
@@ -132,7 +123,7 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
               </p>
               <p className="mt-1 text-xs text-[var(--color-muted)]">ZK Verified</p>
             </div>
-            <div 
+            <div
               className="bg-[var(--color-surface)] p-4 text-center"
               style={{ borderRadius: "var(--border-radius)" }}
             >
@@ -141,13 +132,15 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
               </p>
               <p className="mt-1 text-xs text-[var(--color-muted)]">Active Services</p>
             </div>
-            <div 
+            <div
               className="bg-[var(--color-surface)] p-4 text-center"
               style={{ borderRadius: "var(--border-radius)" }}
             >
               <p
                 className={`text-2xl font-bold ${
-                  agent.stats.disputeCountAsProvider === 0 ? "text-[var(--color-success)]" : "text-[var(--color-warning)]"
+                  agent.stats.disputeCountAsProvider === 0
+                    ? "text-[var(--color-success)]"
+                    : "text-[var(--color-warning)]"
                 }`}
               >
                 {agent.stats.disputeCountAsProvider}
@@ -158,18 +151,21 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
 
           {/* Requester Trust Warning */}
           {agent.stats.disputeRateAsRequester >= 30 && (
-            <div 
+            <div
               className="border border-[var(--color-error)]/30 bg-[var(--color-error)]/10 p-4"
               style={{ borderRadius: "var(--border-radius)" }}
             >
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🚨</span>
                 <div>
-                  <p className="font-medium text-[var(--color-error)]">High Dispute Rate as Requester</p>
+                  <p className="font-medium text-[var(--color-error)]">
+                    High Dispute Rate as Requester
+                  </p>
                   <p className="mt-1 text-sm text-[var(--color-muted)]">
                     This agent disputes {agent.stats.disputeRateAsRequester}% of tasks they request
-                    ({agent.stats.disputeCountAsRequester} out of {agent.stats.tasksCreatedAsRequester} tasks).
-                    Exercise caution when providing services to this wallet.
+                    ({agent.stats.disputeCountAsRequester} out of{" "}
+                    {agent.stats.tasksCreatedAsRequester} tasks). Exercise caution when providing
+                    services to this wallet.
                   </p>
                 </div>
               </div>
@@ -178,24 +174,40 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
 
           {/* Requester Stats - if they have any */}
           {agent.stats.tasksCreatedAsRequester > 0 && (
-            <div 
+            <div
               className="bg-[var(--color-surface)] p-4"
               style={{ borderRadius: "var(--border-radius)" }}
             >
               <h3 className="mb-2 text-sm font-medium text-[var(--color-muted)]">As Requester</h3>
               <div className="flex items-center gap-6 text-sm">
                 <div>
-                  <span className="text-[var(--color-text-bright)]">{agent.stats.tasksCreatedAsRequester}</span>
+                  <span className="text-[var(--color-text-bright)]">
+                    {agent.stats.tasksCreatedAsRequester}
+                  </span>
                   <span className="ml-1 text-[var(--color-muted)]">tasks created</span>
                 </div>
                 <div>
-                  <span className={agent.stats.disputeCountAsRequester === 0 ? "text-[var(--color-success)]" : "text-[var(--color-warning)]"}>
+                  <span
+                    className={
+                      agent.stats.disputeCountAsRequester === 0
+                        ? "text-[var(--color-success)]"
+                        : "text-[var(--color-warning)]"
+                    }
+                  >
                     {agent.stats.disputeCountAsRequester}
                   </span>
                   <span className="ml-1 text-[var(--color-muted)]">disputes initiated</span>
                 </div>
                 <div>
-                  <span className={agent.stats.disputeRateAsRequester < 20 ? "text-[var(--color-success)]" : agent.stats.disputeRateAsRequester < 50 ? "text-[var(--color-warning)]" : "text-[var(--color-error)]"}>
+                  <span
+                    className={
+                      agent.stats.disputeRateAsRequester < 20
+                        ? "text-[var(--color-success)]"
+                        : agent.stats.disputeRateAsRequester < 50
+                          ? "text-[var(--color-warning)]"
+                          : "text-[var(--color-error)]"
+                    }
+                  >
                     {agent.stats.disputeRateAsRequester}%
                   </span>
                   <span className="ml-1 text-[var(--color-muted)]">dispute rate</span>
@@ -217,16 +229,16 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
                 {agent.stats.zkVerifiedCount} / {agent.stats.totalTasksCompleted}
               </span>
             </div>
-            <div 
+            <div
               className="mt-2 h-2 overflow-hidden bg-[var(--color-surface)]"
               style={{ borderRadius: "var(--border-radius-sm)" }}
             >
               <div
                 className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]"
-                style={{ 
+                style={{
                   width: `${zkPercentage}%`,
                   borderRadius: "var(--border-radius-sm)",
-                  transition: "width 0.5s ease-out"
+                  transition: "width 0.5s ease-out",
                 }}
               />
             </div>
@@ -237,22 +249,17 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
             <h3 className="mb-3 text-sm font-medium text-[var(--color-muted)]">
               🛡️ REKT Shield Risk Assessment
             </h3>
-            <div 
-              className={`p-4 ${riskBgClass}`}
-              style={{ borderRadius: "var(--border-radius)" }}
-            >
+            <div className={`p-4 ${riskBgClass}`} style={{ borderRadius: "var(--border-radius)" }}>
               {riskScore.loading ? (
                 <div className="flex items-center gap-2">
-                  <div 
+                  <div
                     className="h-4 w-4 animate-spin border-2 border-[var(--color-primary)] border-t-transparent"
                     style={{ borderRadius: "var(--border-radius-sm)" }}
                   />
                   <span className="text-sm text-[var(--color-muted)]">Scanning wallet...</span>
                 </div>
               ) : riskScore.error ? (
-                <span className="text-sm text-[var(--color-muted)]">
-                  Risk score unavailable
-                </span>
+                <span className="text-sm text-[var(--color-muted)]">Risk score unavailable</span>
               ) : (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -264,8 +271,8 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
                         {riskScore.level === "low"
                           ? "Low Risk"
                           : riskScore.level === "medium"
-                          ? "Medium Risk"
-                          : "High Risk"}
+                            ? "Medium Risk"
+                            : "High Risk"}
                       </p>
                       <p className="text-xs text-[var(--color-muted)]">
                         Based on on-chain activity analysis
@@ -273,11 +280,7 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
                     </div>
                   </div>
                   <span className="text-2xl">
-                    {riskScore.level === "low"
-                      ? "✅"
-                      : riskScore.level === "medium"
-                      ? "⚠️"
-                      : "🚨"}
+                    {riskScore.level === "low" ? "✅" : riskScore.level === "medium" ? "⚠️" : "🚨"}
                   </span>
                 </div>
               )}
@@ -300,7 +303,9 @@ export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileMod
                     style={{ borderRadius: "var(--border-radius-sm)" }}
                   >
                     <div className="flex-1">
-                      <p className="text-sm text-[var(--color-text-bright)]">{service.description}</p>
+                      <p className="text-sm text-[var(--color-text-bright)]">
+                        {service.description}
+                      </p>
                       <div className="mt-1 flex items-center gap-3 text-xs text-[var(--color-muted)]">
                         <span>{service.tasksCompleted} tasks</span>
                         <span>•</span>

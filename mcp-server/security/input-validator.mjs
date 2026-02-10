@@ -98,10 +98,7 @@ export function sanitizeInput(input, type = "default") {
   // Check for forbidden patterns
   for (const pattern of FORBIDDEN_PATTERNS) {
     if (pattern.test(clean)) {
-      throw new SecurityError(
-        `Forbidden pattern detected in ${type} input`,
-        "FORBIDDEN_PATTERN"
-      );
+      throw new SecurityError(`Forbidden pattern detected in ${type} input`, "FORBIDDEN_PATTERN");
     }
   }
 
@@ -121,10 +118,7 @@ export function validateWalletAddress(address) {
   const clean = sanitizeInput(address, "walletAddress");
 
   if (!isValidPublicKey(clean)) {
-    throw new SecurityError(
-      "Invalid wallet address format",
-      "INVALID_WALLET"
-    );
+    throw new SecurityError("Invalid wallet address format", "INVALID_WALLET");
   }
 
   return clean;
@@ -137,10 +131,7 @@ export function validatePda(pda) {
   const clean = sanitizeInput(pda, "pda");
 
   if (!isValidPublicKey(clean)) {
-    throw new SecurityError(
-      "Invalid PDA format",
-      "INVALID_PDA"
-    );
+    throw new SecurityError("Invalid PDA format", "INVALID_PDA");
   }
 
   return clean;
@@ -149,21 +140,18 @@ export function validatePda(pda) {
 /**
  * Validate numeric input
  */
-export function validateNumber(input, { min = 0, max = Number.MAX_SAFE_INTEGER, name = "value" } = {}) {
+export function validateNumber(
+  input,
+  { min = 0, max = Number.MAX_SAFE_INTEGER, name = "value" } = {},
+) {
   const num = Number(input);
 
-  if (isNaN(num)) {
-    throw new SecurityError(
-      `${name} must be a valid number`,
-      "INVALID_NUMBER"
-    );
+  if (Number.isNaN(num)) {
+    throw new SecurityError(`${name} must be a valid number`, "INVALID_NUMBER");
   }
 
   if (num < min || num > max) {
-    throw new SecurityError(
-      `${name} must be between ${min} and ${max}`,
-      "OUT_OF_RANGE"
-    );
+    throw new SecurityError(`${name} must be between ${min} and ${max}`, "OUT_OF_RANGE");
   }
 
   return num;
@@ -179,7 +167,7 @@ export function validateStatus(status) {
   if (!validStatuses.includes(clean)) {
     throw new SecurityError(
       `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
-      "INVALID_STATUS"
+      "INVALID_STATUS",
     );
   }
 
@@ -196,7 +184,7 @@ export function validateRole(role) {
   if (!validRoles.includes(clean)) {
     throw new SecurityError(
       `Invalid role. Must be one of: ${validRoles.join(", ")}`,
-      "INVALID_ROLE"
+      "INVALID_ROLE",
     );
   }
 
@@ -222,10 +210,18 @@ export function validateToolParams(toolName, params) {
     case "search_services":
       if (params.query) validated.query = sanitizeInput(params.query, "query");
       if (params.maxPrice !== undefined) {
-        validated.maxPrice = validateNumber(params.maxPrice, { min: 0, max: 1000, name: "maxPrice" });
+        validated.maxPrice = validateNumber(params.maxPrice, {
+          min: 0,
+          max: 1000,
+          name: "maxPrice",
+        });
       }
       if (params.minReputation !== undefined) {
-        validated.minReputation = validateNumber(params.minReputation, { min: 0, max: 1000000, name: "minReputation" });
+        validated.minReputation = validateNumber(params.minReputation, {
+          min: 0,
+          max: 1000000,
+          name: "minReputation",
+        });
       }
       break;
 
@@ -237,7 +233,11 @@ export function validateToolParams(toolName, params) {
       validated.servicePda = validatePda(params.servicePda);
       validated.description = sanitizeInput(params.description, "description");
       if (params.deadlineMinutes !== undefined) {
-        validated.deadlineMinutes = validateNumber(params.deadlineMinutes, { min: 1, max: 10080, name: "deadlineMinutes" }); // Max 7 days
+        validated.deadlineMinutes = validateNumber(params.deadlineMinutes, {
+          min: 1,
+          max: 10080,
+          name: "deadlineMinutes",
+        }); // Max 7 days
       }
       break;
 
@@ -269,14 +269,19 @@ export function validateToolParams(toolName, params) {
     case "create_team":
       validated.name = sanitizeInput(params.name, "teamName");
       validated.leadWallet = validateWalletAddress(params.leadWallet);
-      if (params.description) validated.description = sanitizeInput(params.description, "description");
+      if (params.description)
+        validated.description = sanitizeInput(params.description, "description");
       if (params.members && Array.isArray(params.members)) {
-        validated.members = params.members.map(m => ({
+        validated.members = params.members.map((m) => ({
           wallet: validateWalletAddress(m.wallet),
           role: sanitizeInput(m.role || "worker"),
           level: validateNumber(m.level || 2, { min: 1, max: 4, name: "level" }),
-          skills: Array.isArray(m.skills) ? m.skills.map(s => sanitizeInput(s)) : [],
-          sharePercentage: validateNumber(m.sharePercentage || 0, { min: 0, max: 100, name: "sharePercentage" }),
+          skills: Array.isArray(m.skills) ? m.skills.map((s) => sanitizeInput(s)) : [],
+          sharePercentage: validateNumber(m.sharePercentage || 0, {
+            min: 0,
+            max: 100,
+            name: "sharePercentage",
+          }),
         }));
       }
       break;
@@ -288,7 +293,8 @@ export function validateToolParams(toolName, params) {
 
     case "list_teams":
       if (params.memberWallet) validated.memberWallet = validateWalletAddress(params.memberWallet);
-      if (params.includeInactive !== undefined) validated.includeInactive = Boolean(params.includeInactive);
+      if (params.includeInactive !== undefined)
+        validated.includeInactive = Boolean(params.includeInactive);
       break;
 
     case "create_team_task":

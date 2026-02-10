@@ -1,14 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useCreateTeam, type CreateTeamParams } from "@/lib/hooks/useTeams";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
+import { type CreateTeamParams, useCreateTeam } from "@/lib/hooks/useTeams";
 
 interface CreateTeamModalProps {
   open: boolean;
@@ -79,7 +74,7 @@ export function CreateTeamModal({ open, onOpenChange, onSuccess }: CreateTeamMod
       await createTeam.mutateAsync(params);
       onSuccess?.();
       onOpenChange(false);
-    } catch (error) {
+    } catch (_error) {
       // Error handled by mutation
     }
   };
@@ -132,7 +127,7 @@ export function CreateTeamModal({ open, onOpenChange, onSuccess }: CreateTeamMod
             <label className="mb-1 block text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider">
               Lead Wallet (You)
             </label>
-            <div 
+            <div
               className="border border-[var(--color-warning)]/20 bg-[var(--color-warning)]/5 px-4 py-2"
               style={{ borderRadius: "var(--border-radius-sm)" }}
             >
@@ -149,7 +144,7 @@ export function CreateTeamModal({ open, onOpenChange, onSuccess }: CreateTeamMod
             <label className="mb-2 block text-sm font-medium text-[var(--color-muted)] uppercase tracking-wider">
               Add Team Members
             </label>
-            <div 
+            <div
               className="space-y-2 border border-[var(--color-border)] bg-[var(--color-surface)] p-3"
               style={{ borderRadius: "var(--border-radius-sm)" }}
             >

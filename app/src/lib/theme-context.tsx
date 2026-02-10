@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 
 export type ThemeName = "cyberpunk" | "glass" | "brutalist" | "organic";
 
@@ -11,9 +11,17 @@ interface ThemeContextType {
 }
 
 const themes = [
-  { id: "cyberpunk" as ThemeName, label: "Cyberpunk Terminal", description: "Matrix meets Bloomberg" },
+  {
+    id: "cyberpunk" as ThemeName,
+    label: "Cyberpunk Terminal",
+    description: "Matrix meets Bloomberg",
+  },
   { id: "glass" as ThemeName, label: "Glass Morphism", description: "Frosted glass & gradients" },
-  { id: "brutalist" as ThemeName, label: "Brutalist Data", description: "Dense info, high contrast" },
+  {
+    id: "brutalist" as ThemeName,
+    label: "Brutalist Data",
+    description: "Dense info, high contrast",
+  },
   { id: "organic" as ThemeName, label: "Organic Flow", description: "Warm & approachable" },
 ];
 
@@ -23,7 +31,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 function getInitialTheme(): ThemeName {
   if (typeof window === "undefined") return "cyberpunk";
   const saved = localStorage.getItem("agentpay-theme") as ThemeName | null;
-  if (saved && themes.some(t => t.id === saved)) {
+  if (saved && themes.some((t) => t.id === saved)) {
     return saved;
   }
   return "cyberpunk";
@@ -43,9 +51,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, themes }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={{ theme, setTheme, themes }}>{children}</ThemeContext.Provider>
   );
 }
 

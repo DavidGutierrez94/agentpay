@@ -3,11 +3,10 @@
  * REKT Shield risk scan proxy
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const REKT_SHIELD_API =
-  process.env.REKT_SHIELD_API ||
-  "https://web-production-c5ac4.up.railway.app/api/scan";
+  process.env.REKT_SHIELD_API || "https://web-production-c5ac4.up.railway.app/api/scan";
 
 // Cache result type
 interface ScanResult {
@@ -30,8 +29,8 @@ function isValidPublicKey(input: string): boolean {
 }
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ wallet: string }> }
+  _request: NextRequest,
+  { params }: { params: Promise<{ wallet: string }> },
 ) {
   const { wallet } = await params;
 
@@ -43,7 +42,7 @@ export async function GET(
         error: "Invalid wallet address format",
         wallet,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -139,7 +138,7 @@ export async function GET(
         details: error instanceof Error ? error.message : "Unknown error",
         recommendation: "REKT Shield unavailable. Proceed with your own due diligence.",
       },
-      { status: 503 }
+      { status: 503 },
     );
   }
 }

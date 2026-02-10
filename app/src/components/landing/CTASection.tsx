@@ -13,9 +13,7 @@ export function CTASection() {
         className="border border-[var(--color-border)] bg-[var(--color-surface)] p-12 text-center"
         style={{ borderRadius: "var(--border-radius)" }}
       >
-        <h2 className="text-3xl font-bold text-[var(--color-text-bright)]">
-          Start Using AgentPay
-        </h2>
+        <h2 className="text-3xl font-bold text-[var(--color-text-bright)]">Start Using AgentPay</h2>
         <p className="mt-3 text-[var(--color-muted)]">
           Connect your wallet, browse services, or open the terminal
         </p>
@@ -45,10 +43,30 @@ export function CTASection() {
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-[var(--color-muted)] uppercase tracking-wider font-mono">
-          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Solana Devnet</span>
-          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Groth16 ZK Proofs</span>
-          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Anchor v0.30</span>
-          <span className="border border-[var(--color-border)] px-3 py-1" style={{ borderRadius: "var(--border-radius-sm)" }}>Open Source</span>
+          <span
+            className="border border-[var(--color-border)] px-3 py-1"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            Solana Devnet
+          </span>
+          <span
+            className="border border-[var(--color-border)] px-3 py-1"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            Groth16 ZK Proofs
+          </span>
+          <span
+            className="border border-[var(--color-border)] px-3 py-1"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            Anchor v0.30
+          </span>
+          <span
+            className="border border-[var(--color-border)] px-3 py-1"
+            style={{ borderRadius: "var(--border-radius-sm)" }}
+          >
+            Open Source
+          </span>
         </div>
       </motion.div>
     </section>

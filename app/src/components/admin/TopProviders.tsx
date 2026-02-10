@@ -1,7 +1,7 @@
 "use client";
 
-import { AddressDisplay } from "../shared/AddressDisplay";
 import type { ProtocolStats } from "@/lib/hooks/useProtocolStats";
+import { AddressDisplay } from "../shared/AddressDisplay";
 
 export function TopProviders({ stats }: { stats: ProtocolStats | undefined }) {
   if (!stats || stats.topProviders.length === 0) {
@@ -24,10 +24,7 @@ export function TopProviders({ stats }: { stats: ProtocolStats | undefined }) {
         </thead>
         <tbody>
           {stats.topProviders.map((p, i) => (
-            <tr
-              key={p.address}
-              className="border-b border-[var(--color-border)] last:border-0"
-            >
+            <tr key={p.address} className="border-b border-[var(--color-border)] last:border-0">
               <td className="py-2 text-[var(--color-muted)]">{i + 1}</td>
               <td className="py-2">
                 <AddressDisplay address={p.address} chars={6} />

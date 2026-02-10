@@ -6,13 +6,14 @@
  * Based on patterns from Kevin Simback and Khaliq Gant
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import { type NextRequest, NextResponse } from "next/server";
 
 // Storage paths
-const DATA_DIR = process.env.AGENTPAY_TEAMS_DIR || path.join(process.cwd(), "..", "mcp-server", "teams-data");
+const DATA_DIR =
+  process.env.AGENTPAY_TEAMS_DIR || path.join(process.cwd(), "..", "mcp-server", "teams-data");
 const TEAMS_FILE = path.join(DATA_DIR, "teams.json");
 const CONTEXT_DIR = path.join(DATA_DIR, "contexts");
 
@@ -90,9 +91,7 @@ export async function GET(request: NextRequest) {
 
     // Filter by member wallet
     if (memberWallet) {
-      teams = teams.filter((t) =>
-        t.members.some((m) => m.wallet === memberWallet)
-      );
+      teams = teams.filter((t) => t.members.some((m) => m.wallet === memberWallet));
     }
 
     // Filter inactive by default
@@ -128,7 +127,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch teams",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -143,14 +142,19 @@ export async function POST(request: NextRequest) {
     if (!name || typeof name !== "string" || name.length < 1 || name.length > 64) {
       return NextResponse.json(
         { success: false, error: "Invalid team name (1-64 characters required)" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (!leadWallet || typeof leadWallet !== "string" || leadWallet.length < 32 || leadWallet.length > 44) {
+    if (
+      !leadWallet ||
+      typeof leadWallet !== "string" ||
+      leadWallet.length < 32 ||
+      leadWallet.length > 44
+    ) {
       return NextResponse.json(
         { success: false, error: "Invalid lead wallet address" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -256,7 +260,7 @@ _Add project context and notes here._
         error: "Failed to create team",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

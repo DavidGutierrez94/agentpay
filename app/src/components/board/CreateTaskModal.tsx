@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
-import { getProgram } from "@/lib/program";
-import { findTaskPda } from "@/lib/pda";
-import { padBytes } from "@/lib/utils";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { useQueryClient } from "@tanstack/react-query";
-import type { ServiceListing } from "@/lib/hooks/useServices";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/Dialog";
+import type { ServiceListing } from "@/lib/hooks/useServices";
+import { findTaskPda } from "@/lib/pda";
+import { getProgram } from "@/lib/program";
+import { padBytes } from "@/lib/utils";
 
 export function CreateTaskModal({
   service,
@@ -69,15 +69,10 @@ export function CreateTaskModal({
       const taskId = crypto.getRandomValues(new Uint8Array(16));
       const [taskRequestPda] = findTaskPda(publicKey, taskId);
       const serviceListingPda = new PublicKey(service.pda);
-      const deadline =
-        Math.floor(Date.now() / 1000) + parseInt(deadlineMinutes) * 60;
+      const deadline = Math.floor(Date.now() / 1000) + parseInt(deadlineMinutes, 10) * 60;
 
       const tx = await program.methods
-        .createTask(
-          Array.from(taskId),
-          padBytes(description, 256),
-          new BN(deadline)
-        )
+        .createTask(Array.from(taskId), padBytes(description, 256), new BN(deadline))
         .accounts({
           requester: publicKey,
           serviceListing: serviceListingPda,
@@ -103,9 +98,7 @@ export function CreateTaskModal({
       <DialogContent className="max-w-md">
         <DialogHeader label="NEW_TASK">
           <DialogTitle>Create Task</DialogTitle>
-          <DialogDescription>
-            Hiring: {service.description}
-          </DialogDescription>
+          <DialogDescription>Hiring: {service.description}</DialogDescription>
         </DialogHeader>
 
         <div
@@ -124,9 +117,7 @@ export function CreateTaskModal({
             >
               [SUCCESS] Task created successfully!
             </div>
-            <p className="break-all font-mono text-xs text-[var(--color-muted)]">
-              tx: {txSig}
-            </p>
+            <p className="break-all font-mono text-xs text-[var(--color-muted)]">tx: {txSig}</p>
             <button
               onClick={handleClose}
               className="w-full border border-[var(--color-border)] bg-[var(--color-surface)] py-2 text-sm font-medium text-[var(--color-text)] hover:border-[var(--color-primary)] transition-colors"

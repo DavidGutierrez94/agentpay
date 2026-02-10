@@ -32,7 +32,7 @@ export function initModelProvider(): ModelProviderInfo {
     if (!CONFIG.openRouter.apiKey) {
       throw new Error(
         "OPENROUTER_API_KEY is required when MODEL_PROVIDER=openrouter. " +
-          "Get your key at https://openrouter.ai/keys"
+          "Get your key at https://openrouter.ai/keys",
       );
     }
 
@@ -51,7 +51,7 @@ export function initModelProvider(): ModelProviderInfo {
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new Error(
         "ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic. " +
-          "Get your key at https://console.anthropic.com/"
+          "Get your key at https://console.anthropic.com/",
       );
     }
 

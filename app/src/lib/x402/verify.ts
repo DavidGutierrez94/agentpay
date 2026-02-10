@@ -3,17 +3,11 @@
  * Verifies and submits Solana SPL token payments from X-Payment header
  */
 
-import {
-  Connection,
-  VersionedTransaction,
-  PublicKey,
-} from "@solana/web3.js";
+import { type Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { X402PaymentPayload, X402VerifyResult } from "./types";
 
 // SPL Token Program ID
-const TOKEN_PROGRAM_ID = new PublicKey(
-  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-);
+const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 
 // Transfer instruction discriminator (SPL Token)
 const TRANSFER_INSTRUCTION = 3;
@@ -28,7 +22,7 @@ export async function verifyAndSubmitPayment(
   paymentHeader: string,
   expectedRecipient: string,
   expectedAmount: number,
-  _expectedMint: string // TODO: Add mint verification for SPL token transfers
+  _expectedMint: string, // TODO: Add mint verification for SPL token transfers
 ): Promise<X402VerifyResult> {
   try {
     // 1. Decode X-Payment header
@@ -43,10 +37,7 @@ export async function verifyAndSubmitPayment(
     }
 
     // 2. Deserialize transaction
-    const txBuffer = Buffer.from(
-      paymentData.payload.serializedTransaction,
-      "base64"
-    );
+    const txBuffer = Buffer.from(paymentData.payload.serializedTransaction, "base64");
 
     let tx: VersionedTransaction;
     try {
@@ -72,9 +63,7 @@ export async function verifyAndSubmitPayment(
       if (ix.data[0] !== TRANSFER_INSTRUCTION) continue;
 
       // Parse transfer amount (8 bytes, little-endian, starting at offset 1)
-      const amount = Number(
-        Buffer.from(ix.data.slice(1, 9)).readBigUInt64LE()
-      );
+      const amount = Number(Buffer.from(ix.data.slice(1, 9)).readBigUInt64LE());
 
       // Get destination account from instruction accounts
       // For SPL Token transfer: [source, destination, authority]
@@ -82,10 +71,7 @@ export async function verifyAndSubmitPayment(
       const destinationAccount = accountKeys[destinationIndex];
 
       // Verify recipient and amount
-      if (
-        destinationAccount.toBase58() === expectedRecipient &&
-        amount >= expectedAmount
-      ) {
+      if (destinationAccount.toBase58() === expectedRecipient && amount >= expectedAmount) {
         validTransfer = true;
         break;
       }
@@ -114,10 +100,7 @@ export async function verifyAndSubmitPayment(
     });
 
     // 6. Confirm transaction
-    const confirmation = await connection.confirmTransaction(
-      signature,
-      "confirmed"
-    );
+    const confirmation = await connection.confirmTransaction(signature, "confirmed");
 
     if (confirmation.value.err) {
       return {
