@@ -25,13 +25,13 @@ jobs:
         working-directory: ./app
         run: npm ci
 
-      - name: Build
-        working-directory: ./app
-        run: npm run build
-
       - name: Lint
         working-directory: ./app
         run: npm run lint
+
+      - name: Build
+        working-directory: ./app
+        run: npm run build
 
   build-mcp:
     name: Build MCP Server
