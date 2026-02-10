@@ -19,16 +19,18 @@ const themes = [
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>("cyberpunk");
+// Helper to get initial theme (handles SSR where localStorage is unavailable)
+function getInitialTheme(): ThemeName {
+  if (typeof window === "undefined") return "cyberpunk";
+  const saved = localStorage.getItem("agentpay-theme") as ThemeName | null;
+  if (saved && themes.some(t => t.id === saved)) {
+    return saved;
+  }
+  return "cyberpunk";
+}
 
-  useEffect(() => {
-    // Load saved theme from localStorage
-    const saved = localStorage.getItem("agentpay-theme") as ThemeName | null;
-    if (saved && themes.some(t => t.id === saved)) {
-      setThemeState(saved);
-    }
-  }, []);
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<ThemeName>(getInitialTheme);
 
   useEffect(() => {
     // Apply theme class to document

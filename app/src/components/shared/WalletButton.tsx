@@ -14,16 +14,17 @@ export function WalletButton() {
 
   useEffect(() => {
     if (!publicKey) {
-      setBalance(null);
-      return;
+      // Clear balance asynchronously to avoid synchronous setState in effect
+      const timeoutId = setTimeout(() => setBalance(null), 0);
+      return () => clearTimeout(timeoutId);
     }
     let cancelled = false;
-    const fetch = async () => {
+    const fetchBalance = async () => {
       const bal = await connection.getBalance(publicKey);
       if (!cancelled) setBalance(bal / LAMPORTS_PER_SOL);
     };
-    fetch();
-    const id = setInterval(fetch, 15000);
+    fetchBalance();
+    const id = setInterval(fetchBalance, 15000);
     return () => {
       cancelled = true;
       clearInterval(id);

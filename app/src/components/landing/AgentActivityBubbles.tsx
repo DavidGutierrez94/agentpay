@@ -28,6 +28,9 @@ interface FloatingBubble {
   type: AgentTransaction["type"];
   agentColor: string;
   timestamp: number;
+  // Pre-computed random offsets for animation (avoids Math.random in render)
+  animOffsetX: number;
+  animOffsetY: number;
 }
 
 export function AgentActivityBubbles() {
@@ -50,6 +53,9 @@ export function AgentActivityBubbles() {
         type: tx.type,
         agentColor: tx.agentColor,
         timestamp: tx.timestamp,
+        // Pre-compute random offsets for animation (avoids Math.random in render)
+        animOffsetX: (Math.random() - 0.5) * 40,
+        animOffsetY: -30 - Math.random() * 30,
       };
     });
 
@@ -187,8 +193,8 @@ export function AgentActivityBubbles() {
               animate={{
                 opacity: [0, 1, 1, 0],
                 scale: [0.5, 1.2, 1, 0.8],
-                x: [0, (Math.random() - 0.5) * 40],
-                y: [0, -30 - Math.random() * 30],
+                x: [0, bubble.animOffsetX],
+                y: [0, bubble.animOffsetY],
               }}
               transition={{
                 duration: 3,
