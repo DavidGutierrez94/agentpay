@@ -2,7 +2,10 @@
 
 export function ZKBadge() {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-400">
+    <span 
+      className="inline-flex items-center gap-1 border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--color-primary)]"
+      style={{ borderRadius: "var(--border-radius-sm)" }}
+    >
       <svg
         width="10"
         height="10"

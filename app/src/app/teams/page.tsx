@@ -234,20 +234,18 @@ export default function TeamsPage() {
       </div>
 
       {/* Team Profile Modal */}
-      {selectedTeamId && (
-        <TeamProfileModal
-          teamId={selectedTeamId}
-          onClose={() => setSelectedTeamId(null)}
-        />
-      )}
+      <TeamProfileModal
+        teamId={selectedTeamId}
+        open={!!selectedTeamId}
+        onOpenChange={(open) => !open && setSelectedTeamId(null)}
+      />
 
       {/* Create Team Modal */}
-      {showCreateModal && (
-        <CreateTeamModal
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={() => refetch()}
-        />
-      )}
+      <CreateTeamModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

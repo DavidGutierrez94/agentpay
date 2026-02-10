@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { AddressDisplay } from "../shared/AddressDisplay";
 import { ZKBadge } from "../shared/ZKBadge";
 import type { Agent } from "@/lib/hooks/useAgents";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
 
 interface AgentProfileModalProps {
-  agent: Agent;
-  onClose: () => void;
+  agent: Agent | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 interface RiskScore {
@@ -18,7 +24,7 @@ interface RiskScore {
   error?: string;
 }
 
-export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
+export function AgentProfileModal({ agent, open, onOpenChange }: AgentProfileModalProps) {
   const [riskScore, setRiskScore] = useState<RiskScore>({
     score: 0,
     level: "low",
@@ -67,105 +73,98 @@ export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
 
   const riskColorClass =
     riskScore.level === "low"
-      ? "text-green-400"
+      ? "text-[var(--color-success)]"
       : riskScore.level === "medium"
-      ? "text-yellow-400"
-      : "text-red-400";
+      ? "text-[var(--color-warning)]"
+      : "text-[var(--color-error)]";
 
   const riskBgClass =
     riskScore.level === "low"
-      ? "bg-green-500/10"
+      ? "bg-[var(--color-success)]/10"
       : riskScore.level === "medium"
-      ? "bg-yellow-500/10"
-      : "bg-red-500/10";
+      ? "bg-[var(--color-warning)]/10"
+      : "bg-[var(--color-error)]/10";
+
+  if (!agent) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-        onClick={onClose}
-      >
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-900 p-6"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-3xl">
-                🤖
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Agent Profile</h2>
-                <AddressDisplay address={agent.wallet} chars={8} />
-                <p className="mt-1 text-sm text-zinc-500">
-                  Active since {joinedFormatted}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader label="AGENT_PROFILE">
+          <div className="flex items-center gap-4">
+            <div 
+              className="flex h-16 w-16 items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-3xl"
+              style={{ borderRadius: "var(--border-radius)" }}
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M5 5l10 10M15 5L5 15" />
-              </svg>
-            </button>
+              🤖
+            </div>
+            <div>
+              <DialogTitle>Agent Profile</DialogTitle>
+              <AddressDisplay address={agent.wallet} chars={8} />
+              <p className="mt-1 text-sm text-[var(--color-muted)]">
+                Active since {joinedFormatted}
+              </p>
+            </div>
           </div>
+        </DialogHeader>
+
+        <div className="space-y-6">
 
           {/* Stats Grid */}
-          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div className="rounded-xl bg-zinc-800/50 p-4 text-center">
-              <p className="text-2xl font-bold text-white">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div 
+              className="bg-[var(--color-surface)] p-4 text-center"
+              style={{ borderRadius: "var(--border-radius)" }}
+            >
+              <p className="text-2xl font-bold text-[var(--color-text-bright)]">
                 {agent.stats.totalTasksCompleted}
               </p>
-              <p className="mt-1 text-xs text-zinc-500">Tasks Completed</p>
+              <p className="mt-1 text-xs text-[var(--color-muted)]">Tasks Completed</p>
             </div>
-            <div className="rounded-xl bg-zinc-800/50 p-4 text-center">
-              <p className="text-2xl font-bold text-white">
+            <div 
+              className="bg-[var(--color-surface)] p-4 text-center"
+              style={{ borderRadius: "var(--border-radius)" }}
+            >
+              <p className="text-2xl font-bold text-[var(--color-text-bright)]">
                 {agent.stats.zkVerifiedCount}
               </p>
-              <p className="mt-1 text-xs text-zinc-500">ZK Verified</p>
+              <p className="mt-1 text-xs text-[var(--color-muted)]">ZK Verified</p>
             </div>
-            <div className="rounded-xl bg-zinc-800/50 p-4 text-center">
-              <p className="text-2xl font-bold text-white">
+            <div 
+              className="bg-[var(--color-surface)] p-4 text-center"
+              style={{ borderRadius: "var(--border-radius)" }}
+            >
+              <p className="text-2xl font-bold text-[var(--color-text-bright)]">
                 {agent.stats.activeServices}
               </p>
-              <p className="mt-1 text-xs text-zinc-500">Active Services</p>
+              <p className="mt-1 text-xs text-[var(--color-muted)]">Active Services</p>
             </div>
-            <div className="rounded-xl bg-zinc-800/50 p-4 text-center">
+            <div 
+              className="bg-[var(--color-surface)] p-4 text-center"
+              style={{ borderRadius: "var(--border-radius)" }}
+            >
               <p
                 className={`text-2xl font-bold ${
-                  agent.stats.disputeCountAsProvider === 0 ? "text-green-400" : "text-yellow-400"
+                  agent.stats.disputeCountAsProvider === 0 ? "text-[var(--color-success)]" : "text-[var(--color-warning)]"
                 }`}
               >
                 {agent.stats.disputeCountAsProvider}
               </p>
-              <p className="mt-1 text-xs text-zinc-500">Disputes (Provider)</p>
+              <p className="mt-1 text-xs text-[var(--color-muted)]">Disputes (Provider)</p>
             </div>
           </div>
 
           {/* Requester Trust Warning */}
           {agent.stats.disputeRateAsRequester >= 30 && (
-            <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+            <div 
+              className="border border-[var(--color-error)]/30 bg-[var(--color-error)]/10 p-4"
+              style={{ borderRadius: "var(--border-radius)" }}
+            >
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🚨</span>
                 <div>
-                  <p className="font-medium text-red-400">High Dispute Rate as Requester</p>
-                  <p className="mt-1 text-sm text-zinc-400">
+                  <p className="font-medium text-[var(--color-error)]">High Dispute Rate as Requester</p>
+                  <p className="mt-1 text-sm text-[var(--color-muted)]">
                     This agent disputes {agent.stats.disputeRateAsRequester}% of tasks they request
                     ({agent.stats.disputeCountAsRequester} out of {agent.stats.tasksCreatedAsRequester} tasks).
                     Exercise caution when providing services to this wallet.
@@ -177,65 +176,79 @@ export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
 
           {/* Requester Stats - if they have any */}
           {agent.stats.tasksCreatedAsRequester > 0 && (
-            <div className="mt-4 rounded-xl bg-zinc-800/30 p-4">
-              <h3 className="mb-2 text-sm font-medium text-zinc-400">As Requester</h3>
+            <div 
+              className="bg-[var(--color-surface)] p-4"
+              style={{ borderRadius: "var(--border-radius)" }}
+            >
+              <h3 className="mb-2 text-sm font-medium text-[var(--color-muted)]">As Requester</h3>
               <div className="flex items-center gap-6 text-sm">
                 <div>
-                  <span className="text-white">{agent.stats.tasksCreatedAsRequester}</span>
-                  <span className="ml-1 text-zinc-500">tasks created</span>
+                  <span className="text-[var(--color-text-bright)]">{agent.stats.tasksCreatedAsRequester}</span>
+                  <span className="ml-1 text-[var(--color-muted)]">tasks created</span>
                 </div>
                 <div>
-                  <span className={agent.stats.disputeCountAsRequester === 0 ? "text-green-400" : "text-yellow-400"}>
+                  <span className={agent.stats.disputeCountAsRequester === 0 ? "text-[var(--color-success)]" : "text-[var(--color-warning)]"}>
                     {agent.stats.disputeCountAsRequester}
                   </span>
-                  <span className="ml-1 text-zinc-500">disputes initiated</span>
+                  <span className="ml-1 text-[var(--color-muted)]">disputes initiated</span>
                 </div>
                 <div>
-                  <span className={agent.stats.disputeRateAsRequester < 20 ? "text-green-400" : agent.stats.disputeRateAsRequester < 50 ? "text-yellow-400" : "text-red-400"}>
+                  <span className={agent.stats.disputeRateAsRequester < 20 ? "text-[var(--color-success)]" : agent.stats.disputeRateAsRequester < 50 ? "text-[var(--color-warning)]" : "text-[var(--color-error)]"}>
                     {agent.stats.disputeRateAsRequester}%
                   </span>
-                  <span className="ml-1 text-zinc-500">dispute rate</span>
+                  <span className="ml-1 text-[var(--color-muted)]">dispute rate</span>
                 </div>
               </div>
             </div>
           )}
 
           {/* ZK Verification Bar */}
-          <div className="mt-6">
+          <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {agent.stats.zkVerifiedCount > 0 && <ZKBadge />}
-                <span className="text-sm text-zinc-400">
+                <span className="text-sm text-[var(--color-muted)]">
                   {zkPercentage}% of tasks ZK verified
                 </span>
               </div>
-              <span className="text-sm text-zinc-500">
+              <span className="text-sm text-[var(--color-muted)]">
                 {agent.stats.zkVerifiedCount} / {agent.stats.totalTasksCompleted}
               </span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-800">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${zkPercentage}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-600"
+            <div 
+              className="mt-2 h-2 overflow-hidden bg-[var(--color-surface)]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
+            >
+              <div
+                className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]"
+                style={{ 
+                  width: `${zkPercentage}%`,
+                  borderRadius: "var(--border-radius-sm)",
+                  transition: "width 0.5s ease-out"
+                }}
               />
             </div>
           </div>
 
           {/* REKT Shield Risk Score */}
-          <div className="mt-6">
-            <h3 className="mb-3 text-sm font-medium text-zinc-400">
+          <div>
+            <h3 className="mb-3 text-sm font-medium text-[var(--color-muted)]">
               🛡️ REKT Shield Risk Assessment
             </h3>
-            <div className={`rounded-xl ${riskBgClass} p-4`}>
+            <div 
+              className={`p-4 ${riskBgClass}`}
+              style={{ borderRadius: "var(--border-radius)" }}
+            >
               {riskScore.loading ? (
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
-                  <span className="text-sm text-zinc-400">Scanning wallet...</span>
+                  <div 
+                    className="h-4 w-4 animate-spin border-2 border-[var(--color-primary)] border-t-transparent"
+                    style={{ borderRadius: "var(--border-radius-sm)" }}
+                  />
+                  <span className="text-sm text-[var(--color-muted)]">Scanning wallet...</span>
                 </div>
               ) : riskScore.error ? (
-                <span className="text-sm text-zinc-500">
+                <span className="text-sm text-[var(--color-muted)]">
                   Risk score unavailable
                 </span>
               ) : (
@@ -252,7 +265,7 @@ export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
                           ? "Medium Risk"
                           : "High Risk"}
                       </p>
-                      <p className="text-xs text-zinc-500">
+                      <p className="text-xs text-[var(--color-muted)]">
                         Based on on-chain activity analysis
                       </p>
                     </div>
@@ -270,22 +283,23 @@ export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
           </div>
 
           {/* Services */}
-          <div className="mt-6">
-            <h3 className="mb-3 text-sm font-medium text-zinc-400">
+          <div>
+            <h3 className="mb-3 text-sm font-medium text-[var(--color-muted)]">
               Services Offered ({agent.services.length})
             </h3>
             {agent.services.length === 0 ? (
-              <p className="text-sm text-zinc-500">No services registered</p>
+              <p className="text-sm text-[var(--color-muted)]">No services registered</p>
             ) : (
               <div className="space-y-2">
                 {agent.services.map((service) => (
                   <div
                     key={service.pda}
-                    className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-800/30 p-3"
+                    className="flex items-center justify-between border border-[var(--color-border)] bg-[var(--color-surface)] p-3"
+                    style={{ borderRadius: "var(--border-radius-sm)" }}
                   >
                     <div className="flex-1">
-                      <p className="text-sm text-white">{service.description}</p>
-                      <div className="mt-1 flex items-center gap-3 text-xs text-zinc-500">
+                      <p className="text-sm text-[var(--color-text-bright)]">{service.description}</p>
+                      <div className="mt-1 flex items-center gap-3 text-xs text-[var(--color-muted)]">
                         <span>{service.tasksCompleted} tasks</span>
                         <span>•</span>
                         <span>Created {new Date(service.createdAt).toLocaleDateString()}</span>
@@ -293,15 +307,16 @@ export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-xs ${
+                        className={`px-2 py-0.5 text-xs ${
                           service.isActive
-                            ? "bg-green-500/10 text-green-400"
-                            : "bg-zinc-700 text-zinc-400"
+                            ? "bg-[var(--color-success)]/10 text-[var(--color-success)]"
+                            : "bg-[var(--color-surface)] text-[var(--color-muted)]"
                         }`}
+                        style={{ borderRadius: "var(--border-radius-sm)" }}
                       >
                         {service.isActive ? "Active" : "Inactive"}
                       </span>
-                      <span className="font-mono text-sm text-violet-400">
+                      <span className="font-mono text-sm text-[var(--color-primary)]">
                         {service.priceSol} SOL
                       </span>
                     </div>
@@ -312,24 +327,26 @@ export function AgentProfileModal({ agent, onClose }: AgentProfileModalProps) {
           </div>
 
           {/* Actions */}
-          <div className="mt-6 flex gap-3">
+          <div className="flex gap-3">
             <a
               href={`https://explorer.solana.com/address/${agent.wallet}?cluster=devnet`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 rounded-lg border border-zinc-700 py-2.5 text-center text-sm font-medium text-white transition-colors hover:border-violet-500 hover:text-violet-400"
+              className="flex-1 border border-[var(--color-border)] py-2.5 text-center text-sm font-medium text-[var(--color-text)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
             >
               View on Explorer ↗
             </a>
             <button
-              onClick={onClose}
-              className="flex-1 rounded-lg bg-violet-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+              onClick={() => onOpenChange(false)}
+              className="flex-1 bg-[var(--color-primary)] py-2.5 text-sm font-medium text-[var(--color-bg)] transition-colors hover:bg-[var(--color-accent)]"
+              style={{ borderRadius: "var(--border-radius-sm)" }}
             >
               Close
             </button>
           </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

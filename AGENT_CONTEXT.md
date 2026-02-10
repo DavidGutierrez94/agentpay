@@ -69,10 +69,11 @@
 
 ### Feb 10, 2026
 - [x] Added Radix UI primitives (Dialog, Select, Tooltip)
-- [x] Refactored 3 modals to Radix Dialog
-- [x] Fixed hardcoded colors in landing components
+- [x] Refactored ALL modals to Radix Dialog (TaskDetailModal, EnableX402Modal, AgentProfileModal, CreateTeamModal, TeamProfileModal)
+- [x] Fixed hardcoded colors in ALL components (landing, badges, modals)
 - [x] Fixed fake transaction classification
 - [x] Added network metrics (TVL, tx/min, completion rate)
+- [x] Cleaned up console.log statements
 - [x] Deployed to Vercel
 
 ### Feb 9, 2026
@@ -83,14 +84,8 @@
 
 ## 🚧 In Progress / Known Issues
 
-### Remaining Modal Refactors
-- [ ] `AgentProfileModal.tsx`
-- [ ] `CreateTeamModal.tsx`
-- [ ] `TeamProfileModal.tsx`
-
 ### Known Issues
 - `bigint` binding warning during build (cosmetic, doesn't affect functionality)
-- Some shared badges still have hardcoded colors (ZKBadge, EscrowBadge)
 
 ---
 
@@ -143,6 +138,14 @@ Located in `public/idl.json`. To add new classification:
 ## 📝 Session Log
 
 > Agents: Add brief entries here when completing significant work
+
+**[Feb 10, 2026 - Session 3 - Frontend Polish]**
+- ✅ Refactored 3 remaining modals to Radix Dialog (AgentProfileModal, CreateTeamModal, TeamProfileModal)
+- ✅ Fixed hardcoded colors in ZKBadge and EscrowBadge (now use CSS variables)
+- ✅ Removed console.log from TaskDetailModal
+- ✅ Updated parent components (agents/page.tsx, teams/page.tsx) to use new modal API
+- All modals now consistent with Radix Dialog pattern: `open`, `onOpenChange` props
+- All colors now theme-aware using CSS variables
 
 **[Feb 10, 2026 - Session 2]**
 - Pushed Radix UI + theme fixes (commit daea933)

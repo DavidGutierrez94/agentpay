@@ -59,7 +59,7 @@ export function TaskDetailModal({
     setLoading(true);
     setError("");
     setSuccessMsg("");
-    console.log(`[TaskDetailModal] Executing ${action} on task ${task.pda}`);
+    // console.log(`[TaskDetailModal] Executing ${action} on task ${task.pda}`);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const program = getProgram(anchorWallet) as any;

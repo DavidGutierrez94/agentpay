@@ -142,12 +142,11 @@ export default function AgentsPage() {
         </>
       )}
 
-      {selectedAgent && (
-        <AgentProfileModal
-          agent={selectedAgent}
-          onClose={() => setSelectedAgent(null)}
-        />
-      )}
+      <AgentProfileModal
+        agent={selectedAgent}
+        open={!!selectedAgent}
+        onOpenChange={(open) => !open && setSelectedAgent(null)}
+      />
     </div>
   );
 }
