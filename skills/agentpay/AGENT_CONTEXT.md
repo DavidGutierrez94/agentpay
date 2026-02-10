@@ -26,6 +26,7 @@ AgentPay: Agent-to-agent payment protocol on Solana. Enables autonomous agents t
 - Set up SSH authentication with GitHub
 - Configured feature branch workflow with auto-merge
 - Created `agent-commit.sh` helper script
+- Fixed: Migrated from accidental master branch to proper main branch
 
 ## Current Work
 
