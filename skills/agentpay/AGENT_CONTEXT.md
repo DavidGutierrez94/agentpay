@@ -45,7 +45,7 @@ AgentPay: Agent-to-agent payment protocol on Solana. Enables autonomous agents t
 
 When working on this project:
 
-1. **Pull latest changes** - `cd /root/.openclaw/workspace && git checkout master && git pull origin master`
+1. **Pull latest changes** - `cd /root/.openclaw/workspace && git checkout main && git pull origin main`
 2. **Read this file first** - Get context on what's been done
 3. **Do your work** - Make changes, run commands, etc.
 4. **Update this file** - Add entries to Session Log and Current Work sections
@@ -58,15 +58,15 @@ When working on this project:
 ### How the Workflow Works
 
 - **Feature branches**: Each commit creates a timestamped branch (`agent-update-YYYYMMDD-HHMMSS`)
-- **Auto-merge**: If no conflicts, merges to master automatically and cleans up
+- **Auto-merge**: If no conflicts, merges to main automatically and cleans up
 - **Conflict handling**: If conflicts detected, branch stays for manual review
-- **Safety**: Never commit directly to master
+- **Safety**: Never commit directly to main
 
 ### Manual Workflow (if script fails)
 
 ```bash
 cd /root/.openclaw/workspace
-git checkout master && git pull origin master
+git checkout main && git pull origin main
 git checkout -b agent-update-$(date +%Y%m%d-%H%M%S)
 git add skills/agentpay/AGENT_CONTEXT.md
 git commit -m "Your message"

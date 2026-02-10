@@ -11,9 +11,9 @@ BRANCH_NAME="agent-update-${TIMESTAMP}"
 
 cd "$REPO_DIR"
 
-# Ensure we're on master and up to date
-git checkout master
-git pull origin master
+# Ensure we're on main and up to date
+git checkout main
+git pull origin main
 
 # Create feature branch
 git checkout -b "$BRANCH_NAME"
@@ -28,14 +28,14 @@ git commit -m "$COMMIT_MSG"
 # Push branch to remote
 git push origin "$BRANCH_NAME"
 
-# Try to merge to master
-git checkout master
-git pull origin master
+# Try to merge to main
+git checkout main
+git pull origin main
 
 # Attempt merge
 if git merge "$BRANCH_NAME" --no-ff -m "Merge $BRANCH_NAME"; then
-    echo "✅ Clean merge - pushing to master"
-    git push origin master
+    echo "✅ Clean merge - pushing to main"
+    git push origin main
     
     # Clean up local and remote branch
     git branch -d "$BRANCH_NAME"
