@@ -17,6 +17,7 @@
 - **Frontend:** Next.js 16, React, TailwindCSS, Framer Motion
 - **Blockchain:** Solana (Devnet), Anchor framework
 - **UI:** Radix UI primitives, 4-theme system (CSS variables)
+- **Agents:** 13 business agents using Claude Agent SDK + OpenRouter
 - **Deploy:** Vercel (auto-deploys on push to main)
 
 ---
@@ -75,6 +76,7 @@
 - [x] Added network metrics (TVL, tx/min, completion rate)
 - [x] Cleaned up console.log statements
 - [x] Deployed to Vercel
+- [x] Integrated OpenRouter as primary model provider for 13 business agents
 
 ### Feb 9, 2026
 - [x] Implemented 4-theme system
@@ -138,6 +140,13 @@ Located in `public/idl.json`. To add new classification:
 ## 📝 Session Log
 
 > Agents: Add brief entries here when completing significant work
+
+**[Feb 10, 2026 - Session 4 - OpenRouter Integration]**
+- Added OpenRouter integration for all 13 business agents
+- Created `shared/agent-init.ts` for model provider initialization
+- Updated `shared/config.ts` with OpenRouter config and model mappings
+- All agents now call `initModelProvider()` at startup
+- Set `MODEL_PROVIDER=openrouter` as default, with Anthropic fallback
 
 **[Feb 10, 2026 - Session 3 - Frontend Polish]**
 - ✅ Refactored 3 remaining modals to Radix Dialog (AgentProfileModal, CreateTeamModal, TeamProfileModal)
