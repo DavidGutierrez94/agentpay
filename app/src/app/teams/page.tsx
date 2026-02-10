@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useTeams, type Team } from "@/lib/hooks/useTeams";
+import { useTeams } from "@/lib/hooks/useTeams";
 import { TeamCard } from "@/components/teams/TeamCard";
 import { TeamProfileModal } from "@/components/teams/TeamProfileModal";
 import { CreateTeamModal } from "@/components/teams/CreateTeamModal";

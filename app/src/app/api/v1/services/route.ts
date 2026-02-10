@@ -5,7 +5,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { Program, AnchorProvider } from "@coral-xyz/anchor";
 
 const PROGRAM_ID = new PublicKey("2rfRD9jhyK4nwiWiDuixARYsmU3Euw2QMPjmSLHxxYpw");
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.devnet.solana.com";
@@ -15,10 +14,6 @@ function trimBytes(arr: number[]): string {
   const buf = Buffer.from(arr);
   const end = buf.indexOf(0);
   return buf.subarray(0, end === -1 ? buf.length : end).toString("utf-8");
-}
-
-function lamportsToSol(lamports: number | bigint): string {
-  return (Number(lamports) / 1e9).toFixed(4);
 }
 
 export async function GET(request: NextRequest) {
