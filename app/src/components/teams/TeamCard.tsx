@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { AddressDisplay } from "../shared/AddressDisplay";
-import type { Team, ROLE_ICONS, AGENT_LEVEL_NAMES } from "@/lib/hooks/useTeams";
+import type { Team } from "@/lib/hooks/useTeams";
 
 const roleLabels: Record<string, string> = {
   lead: "LEAD",

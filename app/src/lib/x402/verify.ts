@@ -28,7 +28,7 @@ export async function verifyAndSubmitPayment(
   paymentHeader: string,
   expectedRecipient: string,
   expectedAmount: number,
-  expectedMint: string
+  _expectedMint: string // TODO: Add mint verification
 ): Promise<X402VerifyResult> {
   try {
     // 1. Decode X-Payment header

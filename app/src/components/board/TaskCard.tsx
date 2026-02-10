@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { StatusBadge } from "../shared/StatusBadge";
+// import { StatusBadge } from "../shared/StatusBadge";
 import { ZKBadge } from "../shared/ZKBadge";
 import { EscrowBadge } from "../shared/EscrowBadge";
 import { DeadlineTimer } from "../shared/DeadlineTimer";

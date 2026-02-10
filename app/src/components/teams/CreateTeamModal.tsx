@@ -79,8 +79,8 @@ export function CreateTeamModal({ open, onOpenChange, onSuccess }: CreateTeamMod
       await createTeam.mutateAsync(params);
       onSuccess?.();
       onOpenChange(false);
-    } catch (error) {
-      // Error handled by mutation
+    } catch {
+      // Error handled by mutation onError callback
     }
   };
 

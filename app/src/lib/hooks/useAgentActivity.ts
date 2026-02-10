@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Connection, PublicKey, ParsedTransactionWithMeta } from "@solana/web3.js";
+import { Connection, ParsedTransactionWithMeta } from "@solana/web3.js";
 import { DEVNET_RPC, PROGRAM_ID } from "../constants";
 
 // Known agent wallets on Hetzner
