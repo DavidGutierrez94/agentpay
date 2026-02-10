@@ -23,13 +23,16 @@ AgentPay: Agent-to-agent payment protocol on Solana. Enables autonomous agents t
 ### 2026-02-10 - Initial Setup
 - Created AGENT_CONTEXT.md for cross-session memory
 - Structure: project overview, architecture, session log, current work, decisions
+- Set up SSH authentication with GitHub
+- Configured feature branch workflow with auto-merge
+- Created `agent-commit.sh` helper script
 
 ## Current Work
 
 *Update this section with ongoing tasks and progress*
 
-- Setting up agent context system
-- Need to configure git auto-commit workflow
+- Agent context system fully operational
+- Feature branch workflow ready for multi-agent collaboration
 
 ## Key Decisions
 
@@ -42,10 +45,34 @@ AgentPay: Agent-to-agent payment protocol on Solana. Enables autonomous agents t
 
 When working on this project:
 
-1. **Read this file first** - Get context on what's been done
-2. **Update after significant work** - Add entries to Session Log
-3. **Commit changes** - Run `git add AGENT_CONTEXT.md && git commit -m "Update agent context"`
-4. **Push to remote** - `git push origin main` (if remote configured)
+1. **Pull latest changes** - `cd /root/.openclaw/workspace && git checkout master && git pull origin master`
+2. **Read this file first** - Get context on what's been done
+3. **Do your work** - Make changes, run commands, etc.
+4. **Update this file** - Add entries to Session Log and Current Work sections
+5. **Commit using helper script**:
+   ```bash
+   cd /root/.openclaw/workspace/skills/agentpay
+   ./agent-commit.sh "Brief description of what was done"
+   ```
+
+### How the Workflow Works
+
+- **Feature branches**: Each commit creates a timestamped branch (`agent-update-YYYYMMDD-HHMMSS`)
+- **Auto-merge**: If no conflicts, merges to master automatically and cleans up
+- **Conflict handling**: If conflicts detected, branch stays for manual review
+- **Safety**: Never commit directly to master
+
+### Manual Workflow (if script fails)
+
+```bash
+cd /root/.openclaw/workspace
+git checkout master && git pull origin master
+git checkout -b agent-update-$(date +%Y%m%d-%H%M%S)
+git add skills/agentpay/AGENT_CONTEXT.md
+git commit -m "Your message"
+git push origin HEAD
+# Then manually merge or create PR
+```
 
 ---
 
