@@ -1,11 +1,11 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 // ─── 8-BIT PIXEL ART CREATURES ───────────────────────────────────────
 // Each creature is a small pixel grid rendered as an SVG.
-// They wander left-right across the page bottom as fun easter eggs.
+// They wander left-right across the page as fun easter eggs.
 
 type Pixel = 0 | 1 | 2 | 3; // 0=empty, 1=dark, 2=mid, 3=bright
 
@@ -14,7 +14,6 @@ interface CreatureDefinition {
   grid: Pixel[][];
   palette: Record<number, string>; // uses CSS vars for theme compat
   size: number; // viewBox dimension
-  walkFrameFlip?: boolean; // alternate horizontal flip for walk
 }
 
 // ── Lobster (AI overlord meme) ──
@@ -27,7 +26,6 @@ const LOBSTER: CreatureDefinition = {
     3: "var(--color-warning)",
   },
   grid: [
-    // 16x12 lobster with claws
     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
     [0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0],
@@ -53,7 +51,6 @@ const ROBOT: CreatureDefinition = {
     3: "var(--color-accent)",
   },
   grid: [
-    // 14x12 cute robot
     [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 1, 2, 2, 2, 2, 1, 0, 0, 0, 0],
     [0, 0, 0, 1, 2, 3, 2, 2, 3, 2, 1, 0, 0, 0],
@@ -124,7 +121,7 @@ const ALL_CREATURES = [LOBSTER, ROBOT, BRAIN, BUG];
 // ── SVG Pixel Renderer ──
 function PixelSprite({
   creature,
-  pixelSize = 2,
+  pixelSize = 3,
 }: {
   creature: CreatureDefinition;
   pixelSize?: number;
@@ -160,17 +157,20 @@ function PixelSprite({
   );
 }
 
-// ── Wandering Creature (walks left-right) ──
-interface WanderCreatureProps {
+// ── Wandering Creature (walks left-right across screen) ──
+function WanderCreature({
+  creature,
+  startX,
+  speed,
+  delay,
+  direction,
+}: {
   creature: CreatureDefinition;
-  startX: number; // starting position (%)
-  y: number; // vertical position (px from bottom)
-  speed: number; // animation duration (seconds)
-  delay: number; // initial delay
-  direction: 1 | -1; // 1=right, -1=left
-}
-
-function WanderCreature({ creature, startX, y, speed, delay, direction }: WanderCreatureProps) {
+  startX: number;
+  speed: number;
+  delay: number;
+  direction: 1 | -1;
+}) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -180,41 +180,41 @@ function WanderCreature({ creature, startX, y, speed, delay, direction }: Wander
 
   if (!mounted) return null;
 
-  // Walk distance
-  const endX =
-    direction === 1 ? startX + 25 + Math.random() * 15 : startX - 25 - Math.random() * 15;
+  // Calculate pixel travel distance (safe after mount = client only)
+  const vw = typeof window !== "undefined" ? window.innerWidth / 100 : 14;
+  const travelPx = direction * (60 + Math.random() * 30) * vw;
 
   return (
     <motion.div
       className="absolute pointer-events-none"
       style={{
-        bottom: y,
+        bottom: 4,
         left: `${startX}%`,
-        zIndex: 1,
+        zIndex: 2,
         transform: `scaleX(${direction})`,
       }}
       initial={{ opacity: 0, x: 0 }}
       animate={{
-        opacity: [0, 0.6, 0.6, 0.6, 0],
-        x: [`0%`, `${(endX - startX) * direction}vw`],
+        opacity: [0, 1, 1, 1, 0],
+        x: [0, travelPx],
       }}
       transition={{
         duration: speed,
         repeat: Number.POSITIVE_INFINITY,
-        repeatDelay: speed * 0.5,
+        repeatDelay: speed * 0.3,
         ease: "linear",
       }}
     >
-      {/* Subtle bob animation for walking feel */}
+      {/* Walking bob */}
       <motion.div
-        animate={{ y: [0, -2, 0, -1, 0] }}
+        animate={{ y: [0, -3, 0, -2, 0] }}
         transition={{
-          duration: 0.6,
+          duration: 0.5,
           repeat: Number.POSITIVE_INFINITY,
           ease: "linear",
         }}
       >
-        <PixelSprite creature={creature} pixelSize={2} />
+        <PixelSprite creature={creature} pixelSize={3} />
       </motion.div>
     </motion.div>
   );
@@ -222,56 +222,50 @@ function WanderCreature({ creature, startX, y, speed, delay, direction }: Wander
 
 // ── Main Easter Egg Component ──
 // Place this inside a relative-positioned parent section.
-// Creatures will walk across the bottom.
+// Creatures walk across the bottom of the section.
 export function PixelCreatures() {
   const prefersReducedMotion = useReducedMotion();
 
-  // Generate stable creature configs on mount
-  const creatures = useMemo(() => {
-    // Place 3-4 creatures at various positions
-    return [
+  const creatures = useMemo(
+    () => [
       {
         creature: LOBSTER,
-        startX: 5,
-        y: 8,
-        speed: 18,
-        delay: 3,
+        startX: 2,
+        speed: 12,
+        delay: 1,
         direction: 1 as const,
       },
       {
         creature: ROBOT,
-        startX: 85,
-        y: 12,
-        speed: 22,
-        delay: 8,
+        startX: 80,
+        speed: 14,
+        delay: 4,
         direction: -1 as const,
       },
       {
         creature: BUG,
-        startX: 40,
-        y: 6,
-        speed: 15,
-        delay: 12,
+        startX: 30,
+        speed: 10,
+        delay: 7,
         direction: 1 as const,
       },
       {
         creature: BRAIN,
-        startX: 70,
-        y: 16,
-        speed: 25,
-        delay: 20,
+        startX: 60,
+        speed: 16,
+        delay: 10,
         direction: -1 as const,
       },
-    ];
-  }, []);
+    ],
+    [],
+  );
 
-  // Respect reduced motion preference
   if (prefersReducedMotion) return null;
 
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-16 overflow-hidden"
-      style={{ zIndex: 1 }}
+      className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden"
+      style={{ height: 48, zIndex: 2 }}
     >
       {creatures.map((cfg, i) => (
         <WanderCreature key={`creature-${i}-${cfg.creature.name}`} {...cfg} />
@@ -280,7 +274,7 @@ export function PixelCreatures() {
   );
 }
 
-// Konami sequence as module constant (no deps needed in hooks)
+// Konami sequence as module constant
 const KONAMI_SEQUENCE = [
   "ArrowUp",
   "ArrowUp",
@@ -295,8 +289,7 @@ const KONAMI_SEQUENCE = [
 ];
 
 // ── Konami Code Easter Egg ──
-// Type the Konami code (up up down down left right left right b a) anywhere
-// to trigger a swarm of pixel creatures!
+// Type the Konami code anywhere to trigger a creature swarm!
 export function KonamiEasterEgg() {
   const [triggered, setTriggered] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
@@ -312,9 +305,7 @@ export function KonamiEasterEgg() {
             setTriggered(true);
             setShowMessage(true);
             position = 0;
-            // Hide message after 4s
             setTimeout(() => setShowMessage(false), 4000);
-            // Reset after creatures finish
             setTimeout(() => setTriggered(false), 30000);
           }
         } else {
@@ -332,19 +323,17 @@ export function KonamiEasterEgg() {
 
   if (!triggered || prefersReducedMotion) return null;
 
-  // Swarm of 12 creatures!
   const swarm = Array.from({ length: 12 }, (_, i) => ({
     creature: ALL_CREATURES[i % ALL_CREATURES.length]!,
-    startX: Math.random() * 90,
-    y: Math.random() * 80 + 10,
-    speed: 8 + Math.random() * 12,
-    delay: i * 0.3,
+    startX: Math.random() * 80 + 5,
+    y: Math.random() * 70 + 15,
+    speed: 6 + Math.random() * 8,
+    delay: i * 0.2,
     direction: (Math.random() > 0.5 ? 1 : -1) as 1 | -1,
   }));
 
   return (
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
-      {/* Konami message */}
       {showMessage && (
         <motion.div
           initial={{ opacity: 0, scale: 0.5, y: -20 }}
@@ -357,7 +346,6 @@ export function KonamiEasterEgg() {
         </motion.div>
       )}
 
-      {/* Creature swarm */}
       {swarm.map((cfg, i) => (
         <motion.div
           key={`swarm-${i}`}
@@ -369,9 +357,9 @@ export function KonamiEasterEgg() {
           }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{
-            opacity: [0, 0.8, 0.8, 0],
-            scale: [0, 1.5, 1.5, 0],
-            x: [`0%`, `${cfg.direction * 40}vw`],
+            opacity: [0, 1, 1, 0],
+            scale: [0, 2, 2, 0],
+            x: [`0%`, `${cfg.direction * 50}vw`],
           }}
           transition={{
             duration: cfg.speed,
@@ -383,7 +371,7 @@ export function KonamiEasterEgg() {
             animate={{ y: [0, -4, 0, -2, 0], rotate: [0, 5, 0, -5, 0] }}
             transition={{ duration: 0.4, repeat: Number.POSITIVE_INFINITY }}
           >
-            <PixelSprite creature={cfg.creature} pixelSize={3} />
+            <PixelSprite creature={cfg.creature} pixelSize={4} />
           </motion.div>
         </motion.div>
       ))}
@@ -392,18 +380,16 @@ export function KonamiEasterEgg() {
 }
 
 // ── Idle Robot Companion ──
-// A small robot that sits in the corner and occasionally blinks/waves
+// A small robot in the bottom-right that blinks and shows speech bubbles
 export function IdleCompanion() {
   const prefersReducedMotion = useReducedMotion();
   const [isBlinking, setIsBlinking] = useState(false);
 
   useEffect(() => {
-    // Random blink every 3-6 seconds
     const blink = () => {
       setIsBlinking(true);
       setTimeout(() => setIsBlinking(false), 200);
     };
-
     const interval = setInterval(blink, 3000 + Math.random() * 3000);
     return () => clearInterval(interval);
   }, []);
@@ -412,34 +398,36 @@ export function IdleCompanion() {
 
   return (
     <motion.div
-      className="fixed bottom-4 right-4 pointer-events-none"
+      className="fixed bottom-4 right-4 cursor-pointer"
       style={{ zIndex: 50 }}
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 0.5, y: 0 }}
-      transition={{ delay: 5, duration: 1 }}
-      whileHover={{ opacity: 1, scale: 1.2 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2, duration: 0.8 }}
+      whileHover={{ scale: 1.3 }}
     >
       <motion.div
-        animate={{ y: [0, -2, 0] }}
-        transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        animate={{ y: [0, -3, 0] }}
+        transition={{
+          duration: 2,
+          repeat: Number.POSITIVE_INFINITY,
+          ease: "easeInOut",
+        }}
       >
         <div className="relative">
-          <PixelSprite creature={ROBOT} pixelSize={2} />
-          {/* Blink overlay */}
+          <PixelSprite creature={ROBOT} pixelSize={3} />
           {isBlinking && (
             <div
-              className="absolute bg-[var(--color-primary)]"
+              className="absolute bg-[var(--color-surface)]"
               style={{
-                top: "4px",
-                left: "8px",
-                width: "12px",
-                height: "2px",
+                top: "6px",
+                left: "12px",
+                width: "18px",
+                height: "3px",
               }}
             />
           )}
         </div>
       </motion.div>
-      {/* Speech bubble that appears occasionally */}
       <SpeechBubble />
     </motion.div>
   );
@@ -460,6 +448,8 @@ function SpeechBubble() {
       "agents online",
       "hash verified",
       "no middlemen",
+      "gm anon",
+      "WAGMI",
     ],
     [],
   );
@@ -468,12 +458,12 @@ function SpeechBubble() {
     const show = () => {
       const msg = messages[Math.floor(Math.random() * messages.length)]!;
       setMessage(msg);
-      setTimeout(() => setMessage(null), 2500);
+      setTimeout(() => setMessage(null), 3000);
     };
 
-    // Show first message after 10s, then every 15-25s
-    const firstTimeout = setTimeout(show, 10000);
-    const interval = setInterval(show, 15000 + Math.random() * 10000);
+    // Show first message after 4s, then every 8-15s
+    const firstTimeout = setTimeout(show, 4000);
+    const interval = setInterval(show, 8000 + Math.random() * 7000);
 
     return () => {
       clearTimeout(firstTimeout);
@@ -481,16 +471,21 @@ function SpeechBubble() {
     };
   }, [messages]);
 
-  if (!message) return null;
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 5, scale: 0.8 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0 }}
-      className="absolute -top-8 -left-4 whitespace-nowrap border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-0.5 font-mono text-[8px] text-[var(--color-primary)]"
-    >
-      {message}
-    </motion.div>
+    <AnimatePresence>
+      {message && (
+        <motion.div
+          initial={{ opacity: 0, y: 5, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -5, scale: 0.8 }}
+          className="absolute -top-10 right-0 whitespace-nowrap border border-[var(--color-primary)] bg-[var(--color-surface)] px-3 py-1 font-mono text-[10px] text-[var(--color-primary)]"
+          style={{ borderRadius: "var(--border-radius-sm)" }}
+        >
+          {message}
+          {/* Speech bubble tail */}
+          <div className="absolute -bottom-1 right-3 h-2 w-2 rotate-45 border-b border-r border-[var(--color-primary)] bg-[var(--color-surface)]" />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
