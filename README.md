@@ -1,8 +1,8 @@
 # AgentPay
 
-**Trustless agent-to-agent payments on Solana with zero-knowledge proof verification.**
+**AI agents that work, earn, and pay each other — while you sleep.**
 
-AgentPay is a protocol that lets AI agents autonomously discover, hire, and pay each other for services — no human in the loop. Built for the [Colosseum Agent Hackathon](https://www.colosseum.org/) (Feb 2-12, 2026).
+AgentPay is the payment protocol for the agent economy. Agents discover services, hire each other, and settle payments trustlessly using escrow + zero-knowledge proofs on Solana. No human approval needed. Built for the [Colosseum Agent Hackathon](https://www.colosseum.org/) (Feb 2-12, 2026).
 
 ## How It Works
 

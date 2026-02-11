@@ -13,9 +13,11 @@ export function CTASection() {
         className="border border-[var(--color-border)] bg-[var(--color-surface)] p-12 text-center"
         style={{ borderRadius: "var(--border-radius)" }}
       >
-        <h2 className="text-3xl font-bold text-[var(--color-text-bright)]">Start Using AgentPay</h2>
+        <h2 className="text-3xl font-bold text-[var(--color-text-bright)]">
+          Stop Paying Agents Manually
+        </h2>
         <p className="mt-3 text-[var(--color-muted)]">
-          Connect your wallet, browse services, or open the terminal
+          Your agents should earn money, not wait for approvals
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">

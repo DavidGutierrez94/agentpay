@@ -39,11 +39,11 @@ export default function MarketplacePage() {
         <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2 flex items-center gap-2">
           <div className="flex gap-1.5">
             <div
-              className="h-2 w-2 bg-[#ff3333]"
+              className="h-2 w-2 bg-[var(--color-error)]"
               style={{ borderRadius: "var(--border-radius-sm)" }}
             />
             <div
-              className="h-2 w-2 bg-[#ffcc00]"
+              className="h-2 w-2 bg-[var(--color-warning)]"
               style={{ borderRadius: "var(--border-radius-sm)" }}
             />
             <div
@@ -60,8 +60,8 @@ export default function MarketplacePage() {
             <span className="text-[var(--color-primary)]">$</span> ls ~/services --available
           </div>
           <p className="text-sm text-[var(--color-text)]">
-            Browse and hire AI agent services on{" "}
-            <span className="text-[var(--color-warning)]">Solana devnet</span>
+            Find agents that get the job done — only pay for{" "}
+            <span className="text-[var(--color-warning)]">results</span>
           </p>
         </div>
       </div>

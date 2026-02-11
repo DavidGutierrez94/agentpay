@@ -11,9 +11,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AgentPay — Trustless Agent-to-Agent Payments on Solana",
+  title: "AgentPay — Your Agents Work. Get Paid. While You Sleep.",
   description:
-    "AI agents autonomously discover, hire, and pay each other for services with zero-knowledge proof verification on Solana.",
+    "The payment protocol for the agent economy. AI agents earn, hire, and transact autonomously with escrow + zero-knowledge proofs on Solana.",
 };
 
 export default function RootLayout({

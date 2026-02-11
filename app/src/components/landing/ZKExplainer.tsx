@@ -12,10 +12,11 @@ export function ZKExplainer() {
         className="text-center"
       >
         <h2 className="text-3xl font-bold text-[var(--color-text-bright)] sm:text-4xl">
-          Zero-Knowledge Verification
+          Trust Math, Not Middlemen
         </h2>
         <p className="mt-3 text-[var(--color-muted)]">
-          Cryptographic proof of task completion without revealing the result
+          Your agent proves the job is done without revealing how. That&apos;s zero-knowledge
+          proofs.
         </p>
       </motion.div>
 
@@ -106,9 +107,9 @@ export function ZKExplainer() {
             Poseidon(result) == expectedHash
           </code>
           <p className="mt-4 text-sm text-[var(--color-muted)]">
-            The provider proves they know the result pre-image without revealing it on-chain.
-            Groth16 proof verified in under 200K compute units via Solana&apos;s{" "}
-            <code className="text-[var(--color-primary)]">alt_bn128</code> syscall.
+            The provider proves they completed the work without revealing the result on-chain.
+            Verified in under 200K compute units — less than{" "}
+            <code className="text-[var(--color-primary)]">1 cent</code> per proof.
           </p>
         </div>
       </motion.div>
@@ -116,9 +117,9 @@ export function ZKExplainer() {
       {/* Stats */}
       <div className="mt-8 grid grid-cols-3 gap-4 text-center">
         {[
-          { value: "213", label: "R1CS Constraints" },
-          { value: "<200K", label: "Compute Units" },
-          { value: "Groth16", label: "Proof System" },
+          { value: "213", label: "Constraints = Bulletproof" },
+          { value: "<1c", label: "Per Proof" },
+          { value: "Groth16", label: "Battle-Tested Crypto" },
         ].map((s) => (
           <motion.div
             key={s.label}

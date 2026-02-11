@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
+import { CloverLogo } from "./CloverLogo";
 import { WalletButton } from "./WalletButton";
 
 const links = [
@@ -53,8 +54,9 @@ export function Nav() {
             </div>
             <Link
               href="/"
-              className="text-[var(--color-primary)] text-sm font-bold tracking-wider glitch-hover"
+              className="flex items-center gap-2 text-[var(--color-primary)] text-sm font-bold tracking-wider glitch-hover"
             >
+              <CloverLogo size={18} />
               AGENTPAY <span className="text-[var(--color-text-dim)]">v2.0</span>
             </Link>
           </div>
