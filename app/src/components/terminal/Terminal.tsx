@@ -83,11 +83,11 @@ export function Terminal({ onResult }: { onResult: (result: CommandResult) => vo
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2">
         <div
-          className="h-3 w-3 bg-[#ff3333]"
+          className="h-3 w-3 bg-[var(--color-error)]"
           style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }}
         />
         <div
-          className="h-3 w-3 bg-[#ffcc00]"
+          className="h-3 w-3 bg-[var(--color-warning)]"
           style={{ borderRadius: "var(--border-radius-sm)", opacity: 0.8 }}
         />
         <div
@@ -113,7 +113,9 @@ export function Terminal({ onResult }: { onResult: (result: CommandResult) => vo
                 [CONNECTED] {publicKey.toBase58().slice(0, 8)}...
               </span>
             ) : (
-              <span className="text-[#ffcc00]">[WARN] Connect wallet to sign transactions</span>
+              <span className="text-[var(--color-warning)]">
+                [WARN] Connect wallet to sign transactions
+              </span>
             )}
           </p>
         </div>
@@ -127,7 +129,7 @@ export function Terminal({ onResult }: { onResult: (result: CommandResult) => vo
             </div>
             <pre
               className={`mt-1 whitespace-pre-wrap text-xs ${
-                entry.result.error ? "text-[#ff3333]" : "text-[var(--color-muted)]"
+                entry.result.error ? "text-[var(--color-error)]" : "text-[var(--color-muted)]"
               }`}
             >
               {entry.result.output}

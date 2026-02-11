@@ -23,13 +23,15 @@ export function AddressDisplay({
   return (
     <button
       onClick={copy}
-      className={`inline-flex items-center gap-1.5 font-mono text-xs text-[#00d4ff] transition-colors hover:text-[#00ff41] ${className}`}
+      className={`inline-flex items-center gap-1.5 font-mono text-xs text-[var(--color-accent)] transition-colors hover:text-[var(--color-primary)] ${className}`}
       title={address}
     >
-      <span className="text-[#666666]">[</span>
+      <span className="text-[var(--color-text-dim)]">[</span>
       {shortenAddress(address, chars)}
-      <span className="text-[#666666]">]</span>
-      {copied && <span className="text-[10px] text-[#00ff41] animate-pulse">COPIED</span>}
+      <span className="text-[var(--color-text-dim)]">]</span>
+      {copied && (
+        <span className="text-[10px] text-[var(--color-primary)] animate-pulse">COPIED</span>
+      )}
     </button>
   );
 }

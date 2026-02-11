@@ -35,11 +35,11 @@ export function WalletButton() {
     return (
       <button
         onClick={() => setVisible(true)}
-        className="group relative rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
+        className="group relative rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-bg)] transition-colors hover:opacity-90"
         title="Connect to Solana Devnet. Need SOL? Use the faucet at faucet.solana.com"
       >
         <span className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[var(--color-success)]" />
           Connect Devnet Wallet
         </span>
       </button>
@@ -48,12 +48,12 @@ export function WalletButton() {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="hidden text-sm text-zinc-400 sm:inline">
+      <span className="hidden text-sm text-[var(--color-text-dim)] sm:inline">
         {balance !== null ? `${balance.toFixed(2)} SOL` : "..."}
       </span>
       <button
         onClick={() => disconnect()}
-        className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm font-mono text-zinc-300 transition-colors hover:border-zinc-500 hover:text-white"
+        className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-mono text-[var(--color-text)] transition-colors hover:border-[var(--color-border-bright)] hover:text-[var(--color-text-bright)]"
       >
         {shortenAddress(publicKey.toBase58())}
       </button>

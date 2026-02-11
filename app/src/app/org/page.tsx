@@ -182,28 +182,28 @@ const agents: AgentInfo[] = [
 
 const teamColors: Record<string, { bg: string; border: string; text: string; glow: string }> = {
   leadership: {
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/30",
-    text: "text-amber-400",
-    glow: "shadow-amber-500/10",
+    bg: "bg-[var(--color-warning)]/10",
+    border: "border-[var(--color-warning)]/30",
+    text: "text-[var(--color-warning)]",
+    glow: "shadow-[var(--card-shadow)]",
   },
   engineering: {
-    bg: "bg-blue-500/10",
-    border: "border-blue-500/30",
-    text: "text-blue-400",
-    glow: "shadow-blue-500/10",
+    bg: "bg-[var(--color-accent)]/10",
+    border: "border-[var(--color-accent)]/30",
+    text: "text-[var(--color-accent)]",
+    glow: "shadow-[var(--card-shadow)]",
   },
   marketing: {
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/30",
-    text: "text-emerald-400",
-    glow: "shadow-emerald-500/10",
+    bg: "bg-[var(--color-primary)]/10",
+    border: "border-[var(--color-primary)]/30",
+    text: "text-[var(--color-primary)]",
+    glow: "shadow-[var(--card-shadow)]",
   },
   sales: {
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/30",
-    text: "text-violet-400",
-    glow: "shadow-violet-500/10",
+    bg: "bg-[var(--color-secondary)]/10",
+    border: "border-[var(--color-secondary)]/30",
+    text: "text-[var(--color-secondary)]",
+    glow: "shadow-[var(--card-shadow)]",
   },
 };
 
@@ -223,14 +223,14 @@ const teamLabels: Record<string, string> = {
 
 function StatusDot({ status }: { status: AgentStatus }) {
   const colors: Record<AgentStatus, string> = {
-    running: "bg-emerald-400",
-    idle: "bg-zinc-500",
-    error: "bg-red-400",
+    running: "bg-[var(--color-success)]",
+    idle: "bg-[var(--color-text-dim)]",
+    error: "bg-[var(--color-error)]",
   };
   return (
     <span className="relative flex h-2.5 w-2.5">
       {status === "running" && (
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-success)] opacity-75" />
       )}
       <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${colors[status]}`} />
     </span>
@@ -247,9 +247,11 @@ function AgentCard({ agent, onClick }: { agent: AgentInfo; onClick: () => void }
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           <StatusDot status={agent.status} />
-          <h3 className="font-semibold text-white">
+          <h3 className="font-semibold text-[var(--color-text-bright)]">
             {agent.name}
-            {agent.isLead && <span className="ml-1.5 text-xs text-amber-400">Lead</span>}
+            {agent.isLead && (
+              <span className="ml-1.5 text-xs text-[var(--color-warning)]">Lead</span>
+            )}
           </h3>
         </div>
         <span
@@ -258,8 +260,8 @@ function AgentCard({ agent, onClick }: { agent: AgentInfo; onClick: () => void }
           {agent.role}
         </span>
       </div>
-      <p className="mt-2 text-sm text-zinc-400 line-clamp-2">{agent.description}</p>
-      <div className="mt-3 flex items-center gap-3 text-xs text-zinc-500">
+      <p className="mt-2 text-sm text-[var(--color-text-dim)] line-clamp-2">{agent.description}</p>
+      <div className="mt-3 flex items-center gap-3 text-xs text-[var(--color-text-dim)]">
         <span>${agent.budgetUsd}/day</span>
         <span>{agent.budgetSol} SOL/day</span>
       </div>
@@ -273,16 +275,19 @@ function AgentDetail({ agent, onClose }: { agent: AgentInfo; onClose: () => void
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className={`relative w-full max-w-lg rounded-2xl border ${colors.border} bg-zinc-900 p-6`}
+        className={`relative w-full max-w-lg rounded-2xl border ${colors.border} bg-[var(--color-surface)] p-6`}
       >
-        <button onClick={onClose} className="absolute right-4 top-4 text-zinc-500 hover:text-white">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-[var(--color-text-dim)] hover:text-[var(--color-text-bright)]"
+        >
           ✕
         </button>
 
         <div className="flex items-center gap-3">
           <span className="text-3xl">{teamIcons[agent.team]}</span>
           <div>
-            <h2 className="text-xl font-bold text-white">{agent.name}</h2>
+            <h2 className="text-xl font-bold text-[var(--color-text-bright)]">{agent.name}</h2>
             <p className={`text-sm ${colors.text}`}>
               {teamLabels[agent.team]} {agent.isLead ? "— Team Lead" : "— Specialist"}
             </p>
@@ -291,45 +296,53 @@ function AgentDetail({ agent, onClose }: { agent: AgentInfo; onClose: () => void
 
         <div className="mt-4 space-y-4">
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-zinc-500">Status</h4>
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--color-text-dim)]">
+              Status
+            </h4>
             <div className="mt-1 flex items-center gap-2">
               <StatusDot status={agent.status} />
-              <span className="text-sm capitalize text-white">{agent.status}</span>
+              <span className="text-sm capitalize text-[var(--color-text-bright)]">
+                {agent.status}
+              </span>
             </div>
           </div>
 
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--color-text-dim)]">
               Description
             </h4>
-            <p className="mt-1 text-sm text-zinc-300">{agent.description}</p>
+            <p className="mt-1 text-sm text-[var(--color-text)]">{agent.description}</p>
           </div>
 
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-zinc-500">Schedule</h4>
-            <p className="mt-1 text-sm text-zinc-300">{agent.schedule}</p>
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--color-text-dim)]">
+              Schedule
+            </h4>
+            <p className="mt-1 text-sm text-[var(--color-text)]">{agent.schedule}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg border border-zinc-800 bg-zinc-800/50 p-3">
-              <h4 className="text-xs font-medium text-zinc-500">API Budget</h4>
-              <p className="mt-1 text-lg font-semibold text-white">
+            <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-3">
+              <h4 className="text-xs font-medium text-[var(--color-text-dim)]">API Budget</h4>
+              <p className="mt-1 text-lg font-semibold text-[var(--color-text-bright)]">
                 ${agent.budgetUsd}
-                <span className="text-xs text-zinc-500">/day</span>
+                <span className="text-xs text-[var(--color-text-dim)]">/day</span>
               </p>
             </div>
-            <div className="rounded-lg border border-zinc-800 bg-zinc-800/50 p-3">
-              <h4 className="text-xs font-medium text-zinc-500">SOL Budget</h4>
-              <p className="mt-1 text-lg font-semibold text-white">
+            <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-3">
+              <h4 className="text-xs font-medium text-[var(--color-text-dim)]">SOL Budget</h4>
+              <p className="mt-1 text-lg font-semibold text-[var(--color-text-bright)]">
                 {agent.budgetSol}
-                <span className="text-xs text-zinc-500"> SOL/day</span>
+                <span className="text-xs text-[var(--color-text-dim)]"> SOL/day</span>
               </p>
             </div>
           </div>
 
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-zinc-500">Role ID</h4>
-            <code className="mt-1 block rounded bg-zinc-800 px-3 py-1.5 font-mono text-xs text-violet-400">
+            <h4 className="text-xs font-medium uppercase tracking-wider text-[var(--color-text-dim)]">
+              Role ID
+            </h4>
+            <code className="mt-1 block rounded bg-[var(--color-surface-elevated)] px-3 py-1.5 font-mono text-xs text-[var(--color-secondary)]">
               {agent.role}
             </code>
           </div>
@@ -351,7 +364,7 @@ function TeamSection({ team, label }: { team: string; label: string }) {
       <div className="mb-4 flex items-center gap-2">
         <span className="text-2xl">{teamIcons[team]}</span>
         <h2 className={`text-lg font-bold ${colors.text}`}>{label}</h2>
-        <span className="ml-auto rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400">
+        <span className="ml-auto rounded-full bg-[var(--color-surface-elevated)] px-2.5 py-0.5 text-xs text-[var(--color-text-dim)]">
           {teamAgents.length} agent{teamAgents.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -365,7 +378,7 @@ function TeamSection({ team, label }: { team: string; label: string }) {
 
       {/* Specialists */}
       {specialists.length > 0 && (
-        <div className="ml-4 space-y-2 border-l-2 border-zinc-700 pl-4">
+        <div className="ml-4 space-y-2 border-l-2 border-[var(--color-border)] pl-4">
           {specialists.map((agent) => (
             <AgentCard key={agent.id} agent={agent} onClick={() => setSelected(agent)} />
           ))}
@@ -386,29 +399,33 @@ export default function OrgPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Organization</h1>
-        <p className="mt-1 text-zinc-400">
+        <h1 className="text-2xl font-bold text-[var(--color-text-bright)]">Organization</h1>
+        <p className="mt-1 text-[var(--color-text-dim)]">
           13 autonomous agents running AgentPay — organized into 4 teams
         </p>
       </div>
 
       {/* Summary Stats */}
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-          <p className="text-xs font-medium text-zinc-500">Total Agents</p>
-          <p className="mt-1 text-2xl font-bold text-white">{agents.length}</p>
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <p className="text-xs font-medium text-[var(--color-text-dim)]">Total Agents</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--color-text-bright)]">{agents.length}</p>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-          <p className="text-xs font-medium text-zinc-500">Running</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-400">{runningCount}</p>
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <p className="text-xs font-medium text-[var(--color-text-dim)]">Running</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--color-success)]">{runningCount}</p>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-          <p className="text-xs font-medium text-zinc-500">Daily API Budget</p>
-          <p className="mt-1 text-2xl font-bold text-white">${totalBudgetUsd}</p>
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <p className="text-xs font-medium text-[var(--color-text-dim)]">Daily API Budget</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--color-text-bright)]">
+            ${totalBudgetUsd}
+          </p>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-          <p className="text-xs font-medium text-zinc-500">Daily SOL Budget</p>
-          <p className="mt-1 text-2xl font-bold text-white">{totalBudgetSol.toFixed(2)}</p>
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <p className="text-xs font-medium text-[var(--color-text-dim)]">Daily SOL Budget</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--color-text-bright)]">
+            {totalBudgetSol.toFixed(2)}
+          </p>
         </div>
       </div>
 
@@ -427,26 +444,26 @@ export default function OrgPage() {
 
       {/* Architecture Info */}
       <div className="mt-12 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
           <div className="mb-2 text-2xl">🔗</div>
-          <h3 className="font-semibold text-white">Shared Context</h3>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h3 className="font-semibold text-[var(--color-text-bright)]">Shared Context</h3>
+          <p className="mt-1 text-sm text-[var(--color-text-dim)]">
             Agents communicate asynchronously via CONTEXT.md files and a JSON task queue. No direct
             agent-to-agent calls.
           </p>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
           <div className="mb-2 text-2xl">🛡️</div>
-          <h3 className="font-semibold text-white">Security Hooks</h3>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h3 className="font-semibold text-[var(--color-text-bright)]">Security Hooks</h3>
+          <p className="mt-1 text-sm text-[var(--color-text-dim)]">
             7-layer security: budget limits, file write scoping, bash restrictions, keypair
             isolation, and audit logging.
           </p>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
           <div className="mb-2 text-2xl">⚡</div>
-          <h3 className="font-semibold text-white">Claude Agent SDK</h3>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h3 className="font-semibold text-[var(--color-text-bright)]">Claude Agent SDK</h3>
+          <p className="mt-1 text-sm text-[var(--color-text-dim)]">
             Each agent runs on the Claude Agent SDK with node-cron scheduling, deployed as K8s pods
             with isolated Solana keypairs.
           </p>

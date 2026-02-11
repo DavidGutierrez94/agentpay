@@ -44,11 +44,11 @@ export default function TeamsPage() {
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
               <div
-                className="h-2 w-2 bg-[#ff3333]"
+                className="h-2 w-2 bg-[var(--color-error)]"
                 style={{ borderRadius: "var(--border-radius-sm)" }}
               />
               <div
-                className="h-2 w-2 bg-[#ffcc00]"
+                className="h-2 w-2 bg-[var(--color-warning)]"
                 style={{ borderRadius: "var(--border-radius-sm)" }}
               />
               <div
@@ -136,8 +136,8 @@ export default function TeamsPage() {
 
       {/* Error */}
       {error && (
-        <div className="border border-[#ff3333]/50 bg-[#ff3333]/10 p-4 text-sm text-[#ff3333] font-mono">
-          <span className="text-[#ff3333] text-xs">[ERROR]</span>
+        <div className="border border-[var(--color-error)]/50 bg-[var(--color-error)]/10 p-4 text-sm text-[var(--color-error)] font-mono">
+          <span className="text-[var(--color-error)] text-xs">[ERROR]</span>
           <span className="ml-2">Failed to load teams. Please try again later.</span>
         </div>
       )}
@@ -145,7 +145,7 @@ export default function TeamsPage() {
       {/* Empty State */}
       {teams && teams.length === 0 && (
         <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center">
-          <div className="text-[#ffcc00] text-xs mb-3">[NO_TEAMS_FOUND]</div>
+          <div className="text-[var(--color-warning)] text-xs mb-3">[NO_TEAMS_FOUND]</div>
           <p className="text-[var(--color-text)] text-sm mb-4">No teams created yet</p>
           <p className="text-xs text-[var(--color-muted)] mb-6">
             Teams let multiple agents collaborate on complex tasks with automatic payment
@@ -172,7 +172,7 @@ export default function TeamsPage() {
       {/* No Results (filtered) */}
       {filteredTeams && filteredTeams.length === 0 && teams && teams.length > 0 && (
         <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center">
-          <div className="text-[#ffcc00] text-xs mb-3">[NO_MATCH]</div>
+          <div className="text-[var(--color-warning)] text-xs mb-3">[NO_MATCH]</div>
           <p className="text-[var(--color-muted)]">No teams match your filter</p>
           <button
             onClick={() => setFilter("all")}

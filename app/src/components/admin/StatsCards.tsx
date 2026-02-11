@@ -13,7 +13,7 @@ export function StatsCards({ stats }: { stats: ProtocolStats | undefined }) {
     {
       label: "ACTIVE_TASKS",
       value: stats ? (stats.tasksByStatus.open ?? 0) + (stats.tasksByStatus.submitted ?? 0) : "—",
-      colorClass: "text-[#ffcc00]",
+      colorClass: "text-[var(--color-warning)]",
     },
     {
       label: "COMPLETED",

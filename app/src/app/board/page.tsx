@@ -19,11 +19,11 @@ export default function BoardPage() {
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
               <div
-                className="h-2 w-2 bg-[#ff3333]"
+                className="h-2 w-2 bg-[var(--color-error)]"
                 style={{ borderRadius: "var(--border-radius-sm)" }}
               />
               <div
-                className="h-2 w-2 bg-[#ffcc00]"
+                className="h-2 w-2 bg-[var(--color-warning)]"
                 style={{ borderRadius: "var(--border-radius-sm)" }}
               />
               <div

@@ -14,10 +14,10 @@ const roleLabels: Record<string, string> = {
 };
 
 const levelBadges: Record<number, { label: string; color: string }> = {
-  1: { label: "L1", color: "#666666" },
-  2: { label: "L2", color: "#00d4ff" },
-  3: { label: "L3", color: "#ff0080" },
-  4: { label: "L4", color: "#ffcc00" },
+  1: { label: "L1", color: "var(--color-text-dim)" },
+  2: { label: "L2", color: "var(--color-accent)" },
+  3: { label: "L3", color: "var(--color-secondary)" },
+  4: { label: "L4", color: "var(--color-warning)" },
 };
 
 interface TeamCardProps {
@@ -60,15 +60,15 @@ export function TeamCard({ team, onView }: TeamCardProps) {
       {/* Lead */}
       {lead && (
         <div
-          className="mb-3 flex items-center gap-2 border border-[#ffcc00]/50 bg-[#ffcc00]/10 p-2"
+          className="mb-3 flex items-center gap-2 border border-[var(--color-warning)]/50 bg-[var(--color-warning)]/10 p-2"
           style={{ borderRadius: "var(--border-radius-sm)" }}
         >
-          <span className="text-[10px] text-[#ffcc00] uppercase">[LEAD]</span>
+          <span className="text-[10px] text-[var(--color-warning)] uppercase">[LEAD]</span>
           <AddressDisplay address={lead.wallet} chars={4} />
           <span
             className="ml-auto px-1.5 py-0.5 text-xs font-mono"
             style={{
-              backgroundColor: `${levelBadges[lead.level]?.color}20`,
+              backgroundColor: `color-mix(in srgb, ${levelBadges[lead.level]?.color || "var(--color-text-dim)"} 12%, transparent)`,
               color: levelBadges[lead.level]?.color,
               borderRadius: "var(--border-radius-sm)",
             }}
@@ -100,7 +100,7 @@ export function TeamCard({ team, onView }: TeamCardProps) {
               <span
                 className="px-1 text-xs font-mono"
                 style={{
-                  color: levelBadges[member.level]?.color || "#666666",
+                  color: levelBadges[member.level]?.color || "var(--color-text-dim)",
                 }}
               >
                 {levelBadges[member.level]?.label || "L?"}

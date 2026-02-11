@@ -4,11 +4,11 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { ProtocolStats } from "@/lib/hooks/useProtocolStats";
 
 const STATUS_COLORS: Record<string, string> = {
-  open: "#00d4ff",
-  submitted: "#ffcc00",
-  completed: "#00ff41",
-  disputed: "#ff3333",
-  expired: "#666666",
+  open: "var(--color-accent)",
+  submitted: "var(--color-warning)",
+  completed: "var(--color-primary)",
+  disputed: "var(--color-error)",
+  expired: "var(--color-text-dim)",
 };
 
 export function TaskStatusChart({ stats }: { stats: ProtocolStats | undefined }) {
@@ -19,7 +19,7 @@ export function TaskStatusChart({ stats }: { stats: ProtocolStats | undefined })
     .map(([status, count]) => ({
       name: status.toUpperCase(),
       value: count,
-      fill: STATUS_COLORS[status] ?? "#666666",
+      fill: STATUS_COLORS[status] ?? "var(--color-text-dim)",
     }));
 
   if (data.length === 0) {

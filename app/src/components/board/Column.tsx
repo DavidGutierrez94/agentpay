@@ -14,11 +14,11 @@ const statusLabels: Record<TaskStatus, string> = {
 };
 
 const statusColors: Record<TaskStatus, string> = {
-  open: "#00d4ff",
-  submitted: "#ffcc00",
-  completed: "#00ff41",
-  disputed: "#ff3333",
-  expired: "#666666",
+  open: "var(--color-accent)",
+  submitted: "var(--color-warning)",
+  completed: "var(--color-primary)",
+  disputed: "var(--color-error)",
+  expired: "var(--color-text-dim)",
 };
 
 export function Column({

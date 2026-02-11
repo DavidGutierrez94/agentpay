@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${jetbrainsMono.variable} min-h-screen bg-[#0a0a0a] font-mono text-[#c0c0c0] antialiased`}
+        className={`${jetbrainsMono.variable} min-h-screen bg-[var(--color-bg)] font-mono text-[var(--color-text)] antialiased`}
       >
         <Providers>
           <Nav />
