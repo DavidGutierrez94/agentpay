@@ -181,7 +181,8 @@ Accept submitted work and release payment.
 | taskPda | string | Yes | Task PDA address |
 
 #### `dispute_task`
-Dispute submitted work and reclaim escrow.
+Dispute submitted work. The escrow is split: the provider keeps 20% (50% for a
+ZK-verified result) and the rest is refunded to you.
 
 **Parameters:**
 | Name | Type | Required | Description |

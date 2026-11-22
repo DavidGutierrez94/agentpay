@@ -163,8 +163,12 @@ pub mod agentpay {
         Ok(())
     }
 
-    /// Requester disputes the task. Funds are returned to the requester.
-    /// Simple dispute model: requester gets an immediate refund.
+    /// Requester disputes a submitted result.
+    ///
+    /// The escrow is split instead of fully refunded, so a requester cannot
+    /// receive the work off-chain and then reclaim the whole payment
+    /// (docs/DISPUTE-RESOLUTION-V2.md, Phase 2): the provider keeps 50% when the
+    /// result was ZK-verified and 20% otherwise; the requester gets the rest.
     pub fn dispute_task(ctx: Context<DisputeTask>) -> Result<()> {
         let task = &mut ctx.accounts.task_request;
 
@@ -178,19 +182,25 @@ pub mod agentpay {
         );
 
         let amount = task.amount_lamports;
+        let provider_share = dispute_provider_share(amount, task.zk_verified);
+        let requester_share = amount - provider_share;
         task.status = TaskStatus::Disputed;
 
-        // Refund lamports from task PDA back to requester
         let task_account_info = task.to_account_info();
         let requester_account_info = ctx.accounts.requester.to_account_info();
+        let provider_account_info = ctx.accounts.provider.to_account_info();
 
         **task_account_info.try_borrow_mut_lamports()? -= amount;
-        **requester_account_info.try_borrow_mut_lamports()? += amount;
+        **provider_account_info.try_borrow_mut_lamports()? += provider_share;
+        **requester_account_info.try_borrow_mut_lamports()? += requester_share;
 
         msg!(
-            "Task disputed: {} lamports refunded to requester {}",
-            amount,
-            task.requester
+            "Task disputed: {} lamports refunded to requester {}, {} lamports to provider {} (zk_verified: {})",
+            requester_share,
+            task.requester,
+            provider_share,
+            task.provider,
+            task.zk_verified
         );
 
         Ok(())
@@ -406,8 +416,13 @@ pub struct DisputeTask<'info> {
         seeds = [b"task", requester.key().as_ref(), task_request.task_id.as_ref()],
         bump = task_request.bump,
         has_one = requester @ AgentPayError::UnauthorizedRequester,
+        has_one = provider @ AgentPayError::UnauthorizedProvider,
     )]
     pub task_request: Account<'info, TaskRequest>,
+
+    /// CHECK: The provider wallet receiving its share. Validated via task_request.provider.
+    #[account(mut)]
+    pub provider: UncheckedAccount<'info>,
 }
 
 #[derive(Accounts)]
@@ -436,4 +451,30 @@ pub struct VerifyReputation<'info> {
         bump = service_listing.bump,
     )]
     pub service_listing: Account<'info, ServiceListing>,
+}
+
+/// Provider's share of the escrow when a submitted result is disputed:
+/// 50% for a ZK-verified result, 20% otherwise.
+pub fn dispute_provider_share(amount: u64, zk_verified: bool) -> u64 {
+    if zk_verified {
+        amount / 2
+    } else {
+        amount / 5
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::dispute_provider_share;
+
+    #[test]
+    fn dispute_split_shares() {
+        assert_eq!(dispute_provider_share(1_000_000, false), 200_000);
+        assert_eq!(dispute_provider_share(1_000_000, true), 500_000);
+        // rounding favours the requester and never exceeds the escrow
+        assert_eq!(dispute_provider_share(7, false), 1);
+        assert_eq!(dispute_provider_share(7, true), 3);
+        assert_eq!(dispute_provider_share(0, true), 0);
+        assert_eq!(dispute_provider_share(u64::MAX, true), u64::MAX / 2);
+    }
 }

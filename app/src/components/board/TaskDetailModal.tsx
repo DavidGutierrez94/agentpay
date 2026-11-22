@@ -70,9 +70,10 @@ export function TaskDetailModal({
           .accounts({
             requester: publicKey,
             taskRequest: new PublicKey(task.pda),
+            provider: new PublicKey(task.provider),
           })
           .rpc();
-        setSuccessMsg("Task disputed. Refund issued.");
+        setSuccessMsg("Task disputed. Escrow split between you and the provider.");
       }
 
       queryClient.invalidateQueries({ queryKey: ["tasks"] });

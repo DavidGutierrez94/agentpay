@@ -140,19 +140,28 @@ export async function disputeTask({ taskPda }) {
       .accounts({
         requester: keypair.publicKey,
         taskRequest: taskPubkey,
+        provider: task.provider,
       })
       .signers([keypair])
       .rpc();
 
-    const amountSol = lamportsToSol(task.amountLamports);
+    // Mirrors dispute_provider_share() in the program: 50% to the provider
+    // for a ZK-verified result, 20% otherwise.
+    const amount = BigInt(task.amountLamports.toString());
+    const providerShare = task.zkVerified ? amount / 2n : amount / 5n;
+    const refundSol = lamportsToSol(amount - providerShare);
+    const providerSol = lamportsToSol(providerShare);
 
     return {
       success: true,
       taskPda,
-      amountRefunded: amountSol,
+      amountRefunded: refundSol,
+      providerShare: providerSol,
       txSignature: tx,
-      message: `Task disputed. ${amountSol} SOL refunded to your wallet.`,
-      note: "The provider will not receive payment for this task.",
+      message: `Task disputed. ${refundSol} SOL refunded to your wallet.`,
+      note: `The provider keeps ${providerSol} SOL (${
+        task.zkVerified ? "50%, ZK-verified result" : "20%"
+      }).`,
     };
   } catch (error) {
     return {

@@ -258,8 +258,12 @@
     {
       "name": "dispute_task",
       "docs": [
-        "Requester disputes the task. Funds are returned to the requester.",
-        "Simple dispute model: requester gets an immediate refund."
+        "Requester disputes a submitted result.",
+        "",
+        "The escrow is split instead of fully refunded, so a requester cannot",
+        "receive the work off-chain and then reclaim the whole payment",
+        "(docs/DISPUTE-RESOLUTION-V2.md, Phase 2): the provider keeps 50% when the",
+        "result was ZK-verified and 20% otherwise; the requester gets the rest."
       ],
       "discriminator": [
         140,
@@ -305,6 +309,13 @@
               }
             ]
           }
+        },
+        {
+          "name": "provider",
+          "writable": true,
+          "relations": [
+            "task_request"
+          ]
         }
       ],
       "args": []
