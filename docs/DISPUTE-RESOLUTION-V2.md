@@ -239,9 +239,9 @@ Given the hackathon deadline, I recommend a **phased approach**:
 
 ### Phase 2 (Future PR)
 
-- [ ] Modify `dispute_task` for split refund
-- [ ] Add provider account to DisputeTask context
-- [ ] Tests for new dispute logic
+- [x] Modify `dispute_task` for split refund
+- [x] Add provider account to DisputeTask context
+- [x] Tests for new dispute logic
 
 ### Phase 3 (v2.0)
 

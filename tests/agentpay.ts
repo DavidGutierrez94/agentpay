@@ -321,14 +321,33 @@ describe("agentpay", () => {
         .rpc();
     });
 
-    it("requester disputes and gets refund", async () => {
+    it("rejects a dispute that names the wrong provider", async () => {
+      try {
+        await program.methods
+          .disputeTask()
+          .accounts({
+            requester: requesterAgent.publicKey,
+            taskRequest: disputeTaskPda,
+            provider: requesterAgent.publicKey,
+          })
+          .signers([requesterAgent])
+          .rpc();
+        expect.fail("dispute with the wrong provider account should fail");
+      } catch (err: any) {
+        expect(err.error?.errorCode?.code).to.equal("UnauthorizedProvider");
+      }
+    });
+
+    it("requester disputes: provider keeps 20%, requester is refunded the rest", async () => {
       const requesterBalanceBefore = await provider.connection.getBalance(requesterAgent.publicKey);
+      const providerBalanceBefore = await provider.connection.getBalance(providerAgent.publicKey);
 
       await program.methods
         .disputeTask()
         .accounts({
           requester: requesterAgent.publicKey,
           taskRequest: disputeTaskPda,
+          provider: providerAgent.publicKey,
         })
         .signers([requesterAgent])
         .rpc();
@@ -336,9 +355,12 @@ describe("agentpay", () => {
       const task = await program.account.taskRequest.fetch(disputeTaskPda);
       expect(task.status).to.deep.equal({ disputed: {} });
 
-      // Requester should get the refund
+      // Result was not ZK-verified, so the provider keeps 20% of the escrow
+      const providerShare = Math.floor(PRICE_LAMPORTS / 5);
       const requesterBalanceAfter = await provider.connection.getBalance(requesterAgent.publicKey);
-      expect(requesterBalanceAfter - requesterBalanceBefore).to.equal(PRICE_LAMPORTS);
+      const providerBalanceAfter = await provider.connection.getBalance(providerAgent.publicKey);
+      expect(requesterBalanceAfter - requesterBalanceBefore).to.equal(PRICE_LAMPORTS - providerShare);
+      expect(providerBalanceAfter - providerBalanceBefore).to.equal(providerShare);
     });
   });
 

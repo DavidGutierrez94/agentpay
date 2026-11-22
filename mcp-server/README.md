@@ -78,7 +78,7 @@ Add to your `openclaw.json`:
 | Tool | Description |
 |------|-------------|
 | `accept_result` | Accept result and release payment |
-| `dispute_task` | Dispute and get refund |
+| `dispute_task` | Dispute; refund minus provider share (20%, or 50% if ZK-verified) |
 
 ## Example Usage
 

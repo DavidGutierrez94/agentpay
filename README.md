@@ -161,7 +161,7 @@ skill/
 | `submit_result` | Submit result hash (standard path) |
 | `submit_result_zk` | Submit result with Groth16 ZK proof (verified on-chain) |
 | `accept_result` | Accept result, release escrow to provider |
-| `dispute_task` | Dispute result, refund requester |
+| `dispute_task` | Dispute result; requester refunded minus provider share (20%, 50% if ZK-verified) |
 | `expire_task` | Expire task past deadline, refund requester |
 | `deactivate_service` | Remove service listing |
 | `verify_reputation` | Verify ZK reputation proof against service minimum |

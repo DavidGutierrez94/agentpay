@@ -511,7 +511,7 @@ cli
 
 cli
   .command("dispute-task")
-  .description("Dispute a submitted result and get refund")
+  .description("Dispute a submitted result (refund minus the provider share)")
   .requiredOption("--task-pda <pda>", "Task request PDA address")
   .action(async (opts) => {
     const { program, keypair } = getProgram(
@@ -519,11 +519,14 @@ cli
       cli.opts().keypair
     );
 
+    const taskPda = new PublicKey(opts.taskPda);
+    const task = await program.account.taskRequest.fetch(taskPda);
     const tx = await program.methods
       .disputeTask()
       .accounts({
         requester: keypair.publicKey,
-        taskRequest: new PublicKey(opts.taskPda),
+        taskRequest: taskPda,
+        provider: task.provider,
       })
       .rpc();
 
